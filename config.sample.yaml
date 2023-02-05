@@ -1,0 +1,104 @@
+notion :
+  token : &token 'here is your own notion intergration token'  # 在notion intergration中获取自己的token：https://www.notion.so/my-integrations/
+  api_version : &version '2022-06-28'  # API的版本
+  header : # requests 的 header 信息
+    Authorization : !join ['Bearer ', *token]  # 需要在 python 中添加 !join 的 constructor
+    Notion-Version : *version 
+    Content-Type : 'application/json'
+task :
+  - 
+    stop: False
+    name : thinking_past_year  # 自定义名称，用来区分输出文件
+    describe : Memo数据库中过去一年的思考  # 当前任务的描述，用来记录该任务要做什么事
+    database_id : 'here is your database id for analysis'  # database id
+    extra :  # 对数据库的筛选和排序选项
+      filter :
+        and :
+          - 
+            property : Label
+            multi_select :
+              contains : 思考
+          - 
+            timestamp : &time_key last_edited_time  # 还有 created_time 可用
+            *time_key :
+              past_year : {} # 可选项有 past_week, past_month, past_year 等
+              # on_or_after: '2021-05-10'
+  - 
+    stop: False
+    name : thinking_all  # 自定义名称，用来区分输出文件
+    describe : Memo数据库中所有的思考  # 当前任务的描述，用来记录该任务要做什么事
+    database_id : 'here is your database id for analysis'  # database id
+    extra :  # 对数据库的筛选和排序选项
+      filter :
+        property : Label
+        multi_select :
+          contains : 思考
+  - 
+    stop: True
+    name : rich_text_all  # 自定义名称，用来区分输出文件
+    describe : Memo数据库中所有的富文本  # 当前任务的描述，用来记录该任务要做什么事
+    database_id : 'here is your database id for analysis'  # database id
+    extra :  # 对数据库的筛选和排序选项
+      filter :
+        property : Label
+        multi_select : 
+          is_not_empty : True
+
+  - 
+    stop: False
+    name : summary_all  # 自定义名称，用来区分输出文件
+    describe : Memo数据库中所有的总结优化  # 当前任务的描述，用来记录该任务要做什么事
+    database_id : 'here is your database id for analysis'  # database id
+    extra :  # 对数据库的筛选和排序选项
+      filter :
+        and :
+          - 
+            or:
+              - 
+                property : Label
+                multi_select : 
+                  contains : 卡片：总结进步
+              - 
+                property : Label
+                multi_select : 
+                  contains : 效率
+              - 
+                property : Label
+                multi_select : 
+                  contains : 自律
+              - 
+                property : Label
+                multi_select : 
+                  contains : 处世之道
+              - 
+                property : Label
+                multi_select : 
+                  contains : 沟通
+          - 
+            property : Label
+            multi_select :
+              does_not_contain : 个人数据
+  - 
+    stop: False
+    name : self_admonition_all  # 自定义名称，用来区分输出文件
+    describe : Memo数据库中所有的自我告诫  # 当前任务的描述，用来记录该任务要做什么事
+    database_id : 'here is your database id for analysis'  # database id
+    extra :  # 对数据库的筛选和排序选项
+      filter :
+        or:
+          - 
+            property : Label
+            multi_select : 
+              contains : 卡片：自我告诫
+          - 
+            property : Label
+            multi_select : 
+              contains : 警醒
+          - 
+            property : Label
+            multi_select : 
+              contains : 情感
+          - 
+            property : Label
+            multi_select : 
+              contains : 自我解构
