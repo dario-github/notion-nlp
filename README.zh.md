@@ -23,7 +23,9 @@ pip install arrow ruamel.yaml tqdm pandas pyfunctional scikit-learn jieba
 
 在浏览器打开 notion database 页面或点击 share 复制链接，均可在地址链接中看到 database id（类似一串乱码），填入到 config 的 task 下的 database_id。
 
-task 的 extra 是用来筛选和排序database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。config文件已提供5种配置。
+task 的 extra 是用来筛选和排序database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。config文件已提供1种配置。
+
+打开 [notebook](./notion_text_analysis.ipynb)，运行所有单元。分析结果默认存放在项目目录下的 results 文件夹。
 
 ## 问题
 

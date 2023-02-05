@@ -1,38 +1,37 @@
-<a name="index">**Index**</a>
+[Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
 
-<a href=" 0">notion_api</a>  
-&emsp;<a href="#1">依赖</a>  
-&emsp;<a href="#2">快速使用</a>  
-&emsp;<a href="#3">问题</a>  
-# <a name="0">notion_api</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# notion rich text analysis
 
-读取notion数据库的富文本信息，并做简单的NLP分析
+Reading rich text information from a Notion database and performing simple NLP analysis.
 
 ```mermaid
 flowchart TB
 
-A[(Notion Database)] --> B([通过 API 读取富文本]) --> C([分词 清洗 建立词句映射]) --> D([计算 TF-IDF]) --> E([将 top 关键词及对应语句输出为 markdown 格式])
+A[(Notion Database)] --> B([Reading rich text through API]) --> C([Tokenizing, cleaning, and creating word-sentence mapping]) --> D([Calculating TF-IDF]) --> E([Outputting top keywords and corresponding sentences in markdown format])
+
 ```
 
-## <a name="1">依赖</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## Dependencies
 
 ```shell
 # python==3.8
 pip install arrow ruamel.yaml tqdm pandas pyfunctional scikit-learn jieba
 ```
 
-## <a name="2">快速使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## Quick Start
 
-配置文件参照 `config.sample.yaml` (下称 config)
+Reference the config.sample.yaml file (referred to as the config file) for configuration.
 
-在 [notion integrations](https://www.notion.so/my-integrations/)获取自己的 token ，填入 config 的 token 后。
+Get your own token from [notion integrations](https://www.notion.so/my-integrations/), and enter it in the token field in the config file.
 
-在浏览器打开 notion database 页面或点击 share 复制链接，均可在地址链接中看到 database id（类似一串乱码），填入到 config 的 task 下的 database_id。
+To obtain the database ID, either open the notion database page in a browser or copy the link after clicking the "share" button. The database ID (a string of random characters) can be found in the address link. Enter it in the database_id field under the task field in the config file.
 
-task 的 extra 是用来筛选和排序database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。config文件已提供5种配置。
+The extra field in the task is used to filter and sort the database. The format and content can be referred to [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object). The config file provides 1 configurations.
 
-## <a name="3">问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Open the [notebook](./notion_text_analysis.ipynb) and run all cells. The analysis results are stored in the "results" folder under the project directory by default.
 
-- jieba分词的准确率不高，可以替换为pkuseg，我的VPS配置不够运行pkuseg库（kernel died），所以如果条件允许可以更换为该库。
+## Issues
 
-- tf-idf的分析方法过于简单，考虑接入LLM的API来做进一步分析（例如chatGPT）。
+- Jieba tokenization may not be accurate, and it can be replaced with pkuseg. However, my VPS configuration is not enough to run the pkuseg library (kernel died), so if conditions permit, it can be changed to that library.
+
+- The TF-IDF analysis method is too simple, and it is considered to connect to the LLM API for further analysis (such as chatGPT)."
