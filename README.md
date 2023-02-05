@@ -1,4 +1,4 @@
-[Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
+[English](./README.md) / [Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
 
 # notion rich text analysis
 

@@ -1,4 +1,6 @@
-# notion_api
+[English](./README.md) / [Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
+
+# notion 富文本数据分析
 
 读取notion数据库的富文本信息，并做简单的NLP分析
 

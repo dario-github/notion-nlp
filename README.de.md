@@ -1,3 +1,5 @@
+[English](./README.md) / [Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
+
 # Notion reichhaltigen Textinformationen
 
 Lese die reichhaltigen Textinformationen aus einer Notion-Datenbank und führe eine einfache NLP-Analyse durch
