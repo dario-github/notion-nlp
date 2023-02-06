@@ -1,6 +1,6 @@
-[English](./README.md) / [Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
-
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=green&right_color=pink)
+
+[English](./README.md) / [Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
 
 # notion rich text analysis
 
