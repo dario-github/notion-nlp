@@ -1,5 +1,7 @@
 [English](./README.md) / [Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
 
+![visitors](https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=green&right_color=pink)
+
 # notion rich text analysis
 
 Reading rich text information from a Notion database and performing simple NLP analysis.
