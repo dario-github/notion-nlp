@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "notion-rich-text-analysis"
+version = "1.0.1"
+description = "Reading rich text information from a Notion database and performing simple NLP analysis."
+authors = ["dario-github <zdclink@gmail.com>"]
+license = "MIT license"
+readme = "README.md"
+packages = [{include = "notion_rich_text_analysis", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+typer = "0.3.2"
+arrow = "^1.2.3"
+pyfunctional = "^1.4.3"
+ruamel-yaml = "^0.17.21"
+tqdm = "^4.64.1"
+pandas = "^1.5.3"
+scikit-learn = "^1.2.1"
+jieba = "^0.42.1"
+pkuseg = "^0.0.25"
+tabulate = "^0.9.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "19.10b0"
+isort = "4.3.21"
+flake8 = "3.7.9"
+tox = "3.20.1"
+invoke = "1.4.1"
+pylint = "2.6.0"
+sphinx = {version = "3.4.0", optional = true}
+sphinx-rtd-theme = {version = "0.5.0", optional = true}
+recommonmark = {version = "0.7.1", optional = true}
+sphinx-markdown-tables = {version = "0.0.15", optional = true}
+
+[tool.poetry.extras]
+doc = ["sphinx", "sphinx-rtd-theme", "recommonmark", "sphinx-markdown-tables"]
+
+[tool.black]
+line-length = 90
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 90
+known_third_party = ""
+skip = "test,tests"
+
+[tool.coverage.run]
+# include source files
+source=["./src/"]
+# exclude source files
+omit=[]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
