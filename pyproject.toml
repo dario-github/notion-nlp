@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "notion_rich_text_analysis", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.10"
+python = "~3.8.10"
 arrow = "1.2.3"
 pyfunctional = "1.4.3"
 ruamel-yaml = "0.17.21"
