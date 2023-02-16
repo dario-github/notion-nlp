@@ -16,10 +16,7 @@ def load_stopwords(stopfiles):
     if not stopfiles:
         logging.error("No stopfiles provided.")
         return punctuation
-    stopwords = reduce(
-        lambda x, y: x.union(y),
-        [set([x.strip() for x in open(file, "r").readlines()]) for file in stopfiles],
-    )
+    stopwords = reduce(lambda x, y: x.union(y), [set([x.strip() for x in open(file, "r").readlines()]) for file in stopfiles],)
     stopwords = stopwords | punctuation
     return stopwords
 

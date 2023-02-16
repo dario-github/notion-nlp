@@ -27,9 +27,7 @@ def task_info(config_file: str = (PROJECT_ROOT_DIR / "config/config.yaml").as_po
     if not config["task"]:
         typer.echo("No task")
         return
-    task_info_without_extra = [
-        {k: str(v) for k, v in task._items() if k != "extra"} for task in config["task"]
-    ]
+    task_info_without_extra = [{k: str(v) for k, v in task._items() if k != "extra"} for task in config["task"]]
     print(tabulate(task_info_without_extra, headers="keys", tablefmt="grid"))
 
 
@@ -70,9 +68,7 @@ def run_task(
         if not task:
             raise ValueError(f"{task_name} does not exist.")
         if not task["run"]:
-            raise ValueError(
-                f"{task_name} has been set to stop running. Check the parameters file."
-            )
+            raise ValueError(f"{task_name} has been set to stop running. Check the parameters file.")
     else:
         task = json.loads(task)
     # 任务名称及描述
@@ -82,20 +78,14 @@ def run_task(
     database_id = task["database_id"]
 
     # 停用词
-    stopfiles = glob(
-        (Path(stopfiles_dir) / f"*{stopfiles_postfix}").absolute().as_posix()
-    )
+    stopfiles = glob((Path(stopfiles_dir) / f"*{stopfiles_postfix}").absolute().as_posix())
     stopwords = load_stopwords(stopfiles)
 
     # 筛选 property，这里的 Label 是上述 database 中的属性
     extra_data = task["extra"]
     try:
-        notion_text_analysis = NotionTextAnalysis(
-            notion_header, task_name, task_describe, database_id, extra_data
-        )
-        notion_text_analysis.run(
-            stopwords, output_dir=PROJECT_ROOT_DIR / "results", top_n=10
-        )
+        notion_text_analysis = NotionTextAnalysis(notion_header, task_name, task_describe, database_id, extra_data)
+        notion_text_analysis.run(stopwords, output_dir=PROJECT_ROOT_DIR / "results", top_n=10)
     except Exception as e:
         # 提取 traceback 信息
         tb = traceback.extract_tb(e.__traceback__)
@@ -111,11 +101,7 @@ def run_all_task(config_file: str = (PROJECT_ROOT_DIR / "config/config.yaml").as
         config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/config/config.yaml".
     """
     config_log(
-        PROJECT_ROOT_DIR.stem,
-        "run_all_task",
-        log_root=(PROJECT_ROOT_DIR / "logs").as_posix(),
-        print_terminal=True,
-        enable_monitor=False,
+        PROJECT_ROOT_DIR.stem, "run_all_task", log_root=(PROJECT_ROOT_DIR / "logs").as_posix(), print_terminal=True, enable_monitor=False,
     )
     task_info(config_file)
     config = load_config(config_file)
@@ -124,9 +110,7 @@ def run_all_task(config_file: str = (PROJECT_ROOT_DIR / "config/config.yaml").as
         if not task["run"]:
             continue
         run_task(
-            task=json.dumps(task, ensure_ascii=False),
-            task_name="",
-            config_file=config_file,
+            task=json.dumps(task, ensure_ascii=False), task_name="", config_file=config_file,
         )
 
 

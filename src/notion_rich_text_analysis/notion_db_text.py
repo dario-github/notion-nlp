@@ -1,6 +1,7 @@
 import json
 import logging
 from typing import List
+
 import arrow
 import requests
 from requests.adapters import HTTPAdapter
@@ -62,9 +63,7 @@ class NotionDBText:
             if next_cursor:
                 self.extra_data["start_cursor"] = next_cursor
             r_database = requests.post(
-                url=f"https://api.notion.com/v1/databases/{self.database_id}/query",
-                headers=self.header,
-                data=json.dumps(self.extra_data),
+                url=f"https://api.notion.com/v1/databases/{self.database_id}/query", headers=self.header, data=json.dumps(self.extra_data),
             )
             respond = json.loads(r_database.text)
             total_pages.extend(respond["results"])
@@ -82,14 +81,9 @@ class NotionDBText:
         for page in tqdm(pages, desc="read blocks"):
             page_id = page["id"]
             try:
-                r_page = requests.get(
-                    url=f"https://api.notion.com/v1/blocks/{page_id}/children",
-                    headers=self.header,
-                )
+                r_page = requests.get(url=f"https://api.notion.com/v1/blocks/{page_id}/children", headers=self.header,)
             except Exception as e:
-                logging.error(
-                    f"read blocks failed, page id: {page_id}, origin error info: {e}"
-                )
+                logging.error(f"read blocks failed, page id: {page_id}, origin error info: {e}")
                 passed_blocks += 1
             else:
                 total_blocks.append(json.loads(r_page.text).get("results", []))
@@ -109,9 +103,7 @@ class NotionDBText:
                     self.unsupported_types.add(block["type"])
                     continue
                 try:
-                    page_texts.extend(
-                        [x["plain_text"] for x in block[block["type"]]["rich_text"]]
-                    )
+                    page_texts.extend([x["plain_text"] for x in block[block["type"]]["rich_text"]])
                 except KeyError:
                     logging.error(block["type"] + "|" + json.dumps(block[block["type"]]))
             total_texts.append(page_texts)

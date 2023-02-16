@@ -16,12 +16,7 @@ class NotionTextAnalysis(NotionDBText):
     """
 
     def __init__(
-        self,
-        header: dict,
-        task_name: str,
-        task_describe: str,
-        database_id: str,
-        extra_data: dict,
+        self, header: dict, task_name: str, task_describe: str, database_id: str, extra_data: dict,
     ):
         """初始化
 
@@ -43,11 +38,7 @@ class NotionTextAnalysis(NotionDBText):
         self.extra_data = extra_data
 
     def run(
-        self,
-        stopwords: set = set(),
-        output_dir: Path = Path(f"{PROJECT_ROOT_DIR}/results"),
-        top_n: int = 5,
-        split_pkg: str = "pkuseg",
+        self, stopwords: set = set(), output_dir: Path = Path(f"{PROJECT_ROOT_DIR}/results"), top_n: int = 5, split_pkg: str = "pkuseg",
     ):
         """运行任务
 
@@ -125,46 +116,29 @@ class NotionTextAnalysis(NotionDBText):
         logging.info("handling sentences....")
         # 检查数据库中获取的富文本是否为空
         if not self.total_texts:
-            logging.error(
-                f"该任务未获取到符合条件的文本，请检查筛选条件。database ID: {self.database_id}; extra data: {self.extra_data}"
-            )
+            logging.error(f"该任务未获取到符合条件的文本，请检查筛选条件。database ID: {self.database_id}; extra data: {self.extra_data}")
             raise ValueError("empty rich texts.")
 
         # 剔除无效句子
-        text_list = [
-            text
-            for item in self.total_texts
-            for text in item
-            if self.check_sentence_available(text)
-        ]
+        text_list = [text for item in self.total_texts for text in item if self.check_sentence_available(text)]
         # 分词
         logging.info(f"Use {split_pkg} to split sentences")
         split_text_list = [self.split_sentence(text, pkg=split_pkg) for text in text_list]
 
         # 剔除停用词
-        self.sequence = seq(split_text_list).map(
-            lambda sent: [
-                word for word in sent if not self.check_stopwords(word, stopwords)
-            ]
-        )
+        self.sequence = seq(split_text_list).map(lambda sent: [word for word in sent if not self.check_stopwords(word, stopwords)])
 
         # 检查序列是否为空
         if not self.sequence:
-            logging.error(
-                f"该任务未获取到符合条件的文本，请检查停用词。database ID: {self.database_id}; extra data: {self.extra_data}"
-            )
+            logging.error(f"该任务未获取到符合条件的文本，请检查停用词。database ID: {self.database_id}; extra data: {self.extra_data}")
             raise ValueError("empty rich texts.")
 
         # 获取词表
-        self.unique_words = self.sequence.map(lambda sent: set(sent)).reduce(
-            lambda x, y: x.union(y)
-        )
+        self.unique_words = self.sequence.map(lambda sent: set(sent)).reduce(lambda x, y: x.union(y))
 
         # 检查词表是否为空
         if not self.unique_words:
-            logging.error(
-                f"词表为空，请检查筛选条件及停用词。database ID: {self.database_id}; extra data: {self.extra_data}"
-            )
+            logging.error(f"词表为空，请检查筛选条件及停用词。database ID: {self.database_id}; extra data: {self.extra_data}")
             raise ValueError("empty unique words")
 
         # 词 --> 句子 查询字典
@@ -216,11 +190,7 @@ class NotionTextAnalysis(NotionDBText):
         return pd.DataFrame()
 
     def output(
-        self,
-        task_name: str,
-        task_describe: str,
-        output_dir: Path = Path(f"{PROJECT_ROOT_DIR}/results"),
-        top_n=5,
+        self, task_name: str, task_describe: str, output_dir: Path = Path(f"{PROJECT_ROOT_DIR}/results"), top_n=5,
     ):
         """输出分析结果
 
@@ -246,10 +216,7 @@ class NotionTextAnalysis(NotionDBText):
                 continue
             func.to_csv(self.directory / f"{result_suffix}.{attr}.csv")
         self.top_freq(
-            self.tf_idf_dataframe,
-            f"{result_suffix}.top{top_n}_word_with_sentences.md",
-            task_describe,
-            top_n,
+            self.tf_idf_dataframe, f"{result_suffix}.top{top_n}_word_with_sentences.md", task_describe, top_n,
         )
 
         logging.info(f"{self.task_name} result files have been saved to {output_dir}.")
@@ -267,15 +234,7 @@ class NotionTextAnalysis(NotionDBText):
             f.write("# " + task_describe + "\n\n")
             for word in df.sum(axis=0).sort_values(ascending=False).head(top_n).index:
                 f.write("## " + word + "\n\n")
-                f.write(
-                    "\n\n".join(
-                        [
-                            sent.replace("\n", " ").replace(word, f"**{word}**")
-                            for sent in self.word2sents[word]
-                        ]
-                    )
-                    + "\n\n"
-                )
+                f.write("\n\n".join([sent.replace("\n", " ").replace(word, f"**{word}**") for sent in self.word2sents[word]]) + "\n\n")
 
     @staticmethod
     def by_mean_drop_maxmin(df: pd.DataFrame):

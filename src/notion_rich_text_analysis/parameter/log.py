@@ -17,13 +17,7 @@ monitor_logger.propagate = False
 
 
 def config_log(
-    project,
-    module,
-    log_root=None,
-    app_id="",
-    level=logging.INFO,
-    print_terminal=False,
-    enable_monitor=True,
+    project, module, log_root=None, app_id="", level=logging.INFO, print_terminal=False, enable_monitor=True,
 ):  # pylint: disable=too-many-arguments
     """配置日志, 日志存放在 log_root / project / f'{module}.log'
     配置完成后，会存在两种日志
@@ -86,9 +80,7 @@ def config_log(
             monitor_handlers.append(StreamHandler())
 
         formatter = Formatter(
-            fmt="[%(asctime)s.%(msecs)03d] [%(levelname)s] [%(trace_id)s] [{app_id}] [%(module_name)s] [%(message)s]".format(
-                app_id=app_id
-            ),
+            fmt="[%(asctime)s.%(msecs)03d] [%(levelname)s] [%(trace_id)s] [{app_id}] [%(module_name)s] [%(message)s]".format(app_id=app_id),
             datefmt="%Y-%m-%d %H:%M:%S",
         )
         for handler in monitor_handlers:
@@ -141,24 +133,16 @@ class Monitor:
         return str(value)
 
     def _construct_message(self, **kwargs):
-        return json.dumps(
-            {k: self._convert(v) for k, v in kwargs.items()}, ensure_ascii=False
-        )
+        return json.dumps({k: self._convert(v) for k, v in kwargs.items()}, ensure_ascii=False)
 
     def trace(self, **kwargs):
         monitor_logger._log(
-            TRACE,
-            self._construct_message(**kwargs),
-            args=(),
-            extra={"trace_id": self.trace_id, "module_name": self.module_name},
+            TRACE, self._construct_message(**kwargs), args=(), extra={"trace_id": self.trace_id, "module_name": self.module_name},
         )
 
     def stats(self, **kwargs):
         monitor_logger._log(
-            STATS,
-            self._construct_message(**kwargs),
-            args=(),
-            extra={"trace_id": self.trace_id, "module_name": self.module_name},
+            STATS, self._construct_message(**kwargs), args=(), extra={"trace_id": self.trace_id, "module_name": self.module_name},
         )
 
 
