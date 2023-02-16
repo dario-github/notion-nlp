@@ -41,6 +41,9 @@ jobs:
 
       - name: install depencies
         run: python -m poetry install -n
+
+      - name: install requirements
+        run: python -m poetry run pip install -r requirements.txt
       
       - name: tox
         run: python -m poetry run tox
