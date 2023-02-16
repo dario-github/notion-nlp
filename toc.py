@@ -98,7 +98,7 @@ def creat_file_with_toc(f):
 
 
 if __name__ == "__main__":
-    file_name = 'README.origin.md'
+    file_name = "README.origin.md"
     # 如果文件名为空，且未传入文件名，则搜索目录下的markdown文件
     if not file_name and len(sys.argv) < 2:
         path = os.getcwd()

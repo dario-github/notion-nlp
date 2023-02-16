@@ -1,4 +1,4 @@
-config.yaml
+config/config.yaml
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -132,11 +132,6 @@ dmypy.json
 **/*.zip
 **/*.pkl
 **/*.npz
-results/self_admonition_all.tf_idf.analysis_result.top10_word_with_sentences.md
-results/summary_all.tf_idf.analysis_result.top10_word_with_sentences.md
-results/thinking_all.tf_idf.analysis_result.top10_word_with_sentences.md
-results/thinking_past_year.tf_idf.analysis_result.top10_word_with_sentences.md
-logs/notion_api/DBtexts.log.2023-01-29
-config.yaml
-logs/notion_api/DBtexts.log.2023-02-05
-results/rich_text_all.tf_idf.analysis_result.top10_word_with_sentences.md
+results/*
+config/config.yaml
+
