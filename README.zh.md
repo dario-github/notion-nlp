@@ -19,7 +19,7 @@ pip install arrow ruamel.yaml tqdm pandas pyfunctional scikit-learn jieba
 
 ## 快速使用
 
-配置文件参照 `config.sample.yaml` (下称 config)
+配置文件参照 `config.sample.yaml` (下称 config, 请改名为`config.yaml`)
 
 在 [notion integrations](https://www.notion.so/my-integrations/)获取自己的 token ，填入 config 的 token 后。
 
@@ -28,6 +28,18 @@ pip install arrow ruamel.yaml tqdm pandas pyfunctional scikit-learn jieba
 task 的 extra 是用来筛选和排序database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。config文件已提供1种配置。
 
 打开 [notebook](./notion_text_analysis.ipynb)，运行所有单元。分析结果默认存放在项目目录下的 results 文件夹。
+
+## 开发
+
+完成代码开发后，格式化
+```shell
+invoke check
+```
+
+提交格式化的修改后，做单元测试，查看覆盖率情况
+```shell
+poetry run tox
+```
 
 ## 问题
 

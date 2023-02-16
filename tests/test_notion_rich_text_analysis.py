@@ -9,7 +9,11 @@ from notion_rich_text_analysis.parameter.log import config_log
 def test_run_all_task():
     project_dir = Path(__file__).parent.parent
     config_log(
-        project_dir.stem, "test_run_all_task", log_root=(project_dir / "logs").as_posix(), print_terminal=True, enable_monitor=False,
+        project_dir.stem,
+        "test_run_all_task",
+        log_root=(project_dir / "logs").as_posix(),
+        print_terminal=True,
+        enable_monitor=False,
     )
     run_all_task(config_file=project_dir / "config/config.test.yaml")
 

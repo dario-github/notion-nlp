@@ -9,15 +9,13 @@ def black(c):
     """执行 black 格式化命令"""
     print("=" * 5, "run black", "=" * 5)
     c.run("black ./src ./tests")
-    print("=" * 15)
 
 
 @task()
 def isort(c):
     """执行 isort 命令"""
     print("=" * 5, "run isort", "=" * 5)
-    c.run("isort -y --recursive ./src ./tests")
-    print("=" * 15)
+    c.run("isort ./src ./tests")
 
 
 @task()
@@ -25,7 +23,6 @@ def flake(c):
     """执行 flake8 代码检查"""
     print("=" * 5, "run flake", "=" * 5)
     c.run("flake8 ./src ./tests")
-    print("=" * 15)
 
 
 @task()
@@ -33,10 +30,9 @@ def pylint(c):
     """执行 pylint 代码检查"""
     print("=" * 5, "run pylint", "=" * 5)
     c.run("pylint ./src --exit-zero")
-    print("=" * 15)
 
 
-@task(black, isort, flake, default=True)
+@task(black, isort, flake, pylint, default=True)
 def check(c):
     print("~" * 5, "check finish!", "~" * 5)
 

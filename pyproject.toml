@@ -8,46 +8,46 @@ readme = "README.md"
 packages = [{include = "notion_rich_text_analysis", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-typer = "0.3.2"
-arrow = "^1.2.3"
-pyfunctional = "^1.4.3"
-ruamel-yaml = "^0.17.21"
-tqdm = "^4.64.1"
-pandas = "^1.5.3"
-scikit-learn = "^1.2.1"
-jieba = "^0.42.1"
-tabulate = "^0.9.0"
-requests = "^2.28.2"
+python = "3.8.10"
+arrow = "1.2.3"
+pyfunctional = "1.4.3"
+ruamel-yaml = "0.17.21"
+tqdm = "4.64.1"
+pandas = "1.5.3"
+scikit-learn = "1.2.1"
+jieba = "0.42.1"
+tabulate = "0.9.0"
+requests = "2.28.2"
+typer = "0.7.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^5.2"
-black = "^19.10b0"
-isort = "^4.3.21"
-flake8 = "^3.7.9"
-tox = "^3.20.1"
-invoke = "^1.4.1"
-pylint = "^2.6.0"
-setuptools = "^67.3.2"
+pytest = "7.2.1"
+black = "23.1.0"
+isort = "5.12.0"
+flake8 = "6.0.0"
+tox = "3.28.0"
+invoke = "1.7.3"
+pylint = "2.16.2"
+setuptools = "67.3.2"
 sphinx = {version = "3.4.0", optional = true}
 sphinx-rtd-theme = {version = "0.5.0", optional = true}
 recommonmark = {version = "0.7.1", optional = true}
 sphinx-markdown-tables = {version = "0.0.15", optional = true}
-coverage = "^7.1.0"
-pytest-cover = "^3.0.0"
+coverage = "7.1.0"
+pytest-cover = "3.0.0"
 
 [tool.poetry.extras]
 doc = ["sphinx", "sphinx-rtd-theme", "recommonmark", "sphinx-markdown-tables"]
 
 [tool.black]
-line-length = 140
+line-length = 90
 
 [tool.isort]
 multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
-line_length = 140
+line_length = 90
 known_third_party = ""
 skip = "test,tests"
 
