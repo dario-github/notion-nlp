@@ -1,35 +1,27 @@
 import pandas as pd
 from pathlib import Path
 from functional import seq
+from functional.pipeline import Sequence
 
 from notion_rich_text_analysis.notion_db_text import NotionDBText
 
 # 日志模块
 import logging
-from notion_rich_text_analysis.parameter.log import config_log
 
-config_log(
-    "notion_rich_text_analysis",
-    "NotionTextAnalysis",
-    log_root='./logs',
-    print_terminal=True,
-    enable_monitor=False,
-)
 
 class NotionTextAnalysis(NotionDBText):
-    '''
-    分析notion富文本信息
-    '''
+    """分析notion富文本信息
+    """
 
-    def __init__(self, header, task_name, task_describe, database_id, extra_data):
+    def __init__(self, header: dict, task_name: str, task_describe: str, database_id: str, extra_data: dict):
         """初始化
 
         Args:
-            header (_type_): _description_
-            task_name (_type_): _description_
-            task_describe (_type_): _description_
-            database_id (_type_): _description_
-            extra_data (_type_): _description_
+            header (dict): header信息
+            task_name (str): 任务名
+            task_describe (str): 任务描述
+            database_id (str): 数据库ID
+            extra_data (dict): 筛选排序的附加信息
         """
         super().__init__(header, database_id, extra_data)
         logging.info(f'{task_name} start, {task_describe}')
@@ -42,12 +34,12 @@ class NotionTextAnalysis(NotionDBText):
         self.extra_data = extra_data
 
     def run(self, stopwords: set = set(), output_dir: Path = Path('./'), top_n: int = 5):
-        """_summary_
+        """运行任务
 
         Args:
-            stopwords (_type_, optional): _description_. Defaults to set().
-            output_dir (_type_, optional): _description_. Defaults to Path('./').
-            top_n (int, optional): _description_. Defaults to 5.
+            stopwords (set, optional): 停用词集合. Defaults to set().
+            output_dir (pathlib.Path, optional): 输出目录. Defaults to Path('./').
+            top_n (int, optional): 输出得分排名前n个词. Defaults to 5.
         """
         self.handling_sentences(stopwords)
         self.tf_idf_dataframe = self.tf_idf(self.sequence)
@@ -55,8 +47,14 @@ class NotionTextAnalysis(NotionDBText):
 
     @staticmethod
     def check_stopwords(word: str, stopwords: set):
-        """
-        检查词语是否在停用词列表内
+        """检查词语是否在停用词列表内
+
+        Args:
+            word (str): 待检查的词
+            stopwords (set): 停用词集合
+
+        Returns:
+            Bool: 词语是否在停用词列表内
         """
         return word in stopwords \
             or word.isdigit() \
@@ -64,18 +62,26 @@ class NotionTextAnalysis(NotionDBText):
 
     @staticmethod
     def check_sentence_available(text: str):
+        """检查句子是否符合要求
+
+        Args:
+            text (str): 输出的文本
+
+        Returns:
+            Bool: 是否符合要求
         """
-        检查句子是否符合要求
-        """
-        # 不要#开头的，可能是作为标签输入的，也可以用来控制一些分版本的重复内容
+        # 不要'#'开头的，因为可能是作为标签输入的，也可以用来控制一些分版本的重复内容
         if text.startswith("#"):
             return False
         return True
 
     @staticmethod
     def split_sentence(sentence: str, pkg: str):
-        """
-        分词
+        """分词
+
+        Args:
+            sentence (str): 句子
+            pkg (str): 分词所用的包
         """
         def _jieba(sentence):
             import jieba
@@ -92,10 +98,15 @@ class NotionTextAnalysis(NotionDBText):
 
         return pkg_map[pkg](sentence)
 
-    def handling_sentences(self, stopwords):
-        '''
-        处理所有文本：分词、清洗、建立映射
-        '''
+    def handling_sentences(self, stopwords: set):
+        """处理所有文本：分词、清洗、建立映射
+
+        Args:
+            stopwords (set): 停用词集合
+
+        Raises:
+            ValueError: 检查文本是否为空
+        """
         # 检查数据库中获取的富文本是否为空
         if not self.total_texts:
             logging.error(
@@ -124,7 +135,7 @@ class NotionTextAnalysis(NotionDBText):
         # 获取词表
         self.unique_words = (self.sequence
                              .map(lambda sent: set(sent))
-                             .reduce(lambda x, y: x.union(y)))
+                             .reduce(lambda x, y: x.union(y))).to_set()
 
         # 检查词表是否为空
         if not self.unique_words:
@@ -136,10 +147,16 @@ class NotionTextAnalysis(NotionDBText):
         self.word2sents = self._word2sent(text_list, self.unique_words)
 
     @staticmethod
-    def _word2sent(text_list, unique_words):
-        '''
-        词 --> 句子 查询字典
-        '''
+    def _word2sent(text_list: list, unique_words: set):
+        """获取 词 --> 句子 查询字典
+
+        Args:
+            text_list (list): 文本列表
+            unique_words (set): 词表
+
+        Returns:
+            dict: 词 --> 句子 查询字典
+        """
         word2sents = {word.lower(): set() for word in unique_words}
 
         for text in text_list:
@@ -149,10 +166,15 @@ class NotionTextAnalysis(NotionDBText):
         return word2sents
 
     @staticmethod
-    def tf_idf(sequence):
-        '''
-        使用标准tf-idf工具来分析
-        '''
+    def tf_idf(sequence: Sequence):
+        """使用标准tf-idf工具来分析
+
+        Args:
+            sequence (Sequence): pyfunctional库的sequence对象
+
+        Returns:
+            DataFrame: 词表与tf-idf的关联dataframe
+        """
         from sklearn.feature_extraction.text import TfidfVectorizer
 
         vectorizer = TfidfVectorizer()
@@ -165,12 +187,19 @@ class NotionTextAnalysis(NotionDBText):
 
     @staticmethod
     def empty_func(*args, **kwargs):
+        """空函数，返回一个空值
+        """
         return
 
-    def output(self, task_name, task_describe, output_dir=Path('./'), top_n=5):
-        '''
-        输出分析结果
-        '''
+    def output(self, task_name: str, task_describe: str, output_dir: Path = Path('./'), top_n=5):
+        """输出分析结果
+
+        Args:
+            task_name (str): 任务名
+            task_describe (str): 任务描述
+            output_dir (Path, optional): 输出路径. Defaults to Path('./').
+            top_n (int, optional): 需要输出得分前n的词. Defaults to 5.
+        """
         import re
 
         self.directory = Path(output_dir)
@@ -192,10 +221,15 @@ class NotionTextAnalysis(NotionDBText):
         logging.info(
             f'{self.task_name} result files have been saved to {output_dir}.')
 
-    def top_freq(self, df, file_name, task_describe, top_n):
-        '''
-        检查高频词
-        '''
+    def top_freq(self, df: pd.DataFrame, file_name: str, task_describe: str, top_n: int):
+        """检查高频词
+
+        Args:
+            df (pd.DataFrame): 词表与tf-idf的关联dataframe
+            file_name (str): 输出的文件名
+            task_describe (str): 任务描述
+            top_n (int): 需要输出得分前n的词
+        """
         with open(self.directory / file_name, "w") as f:
             f.write('# ' + task_describe + '\n\n')
             for word in df.sum(axis=0).sort_values(ascending=False).head(top_n).index:
@@ -204,7 +238,15 @@ class NotionTextAnalysis(NotionDBText):
                     word, f'**{word}**') for sent in self.word2sents[word]]) + '\n\n')
 
     @staticmethod
-    def by_mean_drop_maxmin(df):
+    def by_mean_drop_maxmin(df: pd.DataFrame):
+        """去除最大最小值，计算均值，逆序
+
+        Args:
+            df (DataFrame): 词表与tf-idf的关联dataframe
+
+        Returns:
+            _type_: _description_
+        """
         # 剔除最大最小值，求均值
         df_drop_maxmin = df.copy()
         for col in df.columns:
@@ -214,11 +256,27 @@ class NotionTextAnalysis(NotionDBText):
         return df_drop_maxmin.mean().sort_values(ascending=False)
 
     @staticmethod
-    def by_max(df):
+    def by_max(df: pd.DataFrame):
+        """按词在不同文档中最大值逆序
+
+        Args:
+            df (pd.DataFrame): 词表与tf-idf的关联dataframe
+
+        Returns:
+            Series: 词语得分逆序
+        """
         # 最大值
         return df.max(axis=0).sort_values(ascending=False)
 
     @staticmethod
-    def by_sum(df):
+    def by_sum(df: pd.DataFrame):
+        """按词在不同文档中的分数和逆序
+
+        Args:
+            df (pd.DataFrame): 词表与tf-idf的关联dataframe
+
+        Returns:
+            Series: 词语得分逆序
+        """
         # 求和
         return df.sum(axis=0).sort_values(ascending=False)

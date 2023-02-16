@@ -9,6 +9,8 @@ def load_stopwords(stopfiles):
     punctuation = {c for k in codepoints if category(c := chr(k)).startswith("P")}
 
     # 停用词
+    if not stopfiles:
+        return punctuation
     stopwords = reduce(lambda x, y: x.union(y), [set(
         [x.strip() for x in open(file, "r").readlines()]) for file in stopfiles])
     stopwords = stopwords | punctuation

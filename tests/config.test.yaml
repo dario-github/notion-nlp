@@ -1,0 +1,18 @@
+notion :
+  token : &token 'secret_V0kve3TRxDFg3IiPEy216VfEExeaV9T7dpPnmjIy5uf'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
+  api_version : &version '2022-06-28'  # API version
+  header : # Requests header information
+    Authorization : !join ['Bearer ', *token]  # The !join constructor needs to be added in python
+    Notion-Version : *version 
+    Content-Type : 'application/json'
+task :
+  - 
+    run : True
+    name : unit_testing_task # Custom name for differentiation of output file
+    describe : unit testing task # Description of the current task, used to record what the task is to do
+    database_id : '119943c69f5d477dacb124a093e202ce' # database id
+    extra : # Options for filtering and sorting the database
+      filter :
+        property : Tags
+        multi_select :
+          contains : unit_testing

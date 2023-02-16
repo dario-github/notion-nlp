@@ -7,7 +7,7 @@ notion :
     Content-Type : 'application/json'
 task :
   - 
-    stop : False
+    run : True
     name : thinking_past_year # Custom name for differentiation of output file
     describe : Thinking in the past year from the Memo database # Description of the current task, used to record what the task is to do
     database_id : 'here is your database id for analysis' # database id

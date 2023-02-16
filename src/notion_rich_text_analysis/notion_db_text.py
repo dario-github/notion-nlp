@@ -8,19 +8,12 @@ from typing import List
 import logging
 from notion_rich_text_analysis.parameter.log import config_log
 
-config_log(
-    "notion_rich_text_analysis",
-    "DBtexts",
-    log_root='./logs',
-    print_terminal=True,
-    enable_monitor=False,
-)
-
 
 class NotionDBText:
     """
     读取数据库中所有富文本信息
     """
+
     def __init__(self, header: dict, database_id: str, extra_data: dict = dict()):
         self.header = header
         self.database_id = database_id
@@ -90,6 +83,7 @@ class NotionDBText:
                     page_texts.extend([x['plain_text']
                                       for x in block[block['type']]['rich_text']])
                 except KeyError:
-                    logging.error(block['type'] + '|' + json.dumps(block[block['type']]))
+                    logging.error(block['type'] + '|' +
+                                  json.dumps(block[block['type']]))
             total_texts.append(page_texts)
         return total_texts
