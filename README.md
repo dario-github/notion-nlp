@@ -1,3 +1,6 @@
+[![codecov](https://codecov.io/gh/dario-github/notion_rich_text_analysis/branch/master/graph/badge.svg?token=ehzYhousD3)](https://codecov.io/gh/dario-github/notion_rich_text_analysis)
+![visitors](https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=green&right_color=pink)
+
 [English](./README.md) / [Deutsch](./README.de.md) / [简体中文](./README.zh.md)
 
 # notion rich text analysis
@@ -35,5 +38,3 @@ Open the [notebook](./notion_text_analysis.ipynb) and run all cells. The analysi
 - Jieba tokenization may not be accurate, and it can be replaced with pkuseg. However, my VPS configuration is not enough to run the pkuseg library (kernel died), so if conditions permit, it can be changed to that library.
 
 - The TF-IDF analysis method is too simple, and it is considered to connect to the LLM API for further analysis (such as chatGPT)."
-
-![visitors](https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=green&right_color=pink)
