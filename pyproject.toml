@@ -29,7 +29,6 @@ tox = "3.28.0"
 invoke = "1.7.3"
 pylint = "2.16.2"
 setuptools = "67.3.2"
-coverage = "7.1.0"
 pytest-cover = "3.0.0"
 pytest-html = "3.1.1"
 sphinx = {version = "3.4.0", optional = true}
