@@ -13,8 +13,7 @@ PROJECT_ROOT_DIR = Path(__file__).parent.parent
 
 
 def test_NotionDBText():
-    """测试NotionDBText
-    """
+    """测试NotionDBText"""
     # 测试用参数文件
     config_file = PROJECT_ROOT_DIR / "config/config.test.yaml"
     config = load_config(config_file)

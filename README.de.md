@@ -1,3 +1,8 @@
+[![CI](https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml/badge.svg)](https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/dario-github/notion_rich_text_analysis/branch/master/graph/badge.svg?token=ehzYhousD3)](https://codecov.io/gh/dario-github/notion_rich_text_analysis)
+[![version](https://img.shields.io/badge/version-1.0.1-green.svg?maxAge=259200)](#)
+![visitors](https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=gray&right_color=green)
+
 [English](./README.md) / [Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
 
 # Notion reichhaltigen Textinformationen
