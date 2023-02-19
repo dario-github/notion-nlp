@@ -1,53 +1,163 @@
+# <center>基于 Notion 富文本的数据分析</center>
+
+<div style="text-align:center">
+
+从Notion数据库中读取文本并进行自然语言处理分析。
+
 [![CI](https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml/badge.svg)](https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/dario-github/notion_rich_text_analysis/branch/main/graph/badge.svg?token=ehzYhousD3)](https://codecov.io/gh/dario-github/notion_rich_text_analysis)
-[![version](https://img.shields.io/badge/version-1.0.1-green.svg?maxAge=259200)](#)
+![version](https://img.shields.io/badge/version-1.0.1-green.svg?maxAge=259200)
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=gray&right_color=green)
 
-[English](./README.md) / [Deutsch](./README.de.md) / [简体中文](./README.zh.md) 
+[English](./README.md) / [简体中文](./README.zh.md)
 
-# notion 富文本数据分析
+</div>
 
-读取notion数据库的富文本信息，并做简单的NLP分析
+## 简介
+
+flomo刚出时，在notion建了一个database用来实现类似功能。记录思考和总结已经好几年了，很是积累了一些语料。flomo的漫游功能做的不是很合乎我的需求，于是想自己写一个接入notion API然后做NLP分析的小工具。
+
+去年用notebook写了demo，乱七八糟的事太多搁置了，前不久加以完善。目前支持批量分析任务，可以在配置文件添加多个database和properties筛选排序条件，然后按TF-IDF输出关键词和相应语句段落的markdown。
+
+例如我自己添加了以下任务：
+
+- 近一年的思考
+- 本年度总结优化
+- 所有时段的自我告诫
+- 本周清单
+
+## Pipline
+
+<div style="text-align:center">
 
 ```mermaid
 flowchart TB
 
-A[(Notion Database)] --> B([通过 API 读取富文本]) --> C([分词 清洗 建立词句映射]) --> D([计算 TF-IDF]) --> E([将 top 关键词及对应语句输出为 markdown 格式])
+A[(Notion Database)] --> B([通过 API 读取富文本]) --> C([分词/清洗/建立词句映射]) --> D[/计算 TF-IDF/] --> E[[将 top-n 关键词及所在语句输出为 markdown 格式]]
 ```
 
-## 依赖
+</div>
+
+## 安装
 
 ```shell
-# python==3.8
-pip install arrow ruamel.yaml tqdm pandas pyfunctional scikit-learn jieba
+python3.8 -m pip install notion-rich-text-analysis
 ```
 
 ## 快速使用
 
-配置文件参照 `config.sample.yaml` (下称 config, 请改名为`config.yaml`)
+配置文件参照 `configs/config.sample.yaml` (下称 config, 请改名为`config.yaml`作为自己的配置文件)
 
-在 [notion integrations](https://www.notion.so/my-integrations/)获取自己的 token ，填入 config 的 token 后。
+### 获取integration的token
+
+在 [notion integrations](https://www.notion.so/my-integrations/)新建一个integration，获取自己的 token ，填入 config.yaml 文件的 token 后。
+
+> [tango网页版图文教程](https://app.tango.us/app/workflow/6e53c348-79b6-4ed3-8c75-46f5ddb996da?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown格式图文教程](./docs/tango/get_the_integration_token.zh.md)
+
+### 将integration添加到database/获取database ID
 
 在浏览器打开 notion database 页面或点击 share 复制链接，均可在地址链接中看到 database id（类似一串乱码），填入到 config 的 task 下的 database_id。
 
-task 的 extra 是用来筛选和排序database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。config文件已提供1种配置。
+> [tango网页版图文教程](https://app.tango.us/app/workflow/7e95c7df-af73-4748-9bf7-11efc8e24f2a?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown格式图文教程](./docs/tango/add_integration_to_database.zh.md)
 
-打开 [notebook](./notion_text_analysis.ipynb)，运行所有单元。分析结果默认存放在项目目录下的 results 文件夹。
+### 配置筛选排序数据库条目的extra参数
+
+task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。`config.sample.yaml`文件已提供2种配置。
+
+```yaml
+notion :
+  token : &token 'here is your own notion intergration token'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
+  api_version : &version '2022-06-28'  # API version
+  header : # Requests header information
+    Authorization : !join ['Bearer ', *token]  # The !join constructor needs to be added in python
+    Notion-Version : *version 
+    Content-Type : 'application/json'
+task :
+  - 
+    run : True
+    name : task_1 # Custom name for differentiation of output file
+    describe : Thinking in the past year from the Memo database # Description of the current task, used to record what the task is to do
+    database_id : 'here is your database id for analysis' # database id
+    extra : # Options for filtering and sorting the database
+      filter :
+        and :
+          - 
+            property : Label
+            multi_select :
+              contains : Thinking
+          - 
+            timestamp : &time_key last_edited_time # created_time is also available
+            *time_key : 
+              past_year : {} # past_week, past_month, past_year
+              # on_or_after: '2021-05-10'
+  - 
+    run : True
+    name : task_2 # Custom name for differentiation of output file
+    describe : Summary from the Memo database # Description of the current task, used to record what the task is to do
+    database_id : 'here is your database id for analysis' # database id
+    extra : # Options for filtering and sorting the database
+      filter :
+        and :
+          - 
+            or:
+              - 
+                property : Label
+                multi_select : 
+                  contains : summary
+              - 
+                property : Label
+                multi_select : 
+                  contains : efficency
+          - 
+            property : Label
+            multi_select :
+              does_not_contain : personal
+```
+
+### 执行所有任务
+
+```shell
+# python3.8 -m notion-rich-text-analysis run-all-task --config_file ${Your Config file Path}
+```
 
 ## 开发
 
-完成代码开发后，格式化
-```shell
-invoke check
-```
+欢迎 fork 并 添加功能/修复bug。
 
-提交格式化的修改后，做单元测试，查看覆盖率情况
-```shell
-poetry run tox
-```
+- clone 项目后使用`create_python_env_in_new_machine.sh`脚本创建 poetry 虚拟环境。
+
+- 完成代码开发后，使用invoke命令做一系列格式化，`task.py`已添加`black`/`isort`等任务。
+
+    ```shell
+    invoke check
+    ```
+
+- 提交格式化的修改后，做单元测试，查看覆盖率情况。
+
+    ```shell
+    poetry run tox
+    ```
 
 ## 问题
 
-- jieba分词的准确率不高，可以替换为pkuseg，我的VPS配置不够运行pkuseg库（kernel died），所以如果条件允许可以更换为该库。
+- 中文分词的库内置了两种：jieba/pkuseg，默认使用pkuseg，对内存要求较高，实测低于1G内存的VPS需要加载虚拟内存才能使用。
 
 - tf-idf的分析方法过于简单，考虑接入LLM的API来做进一步分析（例如chatGPT）。
+
+## 贡献
+
+- scikit-learn - [https://github.com/scikit-learn/scikit-learn](https://github.com/scikit-learn/scikit-learn)
+
+## 许可证与版权
+
+- [MIT License](./LICENSE)
+
+  - MIT许可证是一种宽松的开源软件许可证。这意味着任何人都可以自由地使用、复制、修改和分发您的软件，只要他们在其派生作品中包括原始版权声明和许可证。
+
+  - 然而，MIT许可证不提供任何保证或责任，这意味着您不会对使用或分发您的软件而产生的任何损害或损失负责。
+
+  - 通过使用这个软件，您同意接受MIT许可证的条款和条件。
+
+## 联系方式
+
+- 详见 [HomePage](https://github.com/dario-github)
