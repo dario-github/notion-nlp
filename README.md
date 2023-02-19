@@ -1,17 +1,33 @@
-# <center>Notion Rich Text Data Analysis</center>
+<p align="center">
+  <img width="100px" src="https://img.icons8.com/ios/250/FFFFFF/share-2.png" align="center" alt="Notion Rich Text Data Analysis" />
+  <h1 align="center">
+    Notion Rich Text Data Analysis
+  </h1>
+  <p align="center">
+    Read the text from a Notion database and perform NLP analysis.
+  </p>
+</p>
 
-<div style="text-align:center">
-
-Read the text from a Notion database and perform NLP analysis.
-
-[![CI](https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml/badge.svg)](https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/dario-github/notion_rich_text_analysis/branch/main/graph/badge.svg?token=ehzYhousD3)](https://codecov.io/gh/dario-github/notion_rich_text_analysis)
-![version](https://img.shields.io/badge/version-1.0.1-green.svg?maxAge=259200)
-![visitors](https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=gray&right_color=green)
-
-[English](./README.md) / [简体中文](./README.zh.md)
-
-</div>
+  <p align="center">
+    <a href="https://github.com/dario-github/notion_rich_text_analysis/actions">
+      <img alt="Tests Passing" src="https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml/badge.svg" />
+    </a>
+    <a href="https://codecov.io/gh/dario-github/notion_rich_text_analysis">
+      <img alt="codecov" src="https://codecov.io/gh/dario-github/notion_rich_text_analysis/branch/main/graph/badge.svg?token=ehzYhousD3" />
+    </a>
+    <a href="https://github.com/dario-github/notion_rich_text_analysis/graphs/contributors">
+      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion_rich_text_analysis" />
+    </a>
+    <a href="https://github.com/dario-github/notion_rich_text_analysis">
+      <img alt="visitors" src="https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=gray&right_color=green" />
+    </a>
+  </p>
+  
+  <p align="center">
+    <a href="README.md">English</a>
+    /
+    <a href="README.zh.md">简体中文</a>
+  </p>
 
 ## Introduction
 
@@ -28,7 +44,7 @@ For example, I have added the following task myself.
 
 ## Pipline
 
-<div style="text-align:center">
+<center>
 
 ```mermaid
 flowchart TB
@@ -36,7 +52,7 @@ flowchart TB
 A[(Notion Database)] --> B([read rich text via API]) --> C([split word / cleaning / word-phrase mapping]) --> D[/calculate TF-IDF/] --> E[[Output the top-n keywords and their corresponding sentences in markdown format]]
 ```
 
-</div>
+</center>
 
 ## Installation
 
