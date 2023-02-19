@@ -1,17 +1,33 @@
-# <center>基于 Notion 富文本的数据分析</center>
+<p align="center">
+  <img width="100px" src="https://img.icons8.com/ios/250/FFFFFF/share-2.png" align="center" alt="Notion Rich Text Data Analysis" />
+  <h1 align="center">
+    基于 Notion 富文本的数据分析
+  </h1>
+  <p align="center">
+    从Notion数据库中读取文本并进行自然语言处理分析。
+  </p>
+</p>
 
-<div style="text-align:center">
-
-从Notion数据库中读取文本并进行自然语言处理分析。
-
-[![CI](https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml/badge.svg)](https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/dario-github/notion_rich_text_analysis/branch/main/graph/badge.svg?token=ehzYhousD3)](https://codecov.io/gh/dario-github/notion_rich_text_analysis)
-![version](https://img.shields.io/badge/version-1.0.1-green.svg?maxAge=259200)
-![visitors](https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=gray&right_color=green)
-
-[English](./README.md) / [简体中文](./README.zh.md)
-
-</div>
+  <p align="center">
+    <a href="https://github.com/dario-github/notion_rich_text_analysis/actions">
+      <img alt="Tests Passing" src="https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml/badge.svg" />
+    </a>
+    <a href="https://codecov.io/gh/dario-github/notion_rich_text_analysis">
+      <img alt="codecov" src="https://codecov.io/gh/dario-github/notion_rich_text_analysis/branch/main/graph/badge.svg?token=ehzYhousD3" />
+    </a>
+    <a href="https://github.com/dario-github/notion_rich_text_analysis/graphs/contributors">
+      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion_rich_text_analysis" />
+    </a>
+    <a href="https://github.com/dario-github/notion_rich_text_analysis">
+      <img alt="visitors" src="https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=gray&right_color=green" />
+    </a>
+  </p>
+  
+  <p align="center">
+    <a href="README.md">English</a>
+    /
+    <a href="README.zh.md">简体中文</a>
+  </p>
 
 ## 简介
 
@@ -28,7 +44,7 @@ flomo刚出时，在notion建了一个database用来实现类似功能。记录�
 
 ## Pipline
 
-<div style="text-align:center">
+<center>
 
 ```mermaid
 flowchart TB
@@ -36,7 +52,7 @@ flowchart TB
 A[(Notion Database)] --> B([通过 API 读取富文本]) --> C([分词/清洗/建立词句映射]) --> D[/计算 TF-IDF/] --> E[[将 top-n 关键词及所在语句输出为 markdown 格式]]
 ```
 
-</div>
+</center>
 
 ## 安装
 
