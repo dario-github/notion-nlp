@@ -24,7 +24,7 @@ def load_stopwords(stopfiles):
     return stopwords
 
 
-def load_config(config_file: str = "config/config.yaml"):
+def load_config(config_file: str = "configs/config.yaml"):
     from ruamel.yaml import YAML
 
     # 使用 yaml 1.2

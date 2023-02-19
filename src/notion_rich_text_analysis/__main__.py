@@ -17,11 +17,11 @@ PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent
 
 
 @app.command()
-def task_info(config_file: str = (PROJECT_ROOT_DIR / "config/config.yaml").as_posix()):
+def task_info(config_file: str = (PROJECT_ROOT_DIR / "configs/config.yaml").as_posix()):
     """查看任务信息
 
     Args:
-        config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/config/config.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/configs/config.yaml".
     """
     config = load_config(config_file)
     if not config["task"]:
@@ -37,7 +37,7 @@ def task_info(config_file: str = (PROJECT_ROOT_DIR / "config/config.yaml").as_po
 def run_task(
     task: str = "",
     task_name: str = "",
-    config_file: str = (PROJECT_ROOT_DIR / "config/config.yaml").as_posix(),
+    config_file: str = (PROJECT_ROOT_DIR / "configs/config.yaml").as_posix(),
     stopfiles_dir: str = (PROJECT_ROOT_DIR / "resources/stopwords").as_posix(),
     stopfiles_postfix: str = "stopwords.txt",
 ):
@@ -46,7 +46,7 @@ def run_task(
     Args:
         task (str, optional): 任务信息字典. Defaults to "".
         task_name (str, optional): 任务名. Defaults to "".
-        config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/config/config.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/configs/config.yaml".
         stopfiles_dir (str, optional): 停用词文件目录. Defaults to "notion_rich_text_analysis/stopwords".
         stopfiles_postfix (str, optional): 停用词文件后缀. Defaults to "stopwords.txt".
 
@@ -104,11 +104,13 @@ def run_task(
 
 
 @app.command()
-def run_all_task(config_file: str = (PROJECT_ROOT_DIR / "config/config.yaml").as_posix()):
+def run_all_task(
+    config_file: str = (PROJECT_ROOT_DIR / "configs/config.yaml").as_posix(),
+):
     """运行所有任务
 
     Args:
-        config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/config/config.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/configs/config.yaml".
     """
     config_log(
         PROJECT_ROOT_DIR.stem,

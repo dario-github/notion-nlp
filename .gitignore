@@ -1,4 +1,4 @@
-config/config.yaml
+configs/config.yaml
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -133,6 +133,6 @@ dmypy.json
 **/*.pkl
 **/*.npz
 results/*
-config/config.yaml
+configs/config.yaml
 
 pytest.report.xml

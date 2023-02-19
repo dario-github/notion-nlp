@@ -39,7 +39,7 @@ def check(c):
 
 @task()
 def doc(c, no_browser=False):
-    """构建 sphinx-doc """
+    """构建 sphinx-doc"""
     print("=" * 5, "run doc", "=" * 5)
     with c.cd("docs"):
         c.run("make html")
