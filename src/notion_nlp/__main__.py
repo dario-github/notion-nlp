@@ -7,9 +7,9 @@ from pathlib import Path
 import typer
 from tabulate import tabulate
 
-from notion_rich_text_analysis.notion_text_analysis import NotionTextAnalysis
-from notion_rich_text_analysis.parameter.log import config_log
-from notion_rich_text_analysis.parameter.utils import load_config, load_stopwords
+from notion_nlp.core.nlp import NotionTextAnalysis
+from notion_nlp.parameter.log import config_log
+from notion_nlp.parameter.utils import load_config, load_stopwords
 
 app = typer.Typer()
 
@@ -21,7 +21,7 @@ def task_info(config_file: str = (PROJECT_ROOT_DIR / "configs/config.yaml").as_p
     """查看任务信息
 
     Args:
-        config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/configs/config.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
     """
     config = load_config(config_file)
     if not config["task"]:
@@ -46,8 +46,8 @@ def run_task(
     Args:
         task (str, optional): 任务信息字典. Defaults to "".
         task_name (str, optional): 任务名. Defaults to "".
-        config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/configs/config.yaml".
-        stopfiles_dir (str, optional): 停用词文件目录. Defaults to "notion_rich_text_analysis/stopwords".
+        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
+        stopfiles_dir (str, optional): 停用词文件目录. Defaults to "notion_nlp/stopwords".
         stopfiles_postfix (str, optional): 停用词文件后缀. Defaults to "stopwords.txt".
 
     Raises:
@@ -110,7 +110,7 @@ def run_all_task(
     """运行所有任务
 
     Args:
-        config_file (str, optional): 参数文件地址. Defaults to "notion_rich_text_analysis/configs/config.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
     """
     config_log(
         PROJECT_ROOT_DIR.stem,

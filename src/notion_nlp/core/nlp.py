@@ -6,9 +6,9 @@ import pandas as pd
 from functional import seq
 from functional.pipeline import Sequence
 
-from notion_rich_text_analysis.notion_db_text import NotionDBText
+from notion_nlp.core.api import NotionDBText
 
-PROJECT_ROOT_DIR = "notion_rich_text_analysis"
+PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
 
 
 class NotionTextAnalysis(NotionDBText):
@@ -46,7 +46,7 @@ class NotionTextAnalysis(NotionDBText):
         stopwords: set = set(),
         output_dir: Path = Path(f"{PROJECT_ROOT_DIR}/results"),
         top_n: int = 5,
-        split_pkg: str = "pkuseg",
+        split_pkg: str = "jieba",
     ):
         """运行任务
 
@@ -102,9 +102,13 @@ class NotionTextAnalysis(NotionDBText):
             return jieba.lcut(sentence, HMM=True)
 
         def _pkuseg(sentence):
-            import pkuseg
-
-            return pkuseg.pkuseg().cut(sentence)
+            try:
+                import pkuseg
+            except ModuleNotFoundError:
+                # pkuseg不存在，使用jieba
+                return _jieba(sentence)
+            else:
+                return pkuseg.pkuseg().cut(sentence)
 
         pkg_map = dict(jieba=_jieba, pkuseg=_pkuseg)
 
@@ -317,3 +321,27 @@ class NotionTextAnalysis(NotionDBText):
         """
         # 求和
         return df.sum(axis=0).sort_values(ascending=False)
+
+
+def computeTF(wordDict, bagOfWords):
+    tfDict = {}
+    bagOfWordsCount = len(bagOfWords)
+    for word, count in wordDict.items():
+        tfDict[word] = count / float(bagOfWordsCount)
+    return tfDict
+
+
+def computeIDF(documents):
+    import math
+
+    N = len(documents)
+
+    idfDict = dict.fromkeys(documents[0].keys(), 0)
+    for document in documents:
+        for word, val in document.items():
+            if val > 0:
+                idfDict[word] += 1
+
+    for word, val in idfDict.items():
+        idfDict[word] = math.log(N / float(val))
+    return idfDict

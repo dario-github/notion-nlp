@@ -1,25 +1,25 @@
 <p align="center">
   <img width="100px" src="https://img.icons8.com/ios/250/FFFFFF/share-2.png" align="center" alt="Notion Rich Text Data Analysis" />
   <h1 align="center">
-    Notion Rich Text Data Analysis
+    Notion NLP
   </h1>
   <p align="center">
-    Read the text from a Notion database and perform NLP analysis.
+    To read text from a Notion database and perform natural language processing analysis.
   </p>
 </p>
 
   <p align="center">
-    <a href="https://github.com/dario-github/notion_rich_text_analysis/actions">
-      <img alt="Tests Passing" src="https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml/badge.svg" />
+    <a href="https://github.com/dario-github/notion_nlp/actions">
+      <img alt="Tests Passing" src="https://github.com/dario-github/notion_nlp/actions/workflows/main.yml/badge.svg" />
     </a>
-    <a href="https://codecov.io/gh/dario-github/notion_rich_text_analysis">
-      <img alt="codecov" src="https://codecov.io/gh/dario-github/notion_rich_text_analysis/branch/main/graph/badge.svg?token=ehzYhousD3" />
+    <a href="https://codecov.io/gh/dario-github/notion_nlp">
+      <img alt="codecov" src="https://codecov.io/gh/dario-github/notion_nlp/branch/main/graph/badge.svg?token=ehzYhousD3" />
     </a>
-    <a href="https://github.com/dario-github/notion_rich_text_analysis/graphs/contributors">
-      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion_rich_text_analysis" />
+    <a href="https://github.com/dario-github/notion_nlp/graphs/contributors">
+      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion_nlp" />
     </a>
-    <a href="https://github.com/dario-github/notion_rich_text_analysis">
-      <img alt="visitors" src="https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=gray&right_color=green" />
+    <a href="https://github.com/dario-github/notion_nlp">
+      <img alt="visitors" src="https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_nlp&left_color=gray&right_color=green" />
     </a>
   </p>
   
@@ -44,7 +44,7 @@ For example, I have added the following task myself.
 
 ## Pipline
 
-<center>
+<div style="text-align:center;">
 
 ```mermaid
 flowchart TB
@@ -52,12 +52,12 @@ flowchart TB
 A[(Notion Database)] --> B([read rich text via API]) --> C([split word / cleaning / word-phrase mapping]) --> D[/calculate TF-IDF/] --> E[[Output the top-n keywords and their corresponding sentences in markdown format]]
 ```
 
-</center>
+</div>
 
 ## Installation
 
 ```shell
-python3.8 -m pip install notion-rich-text-analysis
+python3.8 -m pip install notion-nlp
 ```
 
 ## Quick use
@@ -133,7 +133,7 @@ task :
 ### Run all tasks
 
 ```shell
-# python3.8 -m notion-rich-text-analysis run-all-task --config_file ${Your Config file Path}
+python3.8 -m notion-nlp run-all-task --config-file ${Your Config file Path}
 ```
 
 ## Development
@@ -157,7 +157,10 @@ Welcome to fork and add new features/fix bugs.
 
 ## Note
 
-- The library for Chinese word segmentation has two built-in options: jieba and pkuseg. The default is pkuseg, which has a higher memory requirement. It has been tested that a VPS with less than 1GB of memory needs to load virtual memory to use it.
+- The word segmentation tool has two built-in options: jieba/pkuseg. (Considering adding language analysis to automatically select the most suitable word segmentation tool for that language.)
+
+  - jieba is used by default.
+  - pkuseg cannot be installed with poetry and needs to be installed manually with pip. In addition, this library is slow and requires high memory usage. It has been tested that a VPS with less than 1G memory needs to load virtual memory to use it.
 
 - The analysis method using tf-idf is too simple. Consider integrating the API of LLM (such as chatGPT) for further analysis.
 

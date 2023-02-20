@@ -3,11 +3,11 @@ from pathlib import Path
 
 import pytest
 
-from notion_rich_text_analysis.parameter.utils import load_config
-from notion_rich_text_analysis.__main__ import run_all_task
-from notion_rich_text_analysis.parameter.log import config_log
-from notion_rich_text_analysis.notion_db_text import NotionDBText
-from notion_rich_text_analysis.notion_text_analysis import NotionTextAnalysis
+from notion_nlp.parameter.utils import load_config
+from notion_nlp import run_all_task
+from notion_nlp.parameter.log import config_log
+from notion_nlp.core.api import NotionDBText
+from notion_nlp.core.nlp import NotionTextAnalysis
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent
 
@@ -51,4 +51,4 @@ if __name__ == "__main__":
         print_terminal=True,
         enable_monitor=False,
     )
-    pytest.main(["-v", "-s", "-q", "test_notion_rich_text_analysis.py"])
+    pytest.main(["-v", "-s", "-q", "test_notion_nlp.py"])
