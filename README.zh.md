@@ -1,7 +1,7 @@
 <p align="center">
   <img width="100px" src="https://img.icons8.com/ios/250/FFFFFF/share-2.png" align="center" alt="Notion Rich Text Data Analysis" />
   <h1 align="center">
-    基于 Notion 富文本的数据分析
+    Notion NLP
   </h1>
   <p align="center">
     从Notion数据库中读取文本并进行自然语言处理分析。
@@ -9,17 +9,17 @@
 </p>
 
   <p align="center">
-    <a href="https://github.com/dario-github/notion_rich_text_analysis/actions">
-      <img alt="Tests Passing" src="https://github.com/dario-github/notion_rich_text_analysis/actions/workflows/main.yml/badge.svg" />
+    <a href="https://github.com/dario-github/notion_nlp/actions">
+      <img alt="Tests Passing" src="https://github.com/dario-github/notion_nlp/actions/workflows/main.yml/badge.svg" />
     </a>
-    <a href="https://codecov.io/gh/dario-github/notion_rich_text_analysis">
-      <img alt="codecov" src="https://codecov.io/gh/dario-github/notion_rich_text_analysis/branch/main/graph/badge.svg?token=ehzYhousD3" />
+    <a href="https://codecov.io/gh/dario-github/notion_nlp">
+      <img alt="codecov" src="https://codecov.io/gh/dario-github/notion_nlp/branch/main/graph/badge.svg?token=ehzYhousD3" />
     </a>
-    <a href="https://github.com/dario-github/notion_rich_text_analysis/graphs/contributors">
-      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion_rich_text_analysis" />
+    <a href="https://github.com/dario-github/notion_nlp/graphs/contributors">
+      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion_nlp" />
     </a>
-    <a href="https://github.com/dario-github/notion_rich_text_analysis">
-      <img alt="visitors" src="https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_rich_text_analysis&left_color=gray&right_color=green" />
+    <a href="https://github.com/dario-github/notion_nlp">
+      <img alt="visitors" src="https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_nlp&left_color=gray&right_color=green" />
     </a>
   </p>
   
@@ -57,7 +57,7 @@ A[(Notion Database)] --> B([通过 API 读取富文本]) --> C([分词/清洗/�
 ## 安装
 
 ```shell
-python3.8 -m pip install notion-rich-text-analysis
+python3.8 -m pip install notion-nlp
 ```
 
 ## 快速使用
@@ -133,7 +133,7 @@ task :
 ### 执行所有任务
 
 ```shell
-# python3.8 -m notion-rich-text-analysis run-all-task --config_file ${Your Config file Path}
+python3.8 -m notion-nlp run-all-task --config-file ${Your Config file Path}
 ```
 
 ## 开发
@@ -156,7 +156,9 @@ task :
 
 ## 问题
 
-- 中文分词的库内置了两种：jieba/pkuseg，默认使用pkuseg，对内存要求较高，实测低于1G内存的VPS需要加载虚拟内存才能使用。
+- 分词工具内置了两种：jieba/pkuseg。（考虑加入语种解析，自动选用该语种最适合的分词工具）
+  - 默认使用jieba；
+  - pkuseg用poetry无法安装，需要手动pip安装，另外该库速度很慢，对内存要求较高，实测低于1G内存的VPS需要加载虚拟内存才能使用。
 
 - tf-idf的分析方法过于简单，考虑接入LLM的API来做进一步分析（例如chatGPT）。
 

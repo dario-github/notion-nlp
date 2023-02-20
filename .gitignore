@@ -136,3 +136,4 @@ results/*
 configs/config.yaml
 
 pytest.report.xml
+publish_to_pypi.sh

@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "notion-rich-text-analysis"
-version = "1.0.1"
+name = "notion-nlp"
+version = "1.0.2"
 description = "Reading rich text information from a Notion database and performing simple NLP analysis."
 authors = ["dario-github <zdclink@gmail.com>"]
 license = "MIT license"
 readme = "README.md"
-packages = [{include = "notion_rich_text_analysis", from = "src"}]
+packages = [{include = "notion_nlp", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "~3.8.10"
