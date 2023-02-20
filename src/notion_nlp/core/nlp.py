@@ -46,7 +46,7 @@ class NotionTextAnalysis(NotionDBText):
         stopwords: set = set(),
         output_dir: Path = Path(f"{PROJECT_ROOT_DIR}/results"),
         top_n: int = 5,
-        split_pkg: str = "pkuseg",
+        split_pkg: str = "jieba",
     ):
         """运行任务
 
@@ -102,9 +102,13 @@ class NotionTextAnalysis(NotionDBText):
             return jieba.lcut(sentence, HMM=True)
 
         def _pkuseg(sentence):
-            import pkuseg
-
-            return pkuseg.pkuseg().cut(sentence)
+            try:
+                import pkuseg
+            except ModuleNotFoundError:
+                # pkuseg不存在，使用jieba
+                return _jieba(sentence)
+            else:
+                return pkuseg.pkuseg().cut(sentence)
 
         pkg_map = dict(jieba=_jieba, pkuseg=_pkuseg)
 
@@ -329,6 +333,7 @@ def computeTF(wordDict, bagOfWords):
 
 def computeIDF(documents):
     import math
+
     N = len(documents)
 
     idfDict = dict.fromkeys(documents[0].keys(), 0)
