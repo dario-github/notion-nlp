@@ -9,16 +9,16 @@
 </p>
 
   <p align="center">
-    <a href="https://github.com/dario-github/notion_nlp/actions">
-      <img alt="Tests Passing" src="https://github.com/dario-github/notion_nlp/actions/workflows/main.yml/badge.svg" />
+    <a href="https://github.com/dario-github/notion-nlp/actions">
+      <img alt="Tests Passing" src="https://github.com/dario-github/notion-nlp/actions/workflows/main.yml/badge.svg" />
     </a>
-    <a href="https://codecov.io/gh/dario-github/notion_nlp">
-      <img alt="codecov" src="https://codecov.io/gh/dario-github/notion_nlp/branch/main/graph/badge.svg?token=ehzYhousD3" />
+    <a href="https://codecov.io/gh/dario-github/notion-nlp">
+      <img alt="codecov" src="https://codecov.io/gh/dario-github/notion-nlp/branch/main/graph/badge.svg?token=ehzYhousD3" />
     </a>
-    <a href="https://github.com/dario-github/notion_nlp/graphs/contributors">
-      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion_nlp" />
+    <a href="https://github.com/dario-github/notion-nlp/graphs/contributors">
+      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion-nlp" />
     </a>
-    <a href="https://github.com/dario-github/notion_nlp">
+    <a href="https://github.com/dario-github/notion-nlp">
       <img alt="visitors" src="https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_nlp&left_color=gray&right_color=green" />
     </a>
   </p>
@@ -44,7 +44,7 @@ flomo刚出时，在notion建了一个database用来实现类似功能。记录�
 
 ## Pipline
 
-<center>
+<div style="text-align:center;">
 
 ```mermaid
 flowchart TB
@@ -52,7 +52,7 @@ flowchart TB
 A[(Notion Database)] --> B([通过 API 读取富文本]) --> C([分词/清洗/建立词句映射]) --> D[/计算 TF-IDF/] --> E[[将 top-n 关键词及所在语句输出为 markdown 格式]]
 ```
 
-</center>
+</div>
 
 ## 安装
 
@@ -78,57 +78,8 @@ python3.8 -m pip install notion-nlp
 
 ### 配置筛选排序数据库条目的extra参数
 
-task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。`config.sample.yaml`文件已提供2种配置。
+task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。[config.sample.yaml](./configs/config.sample.yaml) 文件已提供2种配置。
 
-```yaml
-notion :
-  token : &token 'here is your own notion intergration token'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
-  api_version : &version '2022-06-28'  # API version
-  header : # Requests header information
-    Authorization : !join ['Bearer ', *token]  # The !join constructor needs to be added in python
-    Notion-Version : *version 
-    Content-Type : 'application/json'
-task :
-  - 
-    run : True
-    name : task_1 # Custom name for differentiation of output file
-    describe : Thinking in the past year from the Memo database # Description of the current task, used to record what the task is to do
-    database_id : 'here is your database id for analysis' # database id
-    extra : # Options for filtering and sorting the database
-      filter :
-        and :
-          - 
-            property : Label
-            multi_select :
-              contains : Thinking
-          - 
-            timestamp : &time_key last_edited_time # created_time is also available
-            *time_key : 
-              past_year : {} # past_week, past_month, past_year
-              # on_or_after: '2021-05-10'
-  - 
-    run : True
-    name : task_2 # Custom name for differentiation of output file
-    describe : Summary from the Memo database # Description of the current task, used to record what the task is to do
-    database_id : 'here is your database id for analysis' # database id
-    extra : # Options for filtering and sorting the database
-      filter :
-        and :
-          - 
-            or:
-              - 
-                property : Label
-                multi_select : 
-                  contains : summary
-              - 
-                property : Label
-                multi_select : 
-                  contains : efficency
-          - 
-            property : Label
-            multi_select :
-              does_not_contain : personal
-```
 
 ### 执行所有任务
 

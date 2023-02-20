@@ -5,7 +5,7 @@ notion :
     Authorization : !join ['Bearer ', *token]  # The !join constructor needs to be added in python
     Notion-Version : *version 
     Content-Type : 'application/json'
-task :
+tasks :
   - 
     run : True
     name : unit_testing_task # Custom name for differentiation of output file

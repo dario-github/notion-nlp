@@ -7,6 +7,7 @@ from functional import seq
 from functional.pipeline import Sequence
 
 from notion_nlp.core.api import NotionDBText
+from notion_nlp.parameter.error import NLPError
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
 
@@ -113,7 +114,7 @@ class NotionTextAnalysis(NotionDBText):
         pkg_map = dict(jieba=_jieba, pkuseg=_pkuseg)
 
         if pkg not in pkg_map:
-            raise ValueError(f"No module named {pkg}")
+            raise NLPError(f"No module named {pkg}")
         return pkg_map[pkg](sentence)
 
     def handling_sentences(self, stopwords: set, split_pkg: str):
@@ -123,7 +124,7 @@ class NotionTextAnalysis(NotionDBText):
             stopwords (set): 停用词集合
 
         Raises:
-            ValueError: 检查文本是否为空
+            NLPError: 检查文本是否为空
         """
         logging.info("handling sentences....")
         # 检查数据库中获取的富文本是否为空
@@ -131,7 +132,7 @@ class NotionTextAnalysis(NotionDBText):
             logging.error(
                 f"该任务未获取到符合条件的文本，请检查筛选条件。database ID: {self.database_id}; extra data: {self.extra_data}"
             )
-            raise ValueError("empty rich texts.")
+            raise NLPError("empty rich texts.")
 
         # 剔除无效句子
         text_list = [
@@ -156,7 +157,7 @@ class NotionTextAnalysis(NotionDBText):
             logging.error(
                 f"该任务未获取到符合条件的文本，请检查停用词。database ID: {self.database_id}; extra data: {self.extra_data}"
             )
-            raise ValueError("empty rich texts.")
+            raise NLPError("empty rich texts.")
 
         # 获取词表
         self.unique_words = self.sequence.map(lambda sent: set(sent)).reduce(
@@ -168,7 +169,7 @@ class NotionTextAnalysis(NotionDBText):
             logging.error(
                 f"词表为空，请检查筛选条件及停用词。database ID: {self.database_id}; extra data: {self.extra_data}"
             )
-            raise ValueError("empty unique words")
+            raise NLPError("empty unique words")
 
         # 词 --> 句子 查询字典
         self.word2sents = self._word2sent(text_list, self.unique_words)

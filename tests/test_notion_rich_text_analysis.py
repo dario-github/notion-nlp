@@ -19,10 +19,10 @@ def test_NotionDBText():
     config = load_config(config_file)
 
     # NotionDBText初始化参数
-    header = {k: str(v) for k, v in config["notion"]["header"]._items()}
-    task = config["task"][0]
-    database_id = task["database_id"]
-    extra_data = task["extra"]
+    header = config.notion.header
+    task = config.tasks[0]
+    database_id = task.database_id
+    extra_data = task.extra
 
     # 读取DB
     notion_db_text = NotionDBText(header, database_id, extra_data)
@@ -39,7 +39,13 @@ def test_NotionDBText():
     )
 
 
+# todo def test_run_task():
+# todo 测试task_json
+# todo 测试task_name
+
+
 def test_run_all_task():
+    # 测试从文件运行
     run_all_task(config_file=PROJECT_ROOT_DIR / "configs/config.test.yaml")
 
 
