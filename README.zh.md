@@ -18,8 +18,8 @@
     <a href="https://github.com/dario-github/notion-nlp/graphs/contributors">
       <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion-nlp" />
     </a>
-    <a href="https://github.com/dario-github/notion-nlp">
-      <img alt="visitors" src="https://visitor-badge.glitch.me/badge?page_id=dario-github.notion_nlp&left_color=gray&right_color=green" />
+    <a href="https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fdario-github%2Fnotion-nlp">
+      <img alt="visitors" src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fdario-github%2Fnotion-nlp&countColor=%2337d67a&style=flat" />
     </a>
   </p>
   
