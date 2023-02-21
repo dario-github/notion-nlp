@@ -1,5 +1,6 @@
 import json
 import logging
+import ssl
 from typing import List
 
 import arrow
@@ -87,7 +88,7 @@ class NotionDBText:
                     url=f"https://api.notion.com/v1/blocks/{page_id}/children",
                     headers=self.header,
                 )
-            except Exception as e:
+            except ssl.SSLEOFError as e:
                 logging.error(
                     f"read blocks failed, page id: {page_id}, origin error info: {e}"
                 )
