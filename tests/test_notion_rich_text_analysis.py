@@ -162,9 +162,9 @@ def test_run_task_outputs():
     output_dir = PROJECT_ROOT_DIR / "results/unittest"
     while output_dir.exists():
         output_dir = output_dir / "subdir"
-    with pytest.warns(None) as record:
-        run_task(task=CONFIG.tasks[0], output_dir=output_dir.as_posix())
-        print("!" * 5, len(record), record[0])
+    run_task(
+        task=CONFIG.tasks[0], config_file=config_file, output_dir=output_dir.as_posix()
+    )
 
     # 测试输出结果是否正确
     # 此处的假设是notion_text_analysis.run()会在output_dir下生成一个文件
