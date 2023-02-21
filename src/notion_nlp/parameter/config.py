@@ -66,7 +66,7 @@ class TaskParams:
         }
 
 
-class ConfigParams:
+class RequestParams:
     def __init__(self, token, tasks: List[TaskParams]):
         self.notion: NotionParams = NotionParams(token)
         self.tasks: List[TaskParams] = self.process_task_name(tasks)

@@ -52,7 +52,7 @@ def run_task(
     download_stopwords: bool = False,
     stopfiles_dir: str = (PROJECT_ROOT_DIR / "resources/stopwords").as_posix(),
     stopfiles_postfix: str = "stopwords.txt",
-    top_n: int = 5,
+    top_n: int = 10,
     output_dir: str = (PROJECT_ROOT_DIR / "results").as_posix(),
 ):
     """运行单个任务，任务字典或任务名必须传入一个
@@ -66,15 +66,13 @@ def run_task(
         download_stopwords (bool, optional): 是否下载停用词. Defaults to False.
         stopfiles_dir (str, optional): 停用词文件目录. Defaults to "notion_nlp/stopwords".
         stopfiles_postfix (str, optional): 停用词文件后缀. Defaults to "stopwords.txt".
-        top_n (int, optional): 返回top_n的结果. Defaults to 5.
+        top_n (int, optional): 返回top_n的结果. Defaults to 10.
         output_dir (str, optional): 输出目录. Defaults to "notion_nlp/results".
 
     Raises:
         ConfigError: 检查任务信息字典和任务名是否存在
         TaskError: 检查任务是否存在或禁用
     """
-    if top_n < 1:
-        raise ValueError("top_n must be a positive integer")
     # 以下的操作都是为了获取两个参数：notion_header和task参数类
     # 如果config文件存在，可以不用提供token，只需task_name或task其中之一即可
     if Path(config_file).exists():
@@ -163,7 +161,10 @@ def run_all_task(
     for task in config.tasks:
         if not task.run:
             continue
-        run_task(task=task, token=config.notion.token)
+        run_task(
+            task=task,
+            token=config.notion.token,
+        )
 
 
 if __name__ == "__main__":

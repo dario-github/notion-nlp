@@ -16,9 +16,3 @@ tasks :
         property : Tags
         multi_select :
           contains : unit_testing
-  - 
-    run : False
-    name : discarded_task # Custom name for differentiation of output file
-    describe : discarded unit testing task # Description of the current task, used to record what the task is to do
-    database_id : '119943c69f5d477dacb124a093e202ce' # database id
-    extra : {}
