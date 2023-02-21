@@ -151,9 +151,8 @@ class NotionTextAnalysis(NotionDBText):
                 word for word in sent if not self.check_stopwords(word, stopwords)
             ]
         )
-
         # 检查序列是否为空
-        if not self.sequence:
+        if not any(self.sequence):
             logging.error(
                 f"该任务未获取到符合条件的文本，请检查停用词。database ID: {self.database_id}; extra data: {self.extra_data}"
             )
@@ -324,25 +323,25 @@ class NotionTextAnalysis(NotionDBText):
         return df.sum(axis=0).sort_values(ascending=False)
 
 
-def computeTF(wordDict, bagOfWords):
-    tfDict = {}
-    bagOfWordsCount = len(bagOfWords)
-    for word, count in wordDict.items():
-        tfDict[word] = count / float(bagOfWordsCount)
-    return tfDict
+# def computeTF(wordDict, bagOfWords):
+#     tfDict = {}
+#     bagOfWordsCount = len(bagOfWords)
+#     for word, count in wordDict.items():
+#         tfDict[word] = count / float(bagOfWordsCount)
+#     return tfDict
 
 
-def computeIDF(documents):
-    import math
+# def computeIDF(documents):
+#     import math
 
-    N = len(documents)
+#     N = len(documents)
 
-    idfDict = dict.fromkeys(documents[0].keys(), 0)
-    for document in documents:
-        for word, val in document.items():
-            if val > 0:
-                idfDict[word] += 1
+#     idfDict = dict.fromkeys(documents[0].keys(), 0)
+#     for document in documents:
+#         for word, val in document.items():
+#             if val > 0:
+#                 idfDict[word] += 1
 
-    for word, val in idfDict.items():
-        idfDict[word] = math.log(N / float(val))
-    return idfDict
+#     for word, val in idfDict.items():
+#         idfDict[word] = math.log(N / float(val))
+#     return idfDict

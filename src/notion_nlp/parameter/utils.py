@@ -1,7 +1,7 @@
 import logging
 from typing import Iterator
 
-from notion_nlp.parameter.config import RequestParams, TaskParams
+from notion_nlp.parameter.config import ConfigParams, TaskParams
 
 
 def load_stopwords(stopfiles: Iterator):
@@ -33,14 +33,14 @@ def load_stopwords(stopfiles: Iterator):
     return stopwords
 
 
-def load_config(config_file: str = "configs/config.yaml") -> RequestParams:
+def load_config(config_file: str = "configs/config.yaml") -> ConfigParams:
     """从配置文件加载参数类
 
     Args:
         config_file (str, optional): 参数文件地址. Defaults to "configs/config.yaml".
 
     Returns:
-        RequestParams: 包含所有用于request信息的参数类
+        ConfigParams: 包含所有用于request信息的参数类
     """
     from ruamel.yaml import YAML
 
@@ -58,7 +58,7 @@ def load_config(config_file: str = "configs/config.yaml") -> RequestParams:
     with open(config_file, "r", encoding="utf-8") as f:
         config = yaml.load(f)
     tasks = [TaskParams(**task) for task in config["tasks"]]
-    config = RequestParams(config["notion"]["token"], tasks)
+    config = ConfigParams(config["notion"]["token"], tasks)
     return config
 
 
