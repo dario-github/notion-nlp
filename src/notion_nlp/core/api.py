@@ -57,22 +57,29 @@ class NotionDBText:
         读取database中所有pages
         """
         total_pages = []
+        passed_pages = 0
         has_more = True
         next_cursor = ""
         # 有下一页时，继续读取
         while has_more:
             if next_cursor:
                 self.extra_data["start_cursor"] = next_cursor
-            r_database = requests.post(
-                url=f"https://api.notion.com/v1/databases/{self.database_id}/query",
-                headers=self.header,
-                data=json.dumps(self.extra_data),
-            )
-            respond = json.loads(r_database.text)
-            total_pages.extend(respond["results"])
-            has_more = respond["has_more"]
-            next_cursor = respond["next_cursor"]
+            try:
+                r_database = requests.post(
+                    url=f"https://api.notion.com/v1/databases/{self.database_id}/query",
+                    headers=self.header,
+                    data=json.dumps(self.extra_data),
+                )
+            except ssl.SSLEOFError:
+                logging.error(f"read page failed, database id: {self.database_id}")
+                passed_pages += 1
+            else:
+                respond = json.loads(r_database.text)
+                total_pages.extend(respond["results"])
+                has_more = respond["has_more"]
+                next_cursor = respond["next_cursor"]
         logging.info(f"{len(total_pages)} pages in task when {arrow.now()}")
+        logging.info(f"{passed_pages} pages passed when {arrow.now()}")
         return total_pages
 
     def read_blocks(self, pages: List):
@@ -88,10 +95,8 @@ class NotionDBText:
                     url=f"https://api.notion.com/v1/blocks/{page_id}/children",
                     headers=self.header,
                 )
-            except ssl.SSLEOFError as e:
-                logging.error(
-                    f"read blocks failed, page id: {page_id}, origin error info: {e}"
-                )
+            except ssl.SSLEOFError:
+                logging.error(f"read block failed, page id: {page_id}")
                 passed_blocks += 1
             else:
                 total_blocks.append(json.loads(r_page.text).get("results", []))
@@ -103,6 +108,7 @@ class NotionDBText:
         读取blocks中所有rich text
         """
         total_texts = []
+        passed_texts = 0
         self.unsupported_types = set()
         for page_blocks in blocks:
             page_texts = []
@@ -116,5 +122,10 @@ class NotionDBText:
                     )
                 except KeyError:
                     logging.error(block["type"] + "|" + json.dumps(block[block["type"]]))
+                    passed_texts += 1
             total_texts.append(page_texts)
+        logging.info(
+            f"{sum([len(x) for x in total_texts])} texts in task when {arrow.now()}"
+        )
+        logging.info(f"{passed_texts} texts passed when {arrow.now()}")
         return total_texts

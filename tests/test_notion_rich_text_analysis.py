@@ -159,7 +159,7 @@ def test_run_task_outputs():
     import shutil
 
     # 测试函数输出的结果类型和内容是否正确
-    output_dir = PROJECT_ROOT_DIR / "results/unittest"
+    output_dir = Path("./unittest_results")
     while output_dir.exists():
         output_dir = output_dir / "subdir"
     run_task(
@@ -168,8 +168,9 @@ def test_run_task_outputs():
 
     # 测试输出结果是否正确
     # 此处的假设是notion_text_analysis.run()会在output_dir下生成一个文件
-    assert Path(
-        output_dir, "unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md"
+    assert (
+        output_dir
+        / f"{CONFIG.tasks[0].name}.tf_idf.analysis_result.top5_word_with_sentences.md"
     ).exists()
     # 删除文件
     shutil.rmtree(output_dir)
@@ -184,7 +185,7 @@ def test_run_task_subfunctions(mock_task):
     config = load_config(config_file)
     assert isinstance(config, ConfigParams)
 
-    stopfiles = load_stopwords(glob(f"{stopfiles_dir}/*{stopfiles_postfix}"))
+    stopfiles = load_stopwords(stopfiles_dir, stopfiles_postfix, False)
     assert isinstance(stopfiles, set)
 
 

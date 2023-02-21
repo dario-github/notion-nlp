@@ -1,10 +1,13 @@
 import logging
-from typing import Iterator
+import sys
+from functools import reduce
+from glob import glob
+from pathlib import Path
 
 from notion_nlp.parameter.config import ConfigParams, TaskParams
 
 
-def load_stopwords(stopfiles: Iterator):
+def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopwords: bool):
     """加载停用词
 
     Args:
@@ -13,31 +16,44 @@ def load_stopwords(stopfiles: Iterator):
     Returns:
         _type_: _description_
     """
-    import sys
-    from functools import reduce
     from unicodedata import category
+
+    def load_local_files(stopfiles_dir: str, stopfiles_postfix: str):
+        return glob((Path(stopfiles_dir) / f"*{stopfiles_postfix}").absolute().as_posix())
+
+    def download_files():
+        # todo 添加下载停用词的功能
+        pass
 
     # 标点符号
     codepoints = range(sys.maxunicode + 1)
     punctuation = {c for k in codepoints if category(c := chr(k)).startswith("P")}
 
     # 停用词
+    stopfiles = load_local_files(stopfiles_dir, stopfiles_postfix)
+    if download_stopwords and not bool(stopfiles):
+        download_files()
+        stopfiles = load_local_files(stopfiles_dir, stopfiles_postfix)
     if not stopfiles:
         logging.error("No stopfiles provided.")
         return punctuation
+    logging.info(f"Loaded {len(stopfiles)} stopwords files.")
     stopwords = reduce(
         lambda x, y: x.union(y),
-        [set([x.strip() for x in open(file, "r").readlines()]) for file in stopfiles],
+        [
+            set([x.strip().lower() for x in open(file, "r").readlines()])
+            for file in stopfiles
+        ],
     )
-    stopwords = stopwords | punctuation
-    return stopwords
+    logging.info(f"Loaded {len(stopwords)} stopwords.")
+    return stopwords | punctuation
 
 
-def load_config(config_file: str = "configs/config.yaml") -> ConfigParams:
+def load_config(config_file: str) -> ConfigParams:
     """从配置文件加载参数类
 
     Args:
-        config_file (str, optional): 参数文件地址. Defaults to "configs/config.yaml".
+        config_file (str): 参数文件地址.
 
     Returns:
         ConfigParams: 包含所有用于request信息的参数类
@@ -60,26 +76,3 @@ def load_config(config_file: str = "configs/config.yaml") -> ConfigParams:
     tasks = [TaskParams(**task) for task in config["tasks"]]
     config = ConfigParams(config["notion"]["token"], tasks)
     return config
-
-
-if __name__ == "__main__":
-    from pathlib import Path
-
-    from tabulate import tabulate
-
-    PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
-
-    config = load_config(
-        config_file=(PROJECT_ROOT_DIR / "configs/config.test.yaml").as_posix()
-    )
-
-    print(
-        tabulate(
-            sorted(
-                [task.to_table_row()[:-1] for task in config.tasks],
-                key=lambda x: (-x[2], x[0]),
-            ),
-            headers=config.tasks[0].columns[:-1],
-            tablefmt="rounded_grid",
-        )
-    )
