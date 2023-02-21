@@ -83,7 +83,7 @@ The task's extra is used to filter and sort the database, see [notion filter API
 ### Run all tasks
 
 ```shell
-python3.8 -m notion-nlp run-all-tasks --config-file ${Your Config file Path}
+python3.8 -m notion-nlp run-all-tasks --config-file ${Your-Config-file-Path}
 ```
 
 ## Development

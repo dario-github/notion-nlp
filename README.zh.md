@@ -84,8 +84,12 @@ task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion
 ### 执行所有任务
 
 ```shell
-python3.8 -m notion-nlp run-all-tasks --config-file ${Your Config file Path}
+python3.8 -m notion-nlp run-all-tasks --config-file ${Your-Config-file-Path}
 ```
+
+### 执行单个任务
+
+#### 已有`config`文件，通过`task name`
 
 ## 开发
 
