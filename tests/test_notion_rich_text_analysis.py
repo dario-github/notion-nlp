@@ -5,7 +5,7 @@ import pytest
 import json
 
 from notion_nlp.parameter.utils import load_config, load_stopwords
-from notion_nlp import run_task, run_all_task
+from notion_nlp import run_task, run_all_tasks
 
 from notion_nlp.parameter.config import TaskParams, ConfigParams
 from notion_nlp.parameter.log import config_log
@@ -197,9 +197,9 @@ def test_run_task_edge_cases(mock_task):
         run_task(task=mock_task, top_n=0)
 
 
-def test_run_all_task():
+def test_run_all_tasks():
     # 测试从文件运行
-    run_all_task(config_file=PROJECT_ROOT_DIR / "configs/config.test.yaml")
+    run_all_tasks(config_file=PROJECT_ROOT_DIR / "configs/config.test.yaml")
 
 
 if __name__ == "__main__":

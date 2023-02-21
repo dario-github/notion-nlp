@@ -140,7 +140,7 @@ def run_task(
 
 
 @app.command()
-def run_all_task(
+def run_all_tasks(
     config_file: str = (PROJECT_ROOT_DIR / "configs/config.yaml").as_posix(),
 ):
     """运行所有任务
@@ -151,7 +151,7 @@ def run_all_task(
     # 配置日志参数
     config_log(
         PROJECT_ROOT_DIR.stem,
-        "run_all_task",
+        "run_all_tasks",
         log_root=(PROJECT_ROOT_DIR / "logs").as_posix(),
         print_terminal=True,
         enable_monitor=False,
