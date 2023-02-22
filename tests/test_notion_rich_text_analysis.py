@@ -56,8 +56,8 @@ def test_notion_text_analysis_check_stopwords():
 
 
 def test_notion_text_analysis_check_sentence_available():
-    assert NotionTextAnalysis.check_sentence_available("#hello") is False
-    assert NotionTextAnalysis.check_sentence_available("hello") is True
+    assert NotionTextAnalysis.check_sentence_available("#hello world!") is False
+    assert NotionTextAnalysis.check_sentence_available("hello world!") is True
 
 
 def test_notion_text_analysis_split_sentence():

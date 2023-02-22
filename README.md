@@ -31,16 +31,33 @@
 
 ## Introduction
 
-When flomo first came out, a database was built in notion to implement similar functionality. It has been a few years since I recorded my thoughts and summaries, and I have accumulated some corpus. flomo's roaming function is not very suitable for my needs, so I wanted to write my own small tool to access the notion API and do NLP analysis.
+To achieve functionality similar to flomo, I have created a database using Notion, where I have recorded my thoughts and insights over the years, accumulating a rich corpus of language. However, the random roaming feature of flomo did not meet my needs, so I decided to develop a small tool that integrates with the Notion API and performs NLP analysis.
 
-Last year I wrote a demo using a notebook, but I put it on hold for a while and then improved it. Currently, it supports batch analysis tasks, you can add multiple databases and properties in the configuration file to filter the sorting criteria, and then output the keywords and the corresponding statement paragraph markdown by TF-IDF.
+Now, the tool can:
 
-For example, I have added the following task myself.
+- Output intuitive and visually appealing word cloud images.
+  
+  ![Harry Potter's Story Beginning](./docs/pictures/colormap_cividis.en.png)
 
-- Reflections from the last year
-- Summary optimisation for the year
-- Self-caution for all periods
-- List for the week
+- Generate thematic summaries of your Notion notes.
+
+  ===> [Example thematic summary]((./results/en_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md))
+
+- Support multiple languages. I have added stopword lists for several languages including Chinese, English, Russian, French, Japanese, and German. Users can also customize their own stopword lists.
+
+  ===> [Stopword lists for multiple languages](./resources/stopwords/)
+
+- Support multiple tasks. Users can configure multiple databases and corresponding filtering and sorting conditions to create rich analysis tasks.
+
+  ===> [Example configuration file](./configs/config.sample.yaml)
+
+  For example, I have added the following tasks:
+
+    - Reflections from the past year
+    - Optimization of annual summaries for the current year
+    - Self-admonitions from all time periods
+  
+I am pleased to share this tool and hope it can be helpful to you. :laughing:
 
 ## Pipline
 
@@ -68,13 +85,13 @@ Configuration file reference ``configs/config.sample.yaml`` (hereinafter config,
 
 In [notion integrations](https://www.notion.so/my-integrations/) create a new integration, get your own token and fill in the token in the config.yaml file afterwards.
 
-> [graphic tutorial in tango website](https://app.tango.us/app/workflow/6e53c348-79b6-4ed3-8c75-46f5ddb996da?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [graphic tutorial in markdown format](./docs/tango/get_the_integration_token.md)
+> Graphic Tutorial: [tango](https://app.tango.us/app/workflow/6e53c348-79b6-4ed3-8c75-46f5ddb996da?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown](./docs/tango/get_the_integration_token.md)
 
 ### Add integration to database/get database ID
 
 If you open the notion database page in your browser or click on the share copy link, you will see the database id in the address link (similar to a string of jumbles) and fill in the database_id under the task of config.
 
-> [graphic tutorial in tango website](https://app.tango.us/app/workflow/7e95c7df-af73-4748-9bf7-11efc8e24f2a?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [graphic tutorial in markdown format](./docs/tango/add_integration_to_database.md)
+> Graphic Tutorial: [tango](https://app.tango.us/app/workflow/7e95c7df-af73-4748-9bf7-11efc8e24f2a?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown](./docs/tango/add_integration_to_database.md)
 
 ### Configure the filter sort database entry extra parameter
 
@@ -82,8 +99,80 @@ The task's extra is used to filter and sort the database, see [notion filter API
 
 ### Run all tasks
 
+```Shell
+# Run from command line
+python3.8 -m notion_nlp run-all-tasks --config-file /path/to/your/config/file
+```
+
+```Python
+# Run from Python code
+from notion_nlp import run_all_tasks
+config_file = "./configs/config.yaml"
+run_all_tasks(config_file)
+```
+
+### Run a single task
+
+In the `run_task` command, you can specify the task in several ways, including:
+
+- `task`: an instance of `TaskParams`;
+- `task_json`: a JSON string representing the task information;
+- `task_name`: the name of the task.
+
+If `config_file` exists, you can use `task_name` to specify the task. Note that the task needs to be activated, otherwise an exception will be thrown. If `config_file` does not exist, you need to provide a `token` and either `TaskParams` or `task_json`.
+
+#### With an existing `config` file, pass in `task name`/`task json`/`task parameter class`
+
 ```shell
-python3.8 -m notion-nlp run-all-tasks --config-file ${Your-Config-file-Path}
+# Option 1
+python3.8 -m notion_nlp run-task --task-name task_1 --config-file /path/to/your/config/file
+
+# Option 2
+python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --config-file /path/to/your/config/file
+```
+
+```python
+from notion_nlp import run_task
+task_name = "task_1"
+database_id = "your_database_id"
+config_file="./configs/config.yaml"
+
+# Option 1
+run_task(task_name=task_name, config_file=config_file)
+
+# Option 2 (not recommended for Python code)
+import json
+task_info = {"name": task_name, "database_id": database_id}
+run_task(task_json=json.dumps(task_info, ensure_ascii=False), config_file=config_file)
+
+# Option 3 (recommended)
+from notion_nlp.parameter.config import TaskParams
+task = TaskParams(name=task_name, database_id=database_id)
+run_task(task=task, config_file=config_file)
+```
+
+#### Without a `config` file, pass in `token` and `task json`/`task parameter class`
+
+```shell
+# Option 1
+python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --token 'your_notion_integration_token'
+```
+
+```python
+from notion_nlp import run_task
+task_name = "task_1"
+database_id = "your_database_id"
+notion_token = "your_notion_integration_token"
+
+# Option 1 (not recommended for Python code)
+import json
+task_info = {"name": task_name, "database_id": database_id}
+run_task(task_json=json.dumps(task_info, ensure_ascii=False), token=notion_token)
+
+# Option 2 (recommended)
+from notion_nlp.parameter.config import TaskParams
+task = TaskParams(name=task_name, database_id=database_id)
+run_task(task=task, token=notion_token)
 ```
 
 ## Development
@@ -117,6 +206,7 @@ Welcome to fork and add new features/fix bugs.
 ## Contributions
 
 - scikit-learn - [https://github.com/scikit-learn/scikit-learn](https://github.com/scikit-learn/scikit-learn)
+- Alir3z4/stop-words - [https://github.com/Alir3z4/stop-words](https://github.com/Alir3z4/stop-words)
 
 ## License and Copyright
 

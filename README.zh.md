@@ -31,18 +31,35 @@
 
 ## 简介
 
-flomo刚出时，在notion建了一个database用来实现类似功能。记录思考和总结已经好几年了，很是积累了一些语料。flomo的漫游功能做的不是很合乎我的需求，于是想自己写一个接入notion API然后做NLP分析的小工具。
+为了实现flomo类似的功能，我使用notion建立了一个database，并记录了多年来的思考和总结，积累了丰富的语料库。然而，flomo的随机漫游不能满足我的需求，因此我决定开发一个小工具，接入notion API并进行NLP分析。
 
-去年用notebook写了demo，乱七八糟的事太多搁置了，前不久加以完善。目前支持批量分析任务，可以在配置文件添加多个database和properties筛选排序条件，然后按TF-IDF输出关键词和相应语句段落的markdown。
+现在，它可以:
 
-例如我自己添加了以下任务：
+- 输出直观、酷炫的词云图
 
-- 近一年的思考
-- 本年度总结优化
-- 所有时段的自我告诫
-- 本周清单
+  ![长恨歌词云图](./docs/pictures/colormap_viridis.zh.png)
 
-## Pipline
+- 为你的notion笔记生成一份主题总结
+  
+  ===> [主题总结样例](./results/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md)
+
+- 支持多语种。添加了中英俄法日德等语种的停用词表，也可自定义停用词表。
+  
+  ===> [多语种停用词](./resources/stopwords/)
+
+- 支持多任务。用户可以在配置文件中添加多个数据库和对应筛选排序条件来组成丰富的分析任务。
+
+  ===> [配置文件样例](./configs/config.sample.yaml)
+
+  例如，我添加了以下任务：
+
+  - 近一年的思考
+  - 本年度总结优化
+  - 所有时段的自我告诫
+
+现在，我很高兴能够分享这个工具，希望它能够为您提供帮助 :laughing:
+
+## 流程
 
 <div style="text-align:center;">
 
@@ -60,7 +77,7 @@ A[(Notion Database)] --> B([通过 API 读取富文本]) --> C([分词/清洗/�
 python3.8 -m pip install notion-nlp
 ```
 
-## 快速使用
+## 使用
 
 配置文件参照 `configs/config.sample.yaml` (下称 config, 请改名为`config.yaml`作为自己的配置文件)
 
@@ -84,12 +101,90 @@ task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion
 ### 执行所有任务
 
 ```shell
-python3.8 -m notion-nlp run-all-tasks --config-file ${Your-Config-file-Path}
+# 通过命令行执行
+python3.8 -m notion_nlp run-all-tasks --config-file 您的配置文件路径
+```
+
+```python
+# 通过 Python 调用
+from notion_nlp import run_all_tasks
+config_file = "./configs/config.yaml"
+run_all_tasks(config_file)
 ```
 
 ### 执行单个任务
 
-#### 已有`config`文件，通过`task name`
+在run_task命令中，支持多种方式来指定任务，包括：
+
+- task；参数类；
+- task_json：任务信息json字符串；
+- task_name：任务名。
+
+如果config_file存在，则可以使用task_name进行指定，同时还需要满足任务为激活状态，否则会抛出异常。如果config_file不存在，则需要提供token和参数类或任务信息json字符串中的任意一种。
+
+#### 已有`config`文件，传入`task name`/`task json`/`task 参数类`
+
+```shell
+# 方式一
+python3.8 -m notion_nlp run-task --task-name task_1 --config-file 您的配置文件路径
+
+# 方式二
+python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --config-file 您的配置文件路径
+```
+
+```python
+from notion_nlp import run_task
+task_name = "task_1"
+database_id = "your_database_id"
+config_file="./configs/config.yaml"
+
+# 方式一
+run_task(task_name=task_name, config_file=config_file)
+
+# 方式二（不推荐用于 Python 调用）
+import json
+task_info = {"name": task_name, "database_id": database_id}
+run_task(task_json=json.dumps(task_info, ensure_ascii=False), config_file=config_file)
+
+# 方式三（推荐）
+from notion_nlp.parameter.config import TaskParams
+task = TaskParams(name=task_name, database_id=database_id)
+run_task(task=task, config_file=config_file)
+```
+
+#### 没有`config`文件，传入`token`和`task json`/`task 参数类`
+
+```shell
+# 方式一
+python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --token '您的 Notion Integration Token'
+```
+
+```python
+from notion_nlp import run_task
+task_name = "task_1"
+database_id = "your_database_id"
+notion_token = "your_notion_integration_token"
+
+# 方式一（不推荐用于 Python 调用）
+import json
+task_info = {"name": task_name, "database_id": database_id}
+run_task(task_json=json.dumps(task_info, ensure_ascii=False), token=notion_token)
+
+# 方式二（推荐）
+from notion_nlp.parameter.config import TaskParams
+task = TaskParams(name=task_name, database_id=database_id)
+run_task(task=task, token=notion_token)
+```
+
+## 增强个人体验
+
+### 自定义停用词表
+
+### 部署自己的轻应用
+
+### 订阅邮件推送
+
+### 跟作者聊聊你的想法 / 加入贡献者名单
 
 ## 开发
 
@@ -120,6 +215,7 @@ python3.8 -m notion-nlp run-all-tasks --config-file ${Your-Config-file-Path}
 ## 贡献
 
 - scikit-learn - [https://github.com/scikit-learn/scikit-learn](https://github.com/scikit-learn/scikit-learn)
+- Alir3z4/stop-words - [https://github.com/Alir3z4/stop-words](https://github.com/Alir3z4/stop-words)
 
 ## 许可证与版权
 

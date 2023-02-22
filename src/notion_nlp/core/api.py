@@ -7,6 +7,8 @@ import arrow
 import requests
 from tqdm import tqdm
 
+from notion_nlp.parameter.config import NotionParams
+
 # from requests.adapters import HTTPAdapter
 # from requests.packages.urllib3.util.retry import Retry
 # retry_strategy = Retry(
@@ -24,28 +26,12 @@ class NotionDBText:
     """
 
     def __init__(self, header: dict, database_id: str, extra_data: dict = dict()):
-        self.header = header
+        self.header = header  # todo 改为获取token？，header是API类自带的属性，不应该从外部获取
         self.database_id = database_id
         self.extra_data = extra_data
         self.total_texts, self.total_blocks, self.total_pages = [[]] * 3
-        self.block_types = [
-            "paragraph",
-            "bulleted_list_item",
-            "numbered_list_item",
-            "toggle",
-            "to_do",
-            "quote",
-            "callout",
-            "synced_block",
-            "template",
-            "column",
-            "child_page",
-            "child_database",
-            "table",
-            "heading_1",
-            "heading_2",
-            "heading_3",
-        ]
+        self.api_params = NotionParams()
+        self.api_params.database_id = database_id
 
     def read(self):
         self.total_pages = self.read_pages()
@@ -66,11 +52,11 @@ class NotionDBText:
                 self.extra_data["start_cursor"] = next_cursor
             try:
                 r_database = requests.post(
-                    url=f"https://api.notion.com/v1/databases/{self.database_id}/query",
+                    url=self.api_params.url_get_pages,
                     headers=self.header,
                     data=json.dumps(self.extra_data),
                 )
-            except ssl.SSLEOFError:
+            except Exception:
                 logging.error(f"read page failed, database id: {self.database_id}")
                 passed_pages += 1
             else:
@@ -90,12 +76,13 @@ class NotionDBText:
         passed_blocks = 0
         for page in tqdm(pages, desc="read blocks"):
             page_id = page["id"]
+            self.api_params.page_id = page_id
             try:
                 r_page = requests.get(
-                    url=f"https://api.notion.com/v1/blocks/{page_id}/children",
+                    url=self.api_params.url_get_blocks,
                     headers=self.header,
                 )
-            except ssl.SSLEOFError:
+            except Exception:
                 logging.error(f"read block failed, page id: {page_id}")
                 passed_blocks += 1
             else:
@@ -113,7 +100,7 @@ class NotionDBText:
         for page_blocks in blocks:
             page_texts = []
             for block in page_blocks:
-                if block["type"] not in self.block_types:
+                if block["type"] not in self.api_params.block_types:
                     self.unsupported_types.add(block["type"])
                     continue
                 try:

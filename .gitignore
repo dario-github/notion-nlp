@@ -137,3 +137,5 @@ configs/config.yaml
 
 pytest.report.xml
 publish_to_pypi.sh
+resources/fonts/.DOWNLOAD_RECORDS
+resources/fonts/sharefonts.net.txt

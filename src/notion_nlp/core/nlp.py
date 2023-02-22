@@ -1,13 +1,21 @@
 # 日志模块
 import logging
+import random
 from pathlib import Path
+from typing import Optional
 
+import matplotlib.pyplot as plt
 import pandas as pd
 from functional import seq
 from functional.pipeline import Sequence
+from PIL import Image
+from tabulate import tabulate
+from wordcloud import WordCloud
 
 from notion_nlp.core.api import NotionDBText
+from notion_nlp.parameter.config import TextAnalysisParams
 from notion_nlp.parameter.error import NLPError
+from notion_nlp.parameter.utils import unzip_webfile
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
 
@@ -55,6 +63,7 @@ class NotionTextAnalysis(NotionDBText):
             stopwords (set, optional): 停用词集合. Defaults to set().
             output_dir (pathlib.Path, optional): 输出目录. Defaults to Path('./').
             top_n (int, optional): 输出得分排名前n个词. Defaults to 5.
+            split_pkg (str, optional): 分词包. Defaults to "jieba".
         """
         self.handling_sentences(stopwords, split_pkg)
         self.tf_idf_dataframe = self.tf_idf(self.sequence)
@@ -71,7 +80,8 @@ class NotionTextAnalysis(NotionDBText):
         Returns:
             Bool: 词语是否在停用词列表内
         """
-        return word in stopwords or word.isdigit() or not word.strip()
+        word = word.strip().lower()
+        return word in stopwords or word.isdigit() or not word
 
     @staticmethod
     def check_sentence_available(text: str):
@@ -85,6 +95,12 @@ class NotionTextAnalysis(NotionDBText):
         """
         # 不要'#'开头的，因为可能是作为标签输入的，也可以用来控制一些分版本的重复内容
         if text.startswith("#"):
+            return False
+        # 一个正常的句子的字数在中文和英文中都有很大的差异，以下是两种语言中句子的平均字数：
+        # 中文：一个正常的句子通常包含12 - 20个汉字，但是也可能更长。在写作中，句子的长度可以根据需要进行调整，但一般不会超过30个汉字。
+        # 英文：一个正常的句子通常包含10 - 20个单词，但是也可能更长。在写作中，句子的长度可以根据需要进行调整，但一般不会超过30个单词。
+        # 需要注意的是，这只是一个平均值，实际上句子的长度可以根据需要进行调整，取决于句子的复杂性、写作风格以及句子所要表达的内容等因素。
+        if len(text) <= 10:
             return False
         return True
 
@@ -169,6 +185,7 @@ class NotionTextAnalysis(NotionDBText):
                 f"词表为空，请检查筛选条件及停用词。database ID: {self.database_id}; extra data: {self.extra_data}"
             )
             raise NLPError("empty unique words")
+        logging.info(f"unique words: {len(self.unique_words)}")
 
         # 词 --> 句子 查询字典
         self.word2sents = self._word2sent(text_list, self.unique_words)
@@ -246,15 +263,22 @@ class NotionTextAnalysis(NotionDBText):
             func = getattr(self, attr, self.empty_func)(self.tf_idf_dataframe)
             if func.empty:
                 continue
-            func.to_csv(self.directory / f"{result_suffix}.{attr}.csv")
+            func.to_csv(self.directory / f"{result_suffix}.{attr}.csv", header=["score"])
+        # 输出高分词
         self.top_freq(
             self.tf_idf_dataframe,
             f"{result_suffix}.top{top_n}_word_with_sentences.md",
             task_describe,
             top_n,
         )
-
-        logging.info(f"{self.task_name} result files have been saved to {output_dir}.")
+        logging.info(f"{self.task_name} result markdown have been saved to {output_dir}")
+        # 词云图
+        word_cloud_plot(
+            self.by_mean_drop_maxmin(self.tf_idf_dataframe),
+            self.task_name,
+            colormap="all",
+        )
+        logging.info(f"word cloud plot saved to {PROJECT_ROOT_DIR}/results/word_cloud")
 
     def top_freq(self, df: pd.DataFrame, file_name: str, task_describe: str, top_n: int):
         """检查高频词
@@ -265,14 +289,29 @@ class NotionTextAnalysis(NotionDBText):
             task_describe (str): 任务描述
             top_n (int): 需要输出得分前n的词
         """
+        # todo top_freq是通用方法，要从类中拆出来
+        top_n_words = self.by_mean_drop_maxmin(df).head(top_n)
+        print(
+            tabulate(
+                pd.DataFrame(top_n_words),
+                headers=["word", "score"],
+                tablefmt="rounded_grid",
+            )
+        )
         with open(self.directory / file_name, "w") as f:
             f.write("# " + task_describe + "\n\n")
-            for word in df.sum(axis=0).sort_values(ascending=False).head(top_n).index:
+            f.write("## Top " + str(top_n) + " words\n\n")
+            f.write("|Word|Score|\n|---|---|\n")
+            f.write(
+                "\n".join([f"|{word}|{score}|" for word, score in top_n_words.items()])
+                + "\n\n"
+            )
+            for word in top_n_words.index:
                 f.write("## " + word + "\n\n")
                 f.write(
                     "\n\n".join(
                         [
-                            sent.replace("\n", " ").replace(word, f"**{word}**")
+                            "- " + sent.replace("\n", " ").replace(word, f"**{word}**")
                             for sent in self.word2sents[word]
                         ]
                     )
@@ -345,3 +384,78 @@ class NotionTextAnalysis(NotionDBText):
 #     for word, val in idfDict.items():
 #         idfDict[word] = math.log(N / float(val))
 #     return idfDict
+
+
+def word_cloud_plot(
+    word_cloud_dataframe: pd.DataFrame,
+    task_name: str = "word_cloud",
+    save_path: str = Path(f"{PROJECT_ROOT_DIR}/results/word_cloud").as_posix(),
+    background_path: Optional[str] = None,  # todo 背景图片可以加到task的参数中，每个task的词云图背景不一样，也可以随机
+    font_path: Optional[str] = None,
+    width: int = 800,  # todo 词云图的宽、高也放到task参数中（作为可选项）
+    height: int = 450,
+    colormap: str = "viridis",  # todo 词云图的颜色也是可选项，可以指定自己想要的颜色
+):
+    """绘制词云图"""
+    params = TextAnalysisParams()
+
+    data_dict = dict(word_cloud_dataframe)
+
+    # 设置词云图的基本参数
+    # colormap: 全部生成/随机1张/指定类型  # todo 将该功能扩展出去
+    colormap_list = [colormap]
+    colormap_commands = ["random", "all"]
+    if colormap == "random":
+        colormap_list = [random.choice(params.colormap_types)]
+    elif colormap == "all":
+        colormap_list = params.colormap_types
+    elif colormap not in params.colormap_types:
+        raise ValueError(
+            f"{colormap} is not in {params.colormap_types + colormap_commands}"
+        )
+
+    # 判断是否需要下载字体
+    font_path = font_path or f"{PROJECT_ROOT_DIR}/resources/fonts/{params.font_show}"
+    if not Path(font_path).exists():
+        Path(font_path).parent.mkdir(exist_ok=True)
+        unzip_webfile(params.font_url, Path(font_path).parent)
+    # 如果不是字体文件，抛出异常
+    elif not (font_path.lower().endswith(".ttf") or font_path.lower().endswith(".otf")):
+        raise ValueError(f"{font_path} is not a ttf or otf file")
+
+    for colormap in colormap_list:
+        wc = WordCloud(
+            width=width,
+            height=height,
+            colormap=colormap,
+            font_path=font_path,
+            prefer_horizontal=1,
+            mode="RGBA" if background_path else "RGB",
+            background_color="rgba(255, 255, 255, 0)" if background_path else "white",
+        )
+        wc.generate_from_frequencies(data_dict)
+
+        outfile_path = Path(save_path) / f"{task_name}/colormap_{colormap}.png"
+        outfile_path.parent.mkdir(exist_ok=True, parents=True)
+        wc.to_file(outfile_path)
+
+        if background_path:
+            # Image process
+            image = Image.fromarray(wc.to_array())
+            background = Image.open(background_path).convert("RGBA")
+            background = background.resize(image.size)
+            new_image = Image.alpha_composite(background, image)
+            # Save
+            bkg_name, _ = Path(background_path).name.split(".", 1)
+            name, ext = outfile_path.name.split(".", 1)
+            new_name = f"{name}.{bkg_name}.{ext}"
+            new_path = outfile_path.parent / new_name
+            new_image.save(new_path)
+            # fig = plt.imshow(new_image)
+            # fig.axes.get_xaxis().set_visible(False)
+            # fig.axes.get_yaxis().set_visible(False)
+            # plt.savefig(outfile_path,
+            #             bbox_inches='tight',
+            #             pad_inches=0,
+            #             format='png',
+            #             dpi=300)
