@@ -41,7 +41,7 @@ def test_notion_text_analysis_init(notion_text_analysis):
 def test_notion_text_analysis_run(notion_text_analysis):
     notion_text_analysis.run(
         stopwords=set(),
-        output_dir=PROJECT_ROOT_DIR / "results",
+        output_dir="./results",
         top_n=5,
         split_pkg="jieba",
     )

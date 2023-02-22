@@ -46,7 +46,7 @@ def run_task(
     stopfiles_dir: str = (PROJECT_ROOT_DIR / "resources/stopwords").as_posix(),
     stopfiles_postfix: str = "stopwords.txt",
     top_n: int = 5,
-    output_dir: str = (PROJECT_ROOT_DIR / "results").as_posix(),
+    output_dir: str = "./results",
 ):
     """运行单个任务，任务字典或任务名必须传入一个
 

@@ -53,7 +53,7 @@ class NotionTextAnalysis(NotionDBText):
     def run(
         self,
         stopwords: set = set(),
-        output_dir: Path = Path(f"{PROJECT_ROOT_DIR}/results"),
+        output_dir: Path = Path("./results"),
         top_n: int = 5,
         split_pkg: str = "jieba",
     ):
@@ -238,7 +238,7 @@ class NotionTextAnalysis(NotionDBText):
         self,
         task_name: str,
         task_describe: str,
-        output_dir: Path = Path(f"{PROJECT_ROOT_DIR}/results"),
+        output_dir: Path = Path("./results"),
         top_n=5,
     ):
         """输出分析结果
@@ -389,7 +389,7 @@ class NotionTextAnalysis(NotionDBText):
 def word_cloud_plot(
     word_cloud_dataframe: pd.DataFrame,
     task_name: str = "word_cloud",
-    save_path: str = Path(f"{PROJECT_ROOT_DIR}/results/word_cloud").as_posix(),
+    save_path: str = Path("./results/word_cloud").as_posix(),
     background_path: Optional[str] = None,  # todo 背景图片可以加到task的参数中，每个task的词云图背景不一样，也可以随机
     font_path: Optional[str] = None,
     width: int = 800,  # todo 词云图的宽、高也放到task参数中（作为可选项）
