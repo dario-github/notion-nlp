@@ -41,7 +41,7 @@
 
 - 为你的notion笔记生成一份主题总结
   
-  ===> [主题总结样例](./results/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md)
+  ===> [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md)
 
 - 支持多语种。添加了中英俄法日德等语种的停用词表，也可自定义停用词表。
   

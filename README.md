@@ -41,7 +41,7 @@ Now, the tool can:
 
 - Generate thematic summaries of your Notion notes.
 
-  ===> [Example thematic summary]((./results/en_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md))
+  ===> [Example thematic summary]((./docs/en_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md))
 
 - Support multiple languages. I have added stopword lists for several languages including Chinese, English, Russian, French, Japanese, and German. Users can also customize their own stopword lists.
 
