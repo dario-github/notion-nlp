@@ -37,25 +37,25 @@
 
 - 输出直观、酷炫的词云图
 
-  ![长恨歌词云图](./docs/pictures/colormap_viridis.zh.png)
+  ![长恨歌词云图](https://i.328888.xyz/2023/02/22/x2PAL.png)
 
 - 为你的notion笔记生成一份主题总结
   
-  ===> [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md)
+  ===> [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md) <===
 
 - 支持多语种。添加了中英俄法日德等语种的停用词表，也可自定义停用词表。
   
-  ===> [多语种停用词](./resources/stopwords/)
+  ===> [多语种停用词](./resources/stopwords/) <===
 
 - 支持多任务。用户可以在配置文件中添加多个数据库和对应筛选排序条件来组成丰富的分析任务。
 
-  ===> [配置文件样例](./configs/config.sample.yaml)
+  ===> [配置文件样例](./configs/config.sample.yaml) <===
 
   例如，我添加了以下任务：
 
-  - 近一年的思考
-  - 本年度总结优化
-  - 所有时段的自我告诫
+  - :thinking: 近一年的思考
+  - :triangular_flag_on_post: 本年度总结优化
+  - :warning: 所有时段的自我告诫
 
 现在，我很高兴能够分享这个工具，希望它能够为您提供帮助 :laughing:
 
@@ -79,116 +79,134 @@ python3.8 -m pip install notion-nlp
 
 ## 使用
 
-配置文件参照 `configs/config.sample.yaml` (下称 config, 请改名为`config.yaml`作为自己的配置文件)
+- 配置文件参照 [config.sample.yaml](./configs/config.sample.yaml) (下称 config, 建议重命名为`config.yaml`作为自己的配置文件)
 
 ### 获取integration的token
 
-在 [notion integrations](https://www.notion.so/my-integrations/)新建一个integration，获取自己的 token ，填入 config.yaml 文件的 token 后。
+- 在 [notion integrations](https://www.notion.so/my-integrations/)新建一个integration，获取自己的 token ，填入 config.yaml 文件的 token 后。
 
-> [tango网页版图文教程](https://app.tango.us/app/workflow/6e53c348-79b6-4ed3-8c75-46f5ddb996da?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown格式图文教程](./docs/tango/get_the_integration_token.zh.md)
+  > 图文教程：[tango网页版](https://app.tango.us/app/workflow/6e53c348-79b6-4ed3-8c75-46f5ddb996da?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown格式](./docs/tango/get_the_integration_token.zh.md)
 
 ### 将integration添加到database/获取database ID
 
-在浏览器打开 notion database 页面或点击 share 复制链接，均可在地址链接中看到 database id（类似一串乱码），填入到 config 的 task 下的 database_id。
+- 在浏览器打开 notion database 页面或点击 share 复制链接，均可在地址链接中看到 database id（类似一串乱码），填入到 config 的 task 下的 database_id。
 
-> [tango网页版图文教程](https://app.tango.us/app/workflow/7e95c7df-af73-4748-9bf7-11efc8e24f2a?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown格式图文教程](./docs/tango/add_integration_to_database.zh.md)
+  > 图文教程：[tango网页版](https://app.tango.us/app/workflow/7e95c7df-af73-4748-9bf7-11efc8e24f2a?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown格式](./docs/tango/add_integration_to_database.zh.md)
 
 ### 配置筛选排序数据库条目的extra参数
 
-task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。[config.sample.yaml](./configs/config.sample.yaml) 文件已提供2种配置。
+- task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。[config.sample.yaml](./configs/config.sample.yaml) 文件已提供2种配置。
 
 
 ### 执行所有任务
 
-```shell
-# 通过命令行执行
-python3.8 -m notion_nlp run-all-tasks --config-file 您的配置文件路径
-```
+- 通过命令行执行
 
-```python
-# 通过 Python 调用
-from notion_nlp import run_all_tasks
-config_file = "./configs/config.yaml"
-run_all_tasks(config_file)
-```
+  ```shell
+  python3.8 -m notion_nlp run-all-tasks --config-file 您的配置文件路径
+  ```
+
+- 通过 Python 调用
+
+  ```python
+  from notion_nlp import run_all_tasks
+  config_file = "./configs/config.yaml"
+  run_all_tasks(config_file)
+  ```
 
 ### 执行单个任务
 
-在run_task命令中，支持多种方式来指定任务，包括：
+- 在run_task命令中，支持多种方式来指定任务，包括：
 
-- task；参数类；
-- task_json：任务信息json字符串；
-- task_name：任务名。
+  - task；参数类；
+  - task_json：任务信息json字符串；
+  - task_name：任务名。
 
-如果config_file存在，则可以使用task_name进行指定，同时还需要满足任务为激活状态，否则会抛出异常。如果config_file不存在，则需要提供token和参数类或任务信息json字符串中的任意一种。
+- 如果config_file存在，则可以使用task_name进行指定，同时还需要满足任务为激活状态，否则会抛出异常。如果config_file不存在，则需要提供token和参数类或任务信息json字符串中的任意一种。
 
-#### 已有`config`文件，传入`task name`/`task json`/`task 参数类`
+  - 已有`config`文件，传入`task name`/`task json`/`task 参数类`
+  
+    - 通过命令行执行
 
-```shell
-# 方式一
-python3.8 -m notion_nlp run-task --task-name task_1 --config-file 您的配置文件路径
+      ```shell
+      # 方式一
+      python3.8 -m notion_nlp run-task --task-name task_1 --config-file 您的配置文件路径
 
-# 方式二
-python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --config-file 您的配置文件路径
-```
+      # 方式二
+      python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --config-file 您的配置文件路径
+      ```
 
-```python
-from notion_nlp import run_task
-task_name = "task_1"
-database_id = "your_database_id"
-config_file="./configs/config.yaml"
+    - 通过 Python 调用
 
-# 方式一
-run_task(task_name=task_name, config_file=config_file)
+      ```python
+      from notion_nlp import run_task
+      task_name = "task_1"
+      database_id = "your_database_id"
+      config_file="./configs/config.yaml"
 
-# 方式二（不推荐用于 Python 调用）
-import json
-task_info = {"name": task_name, "database_id": database_id}
-run_task(task_json=json.dumps(task_info, ensure_ascii=False), config_file=config_file)
+      # 方式一
+      run_task(task_name=task_name, config_file=config_file)
 
-# 方式三（推荐）
-from notion_nlp.parameter.config import TaskParams
-task = TaskParams(name=task_name, database_id=database_id)
-run_task(task=task, config_file=config_file)
-```
+      # 方式二（不推荐用于 Python 调用）
+      import json
+      task_info = {"name": task_name, "database_id": database_id}
+      run_task(task_json=json.dumps(task_info, ensure_ascii=False), config_file=config_file)
 
-#### 没有`config`文件，传入`token`和`task json`/`task 参数类`
+      # 方式三（推荐）
+      from notion_nlp.parameter.config import TaskParams
+      task = TaskParams(name=task_name, database_id=database_id)
+      run_task(task=task, config_file=config_file)
+      ```
 
-```shell
-# 方式一
-python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --token '您的 Notion Integration Token'
-```
+  - 没有`config`文件，传入`token`和`task json`/`task 参数类`
 
-```python
-from notion_nlp import run_task
-task_name = "task_1"
-database_id = "your_database_id"
-notion_token = "your_notion_integration_token"
+    - 通过命令行执行
 
-# 方式一（不推荐用于 Python 调用）
-import json
-task_info = {"name": task_name, "database_id": database_id}
-run_task(task_json=json.dumps(task_info, ensure_ascii=False), token=notion_token)
+      ```shell
+      # 方式一
+      python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --token '您的 Notion Integration Token'
+      ```
 
-# 方式二（推荐）
-from notion_nlp.parameter.config import TaskParams
-task = TaskParams(name=task_name, database_id=database_id)
-run_task(task=task, token=notion_token)
-```
+    - 通过 Python 调用
+
+      ```python
+      from notion_nlp import run_task
+      task_name = "task_1"
+      database_id = "your_database_id"
+      notion_token = "your_notion_integration_token"
+
+      # 方式一（不推荐用于 Python 调用）
+      import json
+      task_info = {"name": task_name, "database_id": database_id}
+      run_task(task_json=json.dumps(task_info, ensure_ascii=False), token=notion_token)
+
+      # 方式二（推荐）
+      from notion_nlp.parameter.config import TaskParams
+      task = TaskParams(name=task_name, database_id=database_id)
+      run_task(task=task, token=notion_token)
+      ```
 
 ## 增强个人体验
 
-### 自定义停用词表
+### :customs: 自定义停用词表
+- 在 [stopwords目录](./resources/stopwords/) 添加文本文件，后缀为`stopwords.txt`既可，如`custom.stopwords.txt`，文件内停用词每行一个。
 
+<!--
 ### 部署自己的轻应用
 
 ### 订阅邮件推送
+-->
 
-### 跟作者聊聊你的想法 / 加入贡献者名单
+### :memo: 跟作者聊聊你的想法
+
+- [参与讨论](https://github.com/dario-github/notion-nlp/discussions/new/choose) 
+- [提交问题](https://github.com/dario-github/notion-nlp/issues/new/choose)
+
+### :gift_heart: 加入贡献者名单
 
 ## 开发
 
-欢迎 fork 并 添加功能/修复bug。
+- 欢迎 fork 并 添加功能/修复bug。
 
 - clone 项目后使用`create_python_env_in_new_machine.sh`脚本创建 poetry 虚拟环境。
 
@@ -221,11 +239,11 @@ run_task(task=task, token=notion_token)
 
 - [MIT License](./LICENSE)
 
-  - MIT许可证是一种宽松的开源软件许可证。这意味着任何人都可以自由地使用、复制、修改和分发您的软件，只要他们在其派生作品中包括原始版权声明和许可证。
+  1. MIT许可证是一种宽松的开源软件许可证。这意味着任何人都可以自由地使用、复制、修改和分发您的软件，只要他们在其派生作品中包括原始版权声明和许可证。
 
-  - 然而，MIT许可证不提供任何保证或责任，这意味着您不会对使用或分发您的软件而产生的任何损害或损失负责。
+  2. 然而，MIT许可证不提供任何保证或责任，这意味着您不会对使用或分发您的软件而产生的任何损害或损失负责。
 
-  - 通过使用这个软件，您同意接受MIT许可证的条款和条件。
+  3. 通过使用这个软件，您同意接受MIT许可证的条款和条件。
 
 ## 联系方式
 
