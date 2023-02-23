@@ -68,7 +68,7 @@ class NotionTextAnalysis(NotionDBText):
     def run(
         self,
         stopwords: set = set(),
-        output_dir: Path = EXEC_DIR / PathParams.results.value,
+        output_dir: Path = EXEC_DIR,
         top_n: int = 5,
         split_pkg: str = "jieba",
     ):
@@ -252,7 +252,7 @@ class NotionTextAnalysis(NotionDBText):
         self,
         task_name: str,
         task_describe: str,
-        output_dir: Path = EXEC_DIR / PathParams.results.value,
+        output_dir: Path = EXEC_DIR,
         top_n=5,
     ):
         """输出tf-idf分析结果

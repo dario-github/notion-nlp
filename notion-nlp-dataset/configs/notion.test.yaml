@@ -1,6 +1,6 @@
-notion :
+notion :  # notion API info
   token : 'secret_V0kve3TRxDFg3IiPEy216VfEExeaV9T7dpPnmjIy5uf'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
-tasks :
+tasks :  # task list
   - 
     run : True
     name : zh_unit_testing_task # Custom name for differentiation of output file

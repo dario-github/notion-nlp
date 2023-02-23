@@ -37,7 +37,7 @@ def run_task(
     stopfiles_dir: str = (EXEC_DIR / PathParams.stopwords.value).as_posix(),
     stopfiles_postfix: str = "stopwords.txt",
     top_n: int = 5,
-    output_dir: str = (EXEC_DIR / PathParams.results.value).as_posix(),
+    output_dir: str = (EXEC_DIR).as_posix(),
 ):
     _run_task(
         None,

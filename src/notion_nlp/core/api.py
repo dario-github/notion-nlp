@@ -24,7 +24,7 @@ class NotionDBText:
     读取数据库中所有富文本信息
     """
 
-    def __init__(self, header: dict, database_id: str, extra_data: dict = dict()):
+    def __init__(self, header: dict, database_id: str, extra_data: dict = {}):
         self.header = header  # todo 改为获取token？，header是API类自带的属性，不应该从外部获取
         self.database_id = database_id
         self.extra_data = extra_data
