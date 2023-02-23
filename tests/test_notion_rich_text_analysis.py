@@ -19,17 +19,17 @@ EXEC_DIR = Path.cwd()
 @pytest.fixture
 def notion_text_analysis():
     check_resource()
-    
+
     config_file = PROJECT_ROOT_DIR / PathParams.notion_test_config.value
     config = load_config(config_file)
-    
+
     header = config.notion.header
     task = config.tasks[0]
     task_name = task.name
     task_describe = task.describe
     database_id = task.database_id
     extra_data = task.extra
-    
+
     return NotionTextAnalysis(header, task_name, task_describe, database_id, extra_data)
 
 
@@ -135,8 +135,12 @@ def mock_task():
 def test_run_task_inputs(mock_task, notion_text_analysis):
     # 测试函数输入的参数和异常情况
     with pytest.raises(ConfigError, match="Task or Task Name, there must be one."):
-        run_task(task=None, task_json=None, task_name=None,
-                 config_file=notion_text_analysis.config_file)
+        run_task(
+            task=None,
+            task_json=None,
+            task_name=None,
+            config_file=notion_text_analysis.config_file,
+        )
 
     with pytest.raises(ConfigError, match="Invalid task json."):
         run_task(task_json="{invalid json}", config_file=notion_text_analysis.config_file)
@@ -163,7 +167,9 @@ def test_run_task_outputs(notion_text_analysis):
     while output_dir.exists():
         output_dir = output_dir / "subdir"
     run_task(
-        task=notion_text_analysis.task, config_file=notion_text_analysis.config_file, output_dir=output_dir.as_posix()
+        task=notion_text_analysis.task,
+        config_file=notion_text_analysis.config_file,
+        output_dir=output_dir.as_posix(),
     )
 
     # 测试输出结果是否正确
