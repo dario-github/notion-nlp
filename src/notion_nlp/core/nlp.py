@@ -27,11 +27,6 @@ from notion_nlp.parameter.utils import unzip_webfile
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
 EXEC_DIR = Path.cwd()
 
-jieba.set_dictionary(
-    EXEC_DIR / PathParams.jieba.value / os.path.basename(ResourceParams.jieba_dict_url())
-)
-jieba.initialize()
-
 
 class NotionTextAnalysis(NotionDBText):
     """分析notion富文本信息"""
@@ -57,6 +52,13 @@ class NotionTextAnalysis(NotionDBText):
         logging.info(f"{task_name} start, {task_describe}")
         self.read()
         logging.info(f"Unsupported types: {self.unsupported_types}")
+
+        jieba.set_dictionary(
+            EXEC_DIR
+            / PathParams.jieba.value
+            / os.path.basename(ResourceParams.jieba_dict_url())
+        )
+        jieba.initialize()
 
         self.task_name = task_name
         self.task_describe = task_describe

@@ -141,3 +141,5 @@ resources/fonts/sharefonts.net.txt
 resources/wordcloud/stopwords
 configs/notion.yaml
 resources/stopwords/*.txt
+**/.DOWNLOAD_RECORDS
+**/notion-nlp-dataset

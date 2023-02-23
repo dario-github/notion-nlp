@@ -31,7 +31,7 @@ def check_resource():
         / os.path.basename(ResourceParams.test_config_file_url())
     )
     if not test_config_path.exists():
-        test_config_path.mkdir(exist_ok=True, parents=True)
+        test_config_path.parent.mkdir(exist_ok=True, parents=True)
         download_webfile(ResourceParams.test_config_file_url(), test_config_path.parent)
         logging.info(f"init config success, file path: {test_config_path}")
 
@@ -42,7 +42,7 @@ def check_resource():
         / os.path.basename(ResourceParams.jieba_dict_url())
     )
     if not jieba_dict_path.exists():
-        jieba_dict_path.mkdir(exist_ok=True, parents=True)
+        jieba_dict_path.parent.mkdir(exist_ok=True, parents=True)
         download_webfile(ResourceParams.jieba_dict_url(), jieba_dict_path.parent)
         logging.info(f"download jieba dict success, file path: {jieba_dict_path}")
 

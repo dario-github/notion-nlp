@@ -5,6 +5,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
+PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
+
 
 class ConfigPath(str, Enum):
     """各种应用的配置文件路径类"""
@@ -48,20 +50,25 @@ class ResourcePath(str, Enum):
 class PathParams(str, Enum):
     """各种文件路径的参数类"""
 
-    configs: ConfigPath = ConfigPath.value
-    results: ResultPath = ResultPath.value
-    resources: ResourcePath = ResourcePath.value
+    value = Path(PROJECT_ROOT_DIR.name + "-dataset")
 
-    jieba: ResourcePath = ResourcePath.jieba
-    fonts: ResourcePath = ResourcePath.fonts
-    stopwords: ResourcePath = ResourcePath.stopwords
-    backgrouds: ResourcePath = ResourcePath.backgrouds
+    configs = value / ConfigPath.value
+    results = value / ResultPath.value
+    resources = value / ResourcePath.value
 
-    wordcloud: ResultPath = ResultPath.wordcloud
-    tfidf_analysis: ResultPath = ResultPath.tfidf_analysis
+    jieba = value / ResourcePath.jieba
+    fonts = value / ResourcePath.fonts
+    stopwords = value / ResourcePath.stopwords
+    backgrouds = value / ResourcePath.backgrouds
 
-    notion_config: ConfigPath = ConfigPath.notion
-    notion_test_config: ConfigPath = ConfigPath.notion_test
+    wordcloud = value / ResultPath.wordcloud
+    tfidf_analysis = value / ResultPath.tfidf_analysis
+
+    notion_config = value / ConfigPath.notion
+    notion_test_config = value / ConfigPath.notion_test
+
+    def __str__(self):
+        return self.value
 
 
 class APIParams:

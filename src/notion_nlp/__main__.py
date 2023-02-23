@@ -2,7 +2,7 @@ from pathlib import Path
 
 import typer
 
-from notion_nlp.core.task import check_resource as _check_resource
+from notion_nlp.core.task import check_resource
 from notion_nlp.core.task import first_try as _first_try
 from notion_nlp.core.task import run_all_tasks as _run_all_tasks
 from notion_nlp.core.task import run_task as _run_task
@@ -18,11 +18,6 @@ EXEC_DIR = Path.cwd()
 @app.command()
 def first_try():
     _first_try()
-
-
-@app.command()
-def check_resource():
-    _check_resource()
 
 
 @app.command()
@@ -64,4 +59,5 @@ def task_info(config_file: str = (EXEC_DIR / PathParams.notion_config.value).as_
 
 
 if __name__ == "__main__":
+    check_resource()
     app()
