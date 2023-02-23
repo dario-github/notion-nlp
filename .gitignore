@@ -137,12 +137,18 @@ publish_to_pypi.sh
 
 results
 unittest_results
-resources
 
-**/.DOWNLOAD_RECORDS
+.DOWNLOAD_RECORDS
 
-/notion-nlp-dataset/*
+/notion-nlp-dataset/resources/stopwords/*
+/notion-nlp-dataset/resources/fonts
+/notion-nlp-dataset/resources/wordcloud
+/notion-nlp-dataset/resources/backgrounds
+/notion-nlp-dataset/resources/jieba
+/notion-nlp-dataset/configs/notion.yaml
 !/notion-nlp-dataset/resources/stopwords/multilingual_stopwords.zip
-!/notion-nlp-dataset/resources/jieba/dict.txt
 !/notion-nlp-dataset/configs/notion.test.yaml
 !/notion-nlp-dataset/configs/notion.sample.yaml
+
+
+resources/fonts/sharefonts.net.txt
