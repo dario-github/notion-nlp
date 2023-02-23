@@ -13,7 +13,7 @@ class ConfigPath(str, Enum):
     # todo 支持其他笔记软件的API
     # 用pathlib来自适应不同平台的路径分隔符
     notion = value / "notion.yaml"
-    notion_test = value / "notion_test.yaml"
+    notion_test = value / "notion.test.yaml"
 
     def __str__(self):
         return self.value
