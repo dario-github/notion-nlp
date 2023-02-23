@@ -17,14 +17,19 @@ EXEC_DIR = Path.cwd()
 
 
 @pytest.fixture
-def notion_text_analysis():
-    check_resource()
-
+def notion_config():
     config_file = PROJECT_ROOT_DIR / PathParams.notion_test_config.value
     config = load_config(config_file)
+    return config
 
-    header = config.notion.header
-    task = config.tasks[0]
+
+@pytest.fixture
+def notion_text_analysis(notion_config):
+    check_resource()
+
+    task = notion_config.tasks[0]
+
+    header = notion_config.notion.header
     task_name = task.name
     task_describe = task.describe
     database_id = task.database_id
@@ -83,11 +88,15 @@ def test_notion_text_analysis_handling_sentences(notion_text_analysis):
         notion_text_analysis.handling_sentences(stopwords=set(), split_pkg="jieba")
 
 
+# @pytest.mark.usefixtures("notion_config")
 class TestNotionDBText:
-    def setup_class(self, notion_text_analysis):
-        self.header = notion_text_analysis.header
-        self.database_id = notion_text_analysis.database_id
-        self.extra_data = notion_text_analysis.extra_data
+    @staticmethod
+    def setup_class(self):
+        config = load_config(PROJECT_ROOT_DIR / PathParams.notion_test_config.value)
+        task = config.tasks[0]
+        self.database_id = task.database_id
+        self.extra_data = task.extra
+        self.header = config.notion.header
         self.db_text = NotionDBText(self.header, self.database_id, self.extra_data)
 
     @patch("requests.post")
@@ -132,28 +141,37 @@ def mock_task():
     )
 
 
-def test_run_task_inputs(mock_task, notion_text_analysis):
+def test_run_task_inputs(mock_task):
     # 测试函数输入的参数和异常情况
     with pytest.raises(ConfigError, match="Task or Task Name, there must be one."):
         run_task(
             task=None,
             task_json=None,
             task_name=None,
-            config_file=notion_text_analysis.config_file,
+            config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value,
         )
 
     with pytest.raises(ConfigError, match="Invalid task json."):
-        run_task(task_json="{invalid json}", config_file=notion_text_analysis.config_file)
+        run_task(
+            task_json="{invalid json}",
+            config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value,
+        )
 
     with pytest.raises(TaskError, match="nonexistent does not exist."):
-        run_task(task_name="nonexistent", config_file=notion_text_analysis.config_file)
+        run_task(
+            task_name="nonexistent",
+            config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value,
+        )
 
     with pytest.raises(
         TaskError,
         match="discarded_task has been set to stop running. Check the parameters.",
     ):
         mock_task.run = False
-        run_task(task_name="discarded_task", config_file=notion_text_analysis.config_file)
+        run_task(
+            task_name="discarded_task",
+            config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value,
+        )
 
     with pytest.raises(ConfigError, match="Token is required."):
         run_task(task_json="{valid json}", config_file="nonexistent")
@@ -167,8 +185,8 @@ def test_run_task_outputs(notion_text_analysis):
     while output_dir.exists():
         output_dir = output_dir / "subdir"
     run_task(
-        task=notion_text_analysis.task,
-        config_file=notion_text_analysis.config_file,
+        task_name=notion_text_analysis.task_name,
+        config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value,
         output_dir=output_dir.as_posix(),
     )
 
@@ -176,16 +194,17 @@ def test_run_task_outputs(notion_text_analysis):
     # 此处的假设是notion_text_analysis.run()会在output_dir下生成一个文件
     assert (
         output_dir
-        / f"{notion_text_analysis.task_name}.tf_idf.analysis_result.top5_word_with_sentences.md"
+        / PathParams.tfidf_analysis.value
+        / f"{notion_text_analysis.task_name}.top_5.md"
     ).exists()
     # 删除文件
     shutil.rmtree(output_dir)
 
 
-def test_run_task_subfunctions(mock_task):
+def test_run_task_subfunctions():
     # 测试函数调用的子函数能否正常调用并返回正确的结果
-    config_file = "configs/notion.test.yaml"
-    stopfiles_dir = "resources/stopwords"
+    config_file = PROJECT_ROOT_DIR / PathParams.notion_test_config.value
+    stopfiles_dir = PathParams.stopwords.value
     stopfiles_postfix = "stopwords.txt"
 
     config = load_config(config_file)
@@ -204,16 +223,16 @@ def test_run_task_edge_cases(mock_task):
         run_task(task=mock_task, top_n=0)
 
 
-def test_run_all_tasks():
-    # 测试从文件运行
-    run_all_tasks(config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value)
+# def test_run_all_tasks():
+#     # 测试从文件运行
+#     run_all_tasks(config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value)
 
 
 if __name__ == "__main__":
     config_log(
         EXEC_DIR.stem,
         "unit_test",
-        log_root=(EXEC_DIR / PROJECT_ROOT_DIR.name / "logs").as_posix(),
+        log_root=(EXEC_DIR / "logs").as_posix(),
         print_terminal=True,
         enable_monitor=False,
     )

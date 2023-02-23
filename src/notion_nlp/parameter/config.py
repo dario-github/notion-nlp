@@ -95,7 +95,7 @@ class ResourceParams:
     @staticmethod
     def test_config_file_url() -> str:
         """测试配置文件的url"""
-        return "https://raw.githubusercontent.com/dario-github/notion-nlp/main/configs/notion.test.yaml"
+        return "https://raw.githubusercontent.com/dario-github/notion-nlp/main/notion-nlp-dataset/configs/notion.test.yaml"
 
     @staticmethod
     def font_url() -> str:
@@ -107,12 +107,12 @@ class ResourceParams:
     @staticmethod
     def multilingual_stopwords_url() -> str:
         """多语言停用词文件的url"""
-        return "https://github.com/dario-github/notion-nlp/raw/main/resources/stopwords/multilingual_stopwords.zip"
+        return "https://github.com/dario-github/notion-nlp/raw/main/notion-nlp-dataset/resources/stopwords/multilingual_stopwords.zip"
 
     @staticmethod
     def jieba_dict_url() -> str:
         """jieba 停用词词典的url"""
-        return "https://raw.githubusercontent.com/dario-github/notion-nlp/main/resources/jieba/dict.txt"
+        return "https://github.com/fxsjy/jieba/raw/master/jieba/dict.txt"
 
 
 class CleanTextParams(NLPParams, ResourceParams):

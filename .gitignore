@@ -131,15 +131,18 @@ dmypy.json
 **/*.zip
 **/*.pkl
 **/*.npz
-results/*
-configs/notion.yaml
 
 pytest.report.xml
 publish_to_pypi.sh
-resources/fonts/.DOWNLOAD_RECORDS
-resources/fonts/sharefonts.net.txt
-resources/wordcloud/stopwords
-configs/notion.yaml
-resources/stopwords/*.txt
+
+results
+unittest_results
+resources
+
 **/.DOWNLOAD_RECORDS
-**/notion-nlp-dataset
+
+/notion-nlp-dataset/*
+!/notion-nlp-dataset/resources/stopwords/multilingual_stopwords.zip
+!/notion-nlp-dataset/resources/jieba/dict.txt
+!/notion-nlp-dataset/configs/notion.test.yaml
+!/notion-nlp-dataset/configs/notion.sample.yaml
