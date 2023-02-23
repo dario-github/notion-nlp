@@ -122,10 +122,9 @@ class NotionTextAnalysis(NotionDBText):
         # 中文：一个正常的句子通常包含12 - 20个汉字，但是也可能更长。在写作中，句子的长度可以根据需要进行调整，但一般不会超过30个汉字。
         # 英文：一个正常的句子通常包含10 - 20个单词，但是也可能更长。在写作中，句子的长度可以根据需要进行调整，但一般不会超过30个单词。
         # 需要注意的是，这只是一个平均值，实际上句子的长度可以根据需要进行调整，取决于句子的复杂性、写作风格以及句子所要表达的内容等因素。
-        if (
-            len(text) < CleanTextParams.min_sentence_length()
-            or len(text) > CleanTextParams.max_sentence_length()
-        ):
+        if len(text) < CleanTextParams.min_sentence_length():
+            return False
+        if len(text) > CleanTextParams.max_sentence_length():
             return False
         return True
 
@@ -334,10 +333,8 @@ class NotionTextAnalysis(NotionDBText):
             f.write("# " + task_describe + "\n\n")
             f.write("## Top " + str(top_n) + " words\n\n")
             f.write("|Word|Score|\n|---|---|\n")
-            f.write(
-                "\n".join([f"|{word}|{score}|" for word, score in top_n_words.items()])
-                + "\n\n"
-            )
+            top_words = [f"|{word}|{score}|" for word, score in top_n_words.items()]
+            f.write("\n".join(top_words) + "\n\n")
             for word in top_n_words.index:
                 f.write("## " + word + "\n\n")
                 f.write(
@@ -347,8 +344,8 @@ class NotionTextAnalysis(NotionDBText):
                             for sent in self.word2sents[word]
                         ]
                     )
-                    + "\n\n"
                 )
+                f.write("\n\n")
 
     @staticmethod
     def by_mean_drop_maxmin(df: pd.DataFrame):
