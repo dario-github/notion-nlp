@@ -49,7 +49,7 @@
 
 - 支持多任务。用户可以在配置文件中添加多个数据库和对应筛选排序条件来组成丰富的分析任务。
 
-  ===> [配置文件样例](./configs/config.sample.yaml) <===
+  ===> [配置文件样例](./configs/notion.sample.yaml) <===
 
   例如，我添加了以下任务：
 
@@ -79,11 +79,11 @@ python3.8 -m pip install notion-nlp
 
 ## 使用
 
-- 配置文件参照 [config.sample.yaml](./configs/config.sample.yaml) (下称 config, 建议重命名为`config.yaml`作为自己的配置文件)
+- 配置文件参照 [notion.sample.yaml](./configs/notion.sample.yaml) (下称 config, 建议重命名为`notion.yaml`作为自己的配置文件)
 
 ### 获取integration的token
 
-- 在 [notion integrations](https://www.notion.so/my-integrations/)新建一个integration，获取自己的 token ，填入 config.yaml 文件的 token 后。
+- 在 [notion integrations](https://www.notion.so/my-integrations/)新建一个integration，获取自己的 token ，填入 notion.yaml 文件的 token 后。
 
   > 图文教程：[tango网页版](https://app.tango.us/app/workflow/6e53c348-79b6-4ed3-8c75-46f5ddb996da?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown格式](./docs/tango/get_the_integration_token.zh.md)
 
@@ -95,7 +95,7 @@ python3.8 -m pip install notion-nlp
 
 ### 配置筛选排序数据库条目的extra参数
 
-- task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。[config.sample.yaml](./configs/config.sample.yaml) 文件已提供2种配置。
+- task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。[notion.sample.yaml](./configs/notion.sample.yaml) 文件已提供2种配置。
 
 
 ### 执行所有任务
@@ -110,7 +110,7 @@ python3.8 -m pip install notion-nlp
 
   ```python
   from notion_nlp import run_all_tasks
-  config_file = "./configs/config.yaml"
+  config_file = "./configs/notion.yaml"
   run_all_tasks(config_file)
   ```
 
@@ -142,7 +142,7 @@ python3.8 -m pip install notion-nlp
       from notion_nlp import run_task
       task_name = "task_1"
       database_id = "your_database_id"
-      config_file="./configs/config.yaml"
+      config_file="./configs/notion.yaml"
 
       # 方式一
       run_task(task_name=task_name, config_file=config_file)

@@ -1,10 +1,5 @@
 notion :
-  token : &token 'here is your own notion intergration token'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
-  api_version : &version '2022-06-28'  # API version
-  header : # Requests header information
-    Authorization : !join ['Bearer ', *token]  # The !join constructor needs to be added in python
-    Notion-Version : *version 
-    Content-Type : 'application/json'
+  token : 'here is your own notion intergration token'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
 tasks :
   - 
     run : True

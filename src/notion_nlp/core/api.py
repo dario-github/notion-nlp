@@ -1,6 +1,5 @@
 import json
 import logging
-import ssl
 from typing import List
 
 import arrow
@@ -108,7 +107,12 @@ class NotionDBText:
                         [x["plain_text"] for x in block[block["type"]]["rich_text"]]
                     )
                 except KeyError:
-                    logging.error(block["type"] + "|" + json.dumps(block[block["type"]]))
+                    logging.error(
+                        "No plain text in type: "
+                        + block["type"]
+                        + "|"
+                        + json.dumps(block[block["type"]])
+                    )
                     passed_texts += 1
             total_texts.append(page_texts)
         logging.info(

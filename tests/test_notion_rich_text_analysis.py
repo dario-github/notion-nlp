@@ -1,40 +1,39 @@
 from unittest.mock import patch
 from pathlib import Path
-from glob import glob
 import pytest
 import json
 
 from notion_nlp.parameter.utils import load_config, load_stopwords
-from notion_nlp import run_task, run_all_tasks
+from notion_nlp.core.task import run_task, run_all_tasks, check_resource
 
-from notion_nlp.parameter.config import TaskParams, ConfigParams
+from notion_nlp.parameter.config import TaskParams, ConfigParams, PathParams
 from notion_nlp.parameter.log import config_log
 from notion_nlp.parameter.error import NLPError, ConfigError, TaskError
 from notion_nlp.core.api import NotionDBText
 from notion_nlp.core.nlp import NotionTextAnalysis
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent
-
-config_file = PROJECT_ROOT_DIR / "configs/config.test.yaml"
-CONFIG = load_config(config_file)
+EXEC_DIR = Path.cwd()
 
 
 @pytest.fixture
 def notion_text_analysis():
-    header = CONFIG.notion.header
-    task_name = CONFIG.tasks[0].name
-    task_describe = CONFIG.tasks[0].describe
-    database_id = CONFIG.tasks[0].database_id
-    extra_data = CONFIG.tasks[0].extra
+    check_resource()
+
+    config_file = PROJECT_ROOT_DIR / PathParams.notion_test_config.value
+    config = load_config(config_file)
+
+    header = config.notion.header
+    task = config.tasks[0]
+    task_name = task.name
+    task_describe = task.describe
+    database_id = task.database_id
+    extra_data = task.extra
+
     return NotionTextAnalysis(header, task_name, task_describe, database_id, extra_data)
 
 
 def test_notion_text_analysis_init(notion_text_analysis):
-    assert notion_text_analysis.header == CONFIG.notion.header
-    assert notion_text_analysis.task_name == CONFIG.tasks[0].name
-    assert notion_text_analysis.task_describe == CONFIG.tasks[0].describe
-    assert notion_text_analysis.database_id == CONFIG.tasks[0].database_id
-    assert notion_text_analysis.extra_data == CONFIG.tasks[0].extra
     assert notion_text_analysis.total_texts != []
 
 
@@ -85,10 +84,10 @@ def test_notion_text_analysis_handling_sentences(notion_text_analysis):
 
 
 class TestNotionDBText:
-    def setup_class(self):
-        self.header = CONFIG.notion.header
-        self.database_id = CONFIG.tasks[0].database_id
-        self.extra_data = CONFIG.tasks[0].extra
+    def setup_class(self, notion_text_analysis):
+        self.header = notion_text_analysis.header
+        self.database_id = notion_text_analysis.database_id
+        self.extra_data = notion_text_analysis.extra_data
         self.db_text = NotionDBText(self.header, self.database_id, self.extra_data)
 
     @patch("requests.post")
@@ -133,29 +132,34 @@ def mock_task():
     )
 
 
-def test_run_task_inputs(mock_task):
+def test_run_task_inputs(mock_task, notion_text_analysis):
     # 测试函数输入的参数和异常情况
     with pytest.raises(ConfigError, match="Task or Task Name, there must be one."):
-        run_task(task=None, task_json=None, task_name=None, config_file=config_file)
+        run_task(
+            task=None,
+            task_json=None,
+            task_name=None,
+            config_file=notion_text_analysis.config_file,
+        )
 
     with pytest.raises(ConfigError, match="Invalid task json."):
-        run_task(task_json="{invalid json}", config_file=config_file)
+        run_task(task_json="{invalid json}", config_file=notion_text_analysis.config_file)
 
     with pytest.raises(TaskError, match="nonexistent does not exist."):
-        run_task(task_name="nonexistent", config_file=config_file)
+        run_task(task_name="nonexistent", config_file=notion_text_analysis.config_file)
 
     with pytest.raises(
         TaskError,
         match="discarded_task has been set to stop running. Check the parameters.",
     ):
         mock_task.run = False
-        run_task(task_name="discarded_task", config_file=config_file)
+        run_task(task_name="discarded_task", config_file=notion_text_analysis.config_file)
 
     with pytest.raises(ConfigError, match="Token is required."):
         run_task(task_json="{valid json}", config_file="nonexistent")
 
 
-def test_run_task_outputs():
+def test_run_task_outputs(notion_text_analysis):
     import shutil
 
     # 测试函数输出的结果类型和内容是否正确
@@ -163,14 +167,16 @@ def test_run_task_outputs():
     while output_dir.exists():
         output_dir = output_dir / "subdir"
     run_task(
-        task=CONFIG.tasks[0], config_file=config_file, output_dir=output_dir.as_posix()
+        task=notion_text_analysis.task,
+        config_file=notion_text_analysis.config_file,
+        output_dir=output_dir.as_posix(),
     )
 
     # 测试输出结果是否正确
     # 此处的假设是notion_text_analysis.run()会在output_dir下生成一个文件
     assert (
         output_dir
-        / f"{CONFIG.tasks[0].name}.tf_idf.analysis_result.top5_word_with_sentences.md"
+        / f"{notion_text_analysis.task_name}.tf_idf.analysis_result.top5_word_with_sentences.md"
     ).exists()
     # 删除文件
     shutil.rmtree(output_dir)
@@ -178,7 +184,7 @@ def test_run_task_outputs():
 
 def test_run_task_subfunctions(mock_task):
     # 测试函数调用的子函数能否正常调用并返回正确的结果
-    config_file = "configs/config.test.yaml"
+    config_file = "configs/notion.test.yaml"
     stopfiles_dir = "resources/stopwords"
     stopfiles_postfix = "stopwords.txt"
 
@@ -200,14 +206,14 @@ def test_run_task_edge_cases(mock_task):
 
 def test_run_all_tasks():
     # 测试从文件运行
-    run_all_tasks(config_file=PROJECT_ROOT_DIR / "configs/config.test.yaml")
+    run_all_tasks(config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value)
 
 
 if __name__ == "__main__":
     config_log(
-        PROJECT_ROOT_DIR.stem,
+        EXEC_DIR.stem,
         "unit_test",
-        log_root=(PROJECT_ROOT_DIR / "logs").as_posix(),
+        log_root=(EXEC_DIR / PROJECT_ROOT_DIR.name / "logs").as_posix(),
         print_terminal=True,
         enable_monitor=False,
     )

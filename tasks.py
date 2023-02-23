@@ -50,4 +50,4 @@ def doc(c, no_browser=False):
 
         index = Path(__file__).parent / "docs" / "_build" / "html" / "index.html"
         index.absolute()
-        webbrowser.open(f"file:///{index.absolute()}")
+        webbrowser.open(f"file:///{index.absolute()}", encoding="utf-8")

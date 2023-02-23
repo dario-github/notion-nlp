@@ -40,7 +40,7 @@ def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopword
     # 如果已经有文件，但仍需要下载停用词，检查是否已下载过，如果未下载过，则添加自定义的停用词
     elif download_stopwords:
         # 检查下载记录文件，获取已下载的文件列表
-        with open(Path(stopfiles_dir) / ".DOWNLOAD_RECORDS", "r") as f:
+        with open(Path(stopfiles_dir) / ".DOWNLOAD_RECORDS", "r", encoding="utf-8") as f:
             downloaded_files = set([line.strip() for line in f])
         if params.multilingual_stopwords_url not in downloaded_files:
             # 下载 `params.multilingual_stopwords_url` 中指定的多语言停用词文件，并解压到 `stopfiles_dir` 目录下
@@ -56,7 +56,9 @@ def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopword
     stopwords = reduce(
         lambda x, y: x.union(y),
         [
-            set([x.strip().lower() for x in open(file, "r").readlines()])
+            set(
+                [x.strip().lower() for x in open(file, "r", encoding="utf-8").readlines()]
+            )
             for file in stopfiles
         ],
     )
@@ -81,19 +83,37 @@ def load_config(config_file: str) -> ConfigParams:
     # 使用 yaml 1.2
     yaml = YAML()
 
-    # define custom tag handler
-    def join(loader, node):
-        seq = loader.construct_sequence(node)
-        return "".join([str(i) for i in seq])
+    # # define custom tag handler
+    # def join(loader, node):
+    #     seq = loader.construct_sequence(node)
+    #     return "".join([str(i) for i in seq])
 
-    # register the tag handler
-    yaml.constructor.add_constructor("!join", join)
+    # # register the tag handler
+    # yaml.constructor.add_constructor("!join", join)
 
     with open(config_file, "r", encoding="utf-8") as f:
         config = yaml.load(f)
     tasks = [TaskParams(**task) for task in config["tasks"]]
     config = ConfigParams(config["notion"]["token"], tasks)
     return config
+
+
+def download_webfile(url: str, target_dir: str):
+    """下载 `url` 中的文件到 `target_dir` 目录下
+
+    Args:
+        url (str): 下载地址.
+        target_dir (str): 下载目录.
+    """
+    import os
+    import urllib.request
+
+    # 下载 `url` 中的文件到 `target_dir` 目录下
+    urllib.request.urlretrieve(url, Path(target_dir) / os.path.basename(url))
+    logging.info(f"Downloaded {url} to {target_dir}.")
+    # 在目标目录记录下载过的网址，避免重复下载
+    with open(Path(target_dir) / ".DOWNLOAD_RECORDS", "a", encoding="utf-8") as f:
+        f.write(url + "\n")
 
 
 def unzip_webfile(url: str, target_dir: str):
@@ -108,5 +128,5 @@ def unzip_webfile(url: str, target_dir: str):
                 my_zipfile.extractall(target_dir)
     logging.info(f"Downloaded {url} to {target_dir}")
     # 在目标目录记录下载过的网址，避免重复下载
-    with open(Path(target_dir) / ".DOWNLOAD_RECORDS", "a") as f:
+    with open(Path(target_dir) / ".DOWNLOAD_RECORDS", "a", encoding="utf-8") as f:
         f.write(url + "\n")
