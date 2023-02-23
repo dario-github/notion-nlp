@@ -7,15 +7,16 @@ import json
 from notion_nlp.parameter.utils import load_config, load_stopwords
 from notion_nlp import run_task, run_all_tasks
 
-from notion_nlp.parameter.config import TaskParams, ConfigParams
+from notion_nlp.parameter.config import TaskParams, ConfigParams, PathParams
 from notion_nlp.parameter.log import config_log
 from notion_nlp.parameter.error import NLPError, ConfigError, TaskError
 from notion_nlp.core.api import NotionDBText
 from notion_nlp.core.nlp import NotionTextAnalysis
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent
+EXEC_DIR = Path.cwd()
 
-config_file = PROJECT_ROOT_DIR / "configs/config.test.yaml"
+config_file = PROJECT_ROOT_DIR / PathParams.notion_test_config.value
 CONFIG = load_config(config_file)
 
 
@@ -178,7 +179,7 @@ def test_run_task_outputs():
 
 def test_run_task_subfunctions(mock_task):
     # 测试函数调用的子函数能否正常调用并返回正确的结果
-    config_file = "configs/config.test.yaml"
+    config_file = "configs/notion.test.yaml"
     stopfiles_dir = "resources/stopwords"
     stopfiles_postfix = "stopwords.txt"
 
@@ -200,14 +201,14 @@ def test_run_task_edge_cases(mock_task):
 
 def test_run_all_tasks():
     # 测试从文件运行
-    run_all_tasks(config_file=PROJECT_ROOT_DIR / "configs/config.test.yaml")
+    run_all_tasks(config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value)
 
 
 if __name__ == "__main__":
     config_log(
-        PROJECT_ROOT_DIR.stem,
+        EXEC_DIR.stem,
         "unit_test",
-        log_root=(PROJECT_ROOT_DIR / "logs").as_posix(),
+        log_root=(EXEC_DIR / PROJECT_ROOT_DIR.name / "logs").as_posix(),
         print_terminal=True,
         enable_monitor=False,
     )

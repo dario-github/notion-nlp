@@ -2,18 +2,32 @@ from pathlib import Path
 
 import typer
 
-from notion_nlp import run_all_tasks as _run_all_tasks
-from notion_nlp import run_task as _run_task
-from notion_nlp import task_info as _task_info
+from notion_nlp.core.task import check_resource as _check_resource
+from notion_nlp.core.task import first_try as _first_try
+from notion_nlp.core.task import run_all_tasks as _run_all_tasks
+from notion_nlp.core.task import run_task as _run_task
+from notion_nlp.core.task import task_info as _task_info
+from notion_nlp.parameter.config import PathParams
 
 app = typer.Typer()
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent
+EXEC_DIR = Path.cwd()
+
+
+@app.command()
+def first_try():
+    _first_try()
+
+
+@app.command()
+def check_resource():
+    _check_resource()
 
 
 @app.command()
 def run_all_tasks(
-    config_file: str = (PROJECT_ROOT_DIR / "configs/config.yaml").as_posix(),
+    config_file: str = EXEC_DIR / PathParams.notion_config.value,
 ):
     _run_all_tasks(config_file)
 
@@ -23,12 +37,12 @@ def run_task(
     task_json: str = typer.Argument(..., help="任务信息json字符串"),
     task_name: str = typer.Argument(..., help="任务名"),
     token: str = typer.Argument(..., help="notion Integration token"),
-    config_file: str = (PROJECT_ROOT_DIR / "configs/config.yaml").as_posix(),
+    config_file: str = (EXEC_DIR / PathParams.notion_config.value).as_posix(),
     download_stopwords: bool = False,
-    stopfiles_dir: str = (PROJECT_ROOT_DIR / "resources/stopwords").as_posix(),
+    stopfiles_dir: str = (EXEC_DIR / PathParams.stopwords.value).as_posix(),
     stopfiles_postfix: str = "stopwords.txt",
     top_n: int = 5,
-    output_dir: str = (PROJECT_ROOT_DIR / "results").as_posix(),
+    output_dir: str = (EXEC_DIR / PathParams.results.value).as_posix(),
 ):
     _run_task(
         None,
@@ -45,7 +59,7 @@ def run_task(
 
 
 @app.command()
-def task_info(config_file: str = (PROJECT_ROOT_DIR / "configs/config.yaml").as_posix()):
+def task_info(config_file: str = (EXEC_DIR / PathParams.notion_config.value).as_posix()):
     _task_info(config_file)
 
 

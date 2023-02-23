@@ -1,19 +1,152 @@
 import logging
+from enum import Enum
+from pathlib import Path
 from typing import List, Optional
+
+from pydantic import BaseModel
+
+
+class ConfigPath(str, Enum):
+    """各种应用的配置文件路径类"""
+
+    value = Path("configs")
+    # todo 支持其他笔记软件的API
+    # 用pathlib来自适应不同平台的路径分隔符
+    notion = value / "notion.yaml"
+    notion_test = value / "notion_test.yaml"
+
+    def __str__(self):
+        return self.value
+
+
+class ResultPath(str, Enum):
+    """各种分析方法的结果存放路径"""
+
+    value = Path("results")
+
+    wordcloud = value / "wordcloud"
+    tfidf_analysis = value / "tfidf_analysis"
+
+    def __str__(self):
+        return self.value
+
+
+class ResourcePath(str, Enum):
+    """各种应用的资源路径类"""
+
+    value = Path("resources")
+
+    jieba = value / "jieba"
+    stopwords = value / "stopwords"
+    fonts = value / "fonts"
+    backgrouds = value / "backgrouds"
+
+    def __str__(self):
+        return self.value
+
+
+class PathParams(str, Enum):
+    """各种文件路径的参数类"""
+
+    configs: ConfigPath = ConfigPath.value
+    results: ResultPath = ResultPath.value
+    resources: ResourcePath = ResourcePath.value
+
+    jieba: ResourcePath = ResourcePath.jieba
+    fonts: ResourcePath = ResourcePath.fonts
+    stopwords: ResourcePath = ResourcePath.stopwords
+    backgrouds: ResourcePath = ResourcePath.backgrouds
+
+    wordcloud: ResultPath = ResultPath.wordcloud
+    tfidf_analysis: ResultPath = ResultPath.tfidf_analysis
+
+    notion_config: ConfigPath = ConfigPath.notion
+    notion_test_config: ConfigPath = ConfigPath.notion_test
 
 
 class APIParams:
     """用于定义api.py中使用到的参数，作为各种笔记软件API参数类的父类，减少方法冗余"""
 
+    # todo 待将子类方法抽象出来
+
     def __init__(self) -> None:
-        super().__init__()
+        pass
 
 
 class NLPParams:
     """用于定义nlp.py中使用到的参数，作为各种NLP技术参数类的父类，减少方法冗余"""
 
+    # todo 待将子类方法抽象出来
+
     def __init__(self) -> None:
-        super().__init__()
+        pass
+
+
+class ResourceParams:
+    """资源参数类"""
+
+    @staticmethod
+    def test_config_file_url() -> str:
+        """测试配置文件的url"""
+        return "https://raw.githubusercontent.com/dario-github/notion-nlp/main/configs/notion.test.yaml"
+
+    @staticmethod
+    def font_url() -> str:
+        """字体文件的url"""
+        return (
+            "https://www.wfonts.com/download/data/2014/06/01/stzhongsong/stzhongsong.zip"
+        )
+
+    @staticmethod
+    def multilingual_stopwords_url() -> str:
+        """多语言停用词文件的url"""
+        return "https://github.com/dario-github/notion-nlp/raw/main/resources/stopwords/multilingual_stopwords.zip"
+
+    @staticmethod
+    def jieba_dict_url() -> str:
+        """jieba 停用词词典的url"""
+        return "https://raw.githubusercontent.com/dario-github/notion-nlp/main/resources/jieba/dict.txt"
+
+
+class CleanTextParams(NLPParams, ResourceParams):
+    """数据清洗参数类"""
+
+    @staticmethod
+    def discard_startswith() -> List[str]:
+        return ["#", "@"]
+
+    @staticmethod
+    def min_sentence_length() -> int:
+        return 9
+
+    @staticmethod
+    def max_sentence_length() -> int:
+        return 999
+
+
+class TextAnalysisParams(NLPParams, ResourceParams):
+    """文本分析参数类"""
+
+    @staticmethod
+    def colormap_types() -> List:
+        """颜色映射类型"""
+        return [
+            "viridis",
+            "plasma",
+            "inferno",
+            "magma",
+            "cividis",
+            "cool",
+            "coolwarm",
+            "YlGn",
+            "YlGnBu",
+            "RdYlGn",
+            "jet",
+        ]
+
+    @staticmethod
+    def font_show() -> str:
+        return "chinese.stzhongs.ttf"
 
 
 class NotionParams(APIParams):
@@ -107,7 +240,9 @@ class TaskParams:
             name (str): Custom name for differentiation of output file
             database_id (str): notion database id
             run (bool, optional): run or stop task. Defaults to True.
-            describe (str, optional): Description of the current task, used to record what the task is to do. Defaults to 'task description'.
+            describe (str, optional): Description of the current task,
+                                      used to record what the task is to do.
+                                      Defaults to 'task description'.
             extra (dict, optional): Extra parameters for the task. Defaults to {}.
         """
         self.columns = ["name", "describe", "run", "database_id", "extra"]
@@ -150,31 +285,3 @@ class ConfigParams:
             else:
                 name_cnt_map[task.name] = 1
         return tasks
-
-
-class CleanTextParams(NLPParams):
-    """数据清洗参数类"""
-
-    multilingual_stopwords_url: str = "https://github.com/dario-github/notion-nlp/raw/main/resources/stopwords/multilingual_stopwords.zip"
-
-
-class TextAnalysisParams(NLPParams):
-    """文本分析参数类"""
-
-    colormap_types: List = [
-        "viridis",
-        "plasma",
-        "inferno",
-        "magma",
-        "cividis",
-        "cool",
-        "coolwarm",
-        "YlGn",
-        "YlGnBu",
-        "RdYlGn",
-        "jet",
-    ]
-    font_show: str = "chinese.stzhongs.ttf"
-    font_url: str = (
-        "https://www.wfonts.com/download/data/2014/06/01/stzhongsong/stzhongsong.zip"
-    )

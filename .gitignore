@@ -1,4 +1,3 @@
-configs/config.yaml
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -133,9 +132,12 @@ dmypy.json
 **/*.pkl
 **/*.npz
 results/*
-configs/config.yaml
+configs/notion.yaml
 
 pytest.report.xml
 publish_to_pypi.sh
 resources/fonts/.DOWNLOAD_RECORDS
 resources/fonts/sharefonts.net.txt
+resources/wordcloud/stopwords
+configs/notion.yaml
+resources/stopwords/*.txt
