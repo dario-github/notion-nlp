@@ -204,6 +204,8 @@ python3.8 -m pip install notion-nlp
 
 ### :gift_heart: 加入贡献者名单
 
+- <img src=./docs/pictures/Alipay.jpg width=25% />
+
 ## 开发
 
 - 欢迎 fork 并 添加功能/修复bug。
