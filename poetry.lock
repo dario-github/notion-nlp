@@ -17,7 +17,7 @@ name = "altgraph"
 version = "0.17.3"
 description = "Python graph (network) package"
 category = "dev"
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "altgraph-0.17.3-py2.py3-none-any.whl", hash = "sha256:c8ac1ca6772207179ed8003ce7687757c04b0b71536f81e2ac5755c6226458fe"},
@@ -837,7 +837,7 @@ name = "macholib"
 version = "1.16.2"
 description = "Mach-O header analysis and editing"
 category = "dev"
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "macholib-1.16.2-py2.py3-none-any.whl", hash = "sha256:44c40f2cd7d6726af8fa6fe22549178d3a4dfecc35a9cd15ea916d9c83a688e0"},
@@ -1128,7 +1128,7 @@ name = "pefile"
 version = "2023.2.7"
 description = "Python PE parsing module"
 category = "dev"
-optional = true
+optional = false
 python-versions = ">=3.6.0"
 files = [
     {file = "pefile-2023.2.7-py3-none-any.whl", hash = "sha256:da185cd2af68c08a6cd4481f7325ed600a88f6a813bad9dea07ab3ef73d8d8d6"},
@@ -1386,7 +1386,7 @@ name = "pyinstaller"
 version = "5.8.0"
 description = "PyInstaller bundles a Python application and all its dependencies into a single package."
 category = "dev"
-optional = true
+optional = false
 python-versions = "<3.12,>=3.7"
 files = [
     {file = "pyinstaller-5.8.0-py3-none-macosx_10_13_universal2.whl", hash = "sha256:502a2166165a8e8c3d99c19272e923d2548bac2132424d78910ef9dd8bb11705"},
@@ -1420,7 +1420,7 @@ name = "pyinstaller-hooks-contrib"
 version = "2023.0"
 description = "Community maintained hooks for PyInstaller"
 category = "dev"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "pyinstaller-hooks-contrib-2023.0.tar.gz", hash = "sha256:bd578781cd6a33ef713584bf3726f7cd60a3e656ec08a6cc7971e39990808cc0"},
@@ -1593,7 +1593,7 @@ name = "pywin32-ctypes"
 version = "0.2.0"
 description = ""
 category = "dev"
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "pywin32-ctypes-0.2.0.tar.gz", hash = "sha256:24ffc3b341d457d48e8922352130cf2644024a4ff09762a2261fd34c36ee5942"},
@@ -2329,4 +2329,4 @@ doc = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.10,<3.12"
-content-hash = "64d84eba747bbfc6ef896e5ec539534359bd47ce35d1a8e21ba9239d3bf11cde"
+content-hash = "8eaeb6dc94649e99ace0e3cbb9afef528c8848a107ea4b26f367749a78b56af8"

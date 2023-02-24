@@ -182,8 +182,6 @@ def test_run_task_outputs(notion_text_analysis):
 
     # 测试函数输出的结果类型和内容是否正确
     output_dir = Path("./unittest_results")
-    while output_dir.exists():
-        output_dir = output_dir / "subdir"
     run_task(
         task_name=notion_text_analysis.task_name,
         config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value,
