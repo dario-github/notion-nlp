@@ -36,8 +36,8 @@ To achieve functionality similar to flomo, I have created a database using Notio
 Now, the tool can:
 
 - Output intuitive and visually appealing word cloud images.
-
-  ![Harry Potter's Story Beginning](https://i.328888.xyz/2023/02/22/xHi08.png)
+  
+  <img src=https://i.328888.xyz/2023/02/22/xHi08.png width=50% />
 
 - Generate thematic summaries of your Notion notes.
 
