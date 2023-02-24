@@ -203,7 +203,7 @@ python3.8 -m pip install notion-nlp
 
 ### :gift_heart: Join the List of Contributors
 
-  [Alipay](./docs/pictures/Alipay.jpg)
+- <img src=./docs/pictures/Alipay.jpg width=25% />
 
 ## Development
 
