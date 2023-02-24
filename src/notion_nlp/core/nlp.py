@@ -459,7 +459,8 @@ def word_cloud_plot(
 
     # 判断是否需要下载字体
     font_path = (
-        font_path or f"{EXEC_DIR}/resources/fonts/{TextAnalysisParams.font_show()}"
+        font_path
+        or (EXEC_DIR / PathParams.fonts.value / TextAnalysisParams.font_show()).as_posix()
     )
     if not Path(font_path).exists():
         Path(font_path).parent.mkdir(exist_ok=True, parents=True)
