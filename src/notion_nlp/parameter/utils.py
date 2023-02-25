@@ -1,3 +1,5 @@
+import shutil
+import ssl
 import logging
 import sys
 from functools import reduce
@@ -110,7 +112,10 @@ def download_webfile(url: str, target_dir: str):
 
     # 下载 `url` 中的文件到 `target_dir` 目录下
     file_path = Path(target_dir) / os.path.basename(url)
-    urllib.request.urlretrieve(url, file_path)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)  # 创建一个SSLContext对象，指定TLSv1.2协议
+    with urllib.request.urlopen(url, context=context) as response:  # 打开一个URL，传入SSLContext对象
+        with open(file_path, 'wb') as file:  # 打开一个文件对象，传入'wb'模式
+            shutil.copyfileobj(response, file)  # 将URL的内容复制到文件对象
     logging.info(f"Downloaded {file_path}")
     # 在目标目录记录下载过的网址，避免重复下载
     with open(Path(target_dir) / ".DOWNLOAD_RECORDS", "a", encoding="utf-8") as f:
