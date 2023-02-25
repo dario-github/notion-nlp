@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from typing import Optional
 import typer
 
 from notion_nlp.core.task import check_resource
@@ -30,22 +30,37 @@ def run_all_tasks(
 
 @app.command()
 def run_task(
-    task_json: typer.Option[str] = typer.Option(None, help="task infomation json"),
-    task_name: typer.Option[str] = typer.Option(None, help="task name"),
-    token: typer.Option[str] = typer.Option(None, help="notion Integration token"),
-    config_file: typer.Option[str] = typer.Option(None, help="config file path"),
-    download_stopwords: typer.Option[bool] = typer.Option(True, help="config file path"),
-    stopfiles_dir: typer.Option[str] = typer.Option(
-        (EXEC_DIR / PathParams.stopwords.value).as_posix(), help="stopwords files dir"
-    ),
-    stopfiles_postfix: typer.Option[str] = typer.Option(
-        "stopwords.txt", help="stopwords postfix"
-    ),
-    top_n: typer.Option[int] = typer.Option(5, help="output top n words"),
-    output_dir: typer.Option[str] = typer.Option(
-        (EXEC_DIR).as_posix(), help="output dir"
-    ),
+    task_json: Optional[str] = None,
+    task_name: Optional[str] = None,
+    token: Optional[str] = None,
+    config_file: Optional[str] = (EXEC_DIR / PathParams.notion_config.value).as_posix(),
+    download_stopwords: Optional[bool] = True,
+    stopfiles_dir: Optional[str] = (EXEC_DIR / PathParams.stopwords.value).as_posix(),
+    stopfiles_postfix: Optional[str] = "stopwords.txt",
+    top_n: Optional[int] = 5,
+    output_dir: Optional[str] = (EXEC_DIR).as_posix(),
 ):
+    """This function is designed to execute a task and produce the results specified in the `task_json` file, which can be specified directly or by referencing a `task_name`.
+
+    `task_json` : Optional[str], optional
+        The path to the json file containing the parameters necessary to run the task.
+    `task_name` : Optional[str], optional
+        The name of the task to execute. If set, it will look for `task_json` in the directory specified by `DEFAULT_TASK_DIR`.
+    `token` : Optional[str], optional
+        Used to authenticate access to NotionAPI. This is optional if the config file contains valid credentials.
+    `config_file`: Optional[str], optional
+        Path to configuration file. By default, it uses `EXEC_DIR/PathParams.notion_config.value`.
+    `download_stopwords`: Optional[bool], optional
+        A boolean flag determining whether the function should search for stopwords. Default set to `True`.
+    `stopfiles_dir`: Optional[str], optional
+        Path to folder containig stopwords. By default, it uses `EXEC_DIR/PathParams.stopwords.value`.
+    `stopfiles_postfix`: Optional[str], optional
+        Filename postfix used when downloading stopwords. By default, it uses `"stopwords.txt".`
+    `top_n`: Optional[int], optional
+        Used to determine which `n` entities are considered most important when computing results.By default, it uses `5`.
+    `output_dir`: Optional[str], optional
+        The directory where results should be written. By default, it uses `EXEC_DIR`.
+    """
     _run_task(
         None,
         task_json,
@@ -73,5 +88,5 @@ if __name__ == "__main__":
         print_terminal=True,
         enable_monitor=False,
     )
-    check_resource()
+    # check_resource()
     app()

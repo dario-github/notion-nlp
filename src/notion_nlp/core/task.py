@@ -4,7 +4,7 @@ import os
 import traceback
 from pathlib import Path
 from typing import Optional
-
+from tqdm import tqdm
 from tabulate import tabulate
 
 from notion_nlp.core.nlp import NotionTextAnalysis
@@ -15,7 +15,6 @@ from notion_nlp.parameter.config import (
     TaskParams,
 )
 from notion_nlp.parameter.error import ConfigError, TaskError
-from notion_nlp.parameter.log import config_log
 from notion_nlp.parameter.utils import download_webfile, load_config, load_stopwords
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
@@ -35,7 +34,9 @@ def check_resource():
         logging.info(
             f"Downloading test config file from {ResourceParams.test_config_file_url()}"
         )
-        download_webfile(ResourceParams.test_config_file_url(), test_config_path.parent)
+        download_webfile(
+            ResourceParams.test_config_file_url(), test_config_path.parent.as_posix()
+        )
         logging.info(f"init config success, file path: {test_config_path}")
 
     # jieba字典
@@ -47,18 +48,23 @@ def check_resource():
     if not jieba_dict_path.exists():
         jieba_dict_path.parent.mkdir(exist_ok=True, parents=True)
         logging.info(f"Downloading jieba dict from {ResourceParams.jieba_dict_url()}")
-        download_webfile(ResourceParams.jieba_dict_url(), jieba_dict_path.parent)
-        logging.info(f"download jieba dict success, file path: {jieba_dict_path}")
+        download_webfile(
+            ResourceParams.jieba_dict_url(), jieba_dict_path.parent.as_posix()
+        )
 
 
 def first_try():
     """首次运行的准备工作"""
     # 下载资源文件
+    logging.info(f"Project Dir: {PROJECT_ROOT_DIR.absolute()}")
+    logging.info(f"Exec Dir: {EXEC_DIR.absolute()}")
     check_resource()
     # 检查是否存在生产环境和测试环境的配置文件,如果存在生产环境的配置文件，则执行所有任务
     config_path = EXEC_DIR / PathParams.notion_config.value
     test_config_path = EXEC_DIR / PathParams.notion_test_config.value
-    run_all_tasks(config_path if config_path.exists() else test_config_path)
+    run_all_tasks(
+        config_path.as_posix() if config_path.exists() else test_config_path.as_posix()
+    )
 
 
 def task_info(config_file: str = (EXEC_DIR / PathParams.notion_config.value).as_posix()):
@@ -185,7 +191,8 @@ def run_all_tasks(
     task_info(config_file)
     # 获取参数类
     config = load_config(config_file)
-    for task in config.tasks:
-        if not task.run:
-            continue
+    tasks_to_run = [task for task in config.tasks if task.run]
+    logging.info(
+        f"Running {len(tasks_to_run)} tasks: {[task.name for task in tasks_to_run]}")
+    for task in tqdm(tasks_to_run, desc="Total Tasks"):
         run_task(task=task, token=config.notion.token)

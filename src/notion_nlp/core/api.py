@@ -89,7 +89,7 @@ class NotionDBText:
             else:
                 total_blocks.append(json.loads(r_page.text).get("results", []))
         logging.info(
-            f"{sum([len(x) for x in total_blocks])} blocks in task, {passed_blocks} blocks passed"
+            f"{sum([len(x) for x in total_blocks])} blocks in task, read {passed_blocks} blocks failed"
         )
         return total_blocks
 
@@ -119,6 +119,5 @@ class NotionDBText:
                     )
                     passed_texts += 1
             total_texts.append(page_texts)
-        logging.info(f"{sum([len(x) for x in total_texts])} texts in task")
-        logging.info(f"{passed_texts} texts passed")
+        logging.info(f"{sum([len(x) for x in total_texts])} texts in task, read {passed_texts} texts failed")
         return total_texts

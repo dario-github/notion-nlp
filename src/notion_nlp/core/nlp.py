@@ -49,9 +49,9 @@ class NotionTextAnalysis(NotionDBText):
             extra_data (dict): 筛选排序的附加信息
         """
         super().__init__(header, database_id, extra_data)
-        logging.info(f"{task_name} start, {task_describe}")
+        logging.info(f"Task: {task_name}, Desc: {task_describe}")
         self.read()
-        logging.info(f"Unsupported types: {self.unsupported_types}")
+        logging.info(f"{task_name} has these unsupported types: {self.unsupported_types}")
 
         jieba.set_dictionary(
             EXEC_DIR
@@ -285,19 +285,19 @@ class NotionTextAnalysis(NotionDBText):
             if func.empty:
                 continue
             func.to_csv(
-                tfidf_output_dir / f"{task_name_clean}.{attr}.csv", header=["score"]
+                tfidf_output_dir / task_name_clean / f"{task_name_clean}.{attr}.csv", header=["score"]
             )
 
         # 输出高分词
         self.top_freq(
             df=self.tf_idf_dataframe,
             file_name=f"{task_name_clean}.top_{top_n}.md",
-            output_dir=tfidf_output_dir,
+            output_dir=tfidf_output_dir / task_name_clean,
             task_describe=task_describe,
             top_n=top_n,
         )
         logging.info(
-            f"{self.task_name} result markdown have been saved to {tfidf_output_dir.absolute()}"
+            f"{self.task_name} result markdown have been saved to {tfidf_output_dir.absolute() / task_name_clean}"
         )
 
         # 词云图
@@ -464,7 +464,7 @@ def word_cloud_plot(
     )
     if not Path(font_path).exists():
         Path(font_path).parent.mkdir(exist_ok=True, parents=True)
-        unzip_webfile(TextAnalysisParams.font_url(), Path(font_path).parent)
+        unzip_webfile(TextAnalysisParams.font_url(), Path(font_path).parent.as_posix())
     # 如果不是字体文件，抛出异常
     elif not (font_path.lower().endswith(".ttf") or font_path.lower().endswith(".otf")):
         raise ValueError(f"{font_path} is not a ttf or otf file")
@@ -481,7 +481,7 @@ def word_cloud_plot(
         )
         wc.generate_from_frequencies(data_dict)
 
-        outfile_path = Path(save_path) / f"{task_name}/colormap_{colormap}.png"
+        outfile_path = Path(save_path) / task_name / f"colormap_{colormap}.png"
         outfile_path.parent.mkdir(exist_ok=True, parents=True)
         wc.to_file(outfile_path)
 
@@ -507,7 +507,6 @@ def word_cloud_plot(
             #             dpi=300)
 
 
-# 把段落按句号、分号、问号等分隔符切分为句子
 def split_paragraphs(paragraph: str) -> List[str]:
     """把段落按句号、分号、问号等分隔符切分为句子
 
@@ -520,6 +519,6 @@ def split_paragraphs(paragraph: str) -> List[str]:
     # todo 改用成熟的句子切分工具，如 Stanford CoreNLP、NLTK 和 SpaCy 等，它们都能够处理多种语言中的句子切分问题。
 
     # 匹配中英文标点符号后面可能跟着的零个或多个空白字符，再匹配一个非空白字符。其中，中英文标点符号包括句号（。）、分号（；）、问号（？）、感叹号（！）和英文标点符号（.、;、?、!）
-    pattern = r"(?<=[。；？！\.;?!])\s*(?=[^\s。；？！\.;?!])"
+    pattern = r"(?<=[\n。；？！\.;?!])\s*(?=[^\s\n。；？！\.;?!])"
     sentences = re.split(pattern, paragraph)
     return sentences

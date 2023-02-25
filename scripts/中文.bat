@@ -4,19 +4,22 @@ color 0a
 :: 首次执行脚本：下载资源文件
 if not exist ".\Temp-dataset\configs\notion.yaml" (
     echo 检测到脚本首次执行，将下载资源文件并执行样例任务，请耐心等待 1-3 min...
-    .\notion-nlp-win64.exe first-try || ((echo "太可惜了~发现未知错误，请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl") && pause) 
-    echo 样例任务已执行完毕，请按回车键打开词云图样例及目录
+    .\notion-nlp-win64.exe first-try || ((echo 太可惜了~发现未知错误，请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl) && pause) 
+    echo 样例任务已执行完毕，请按回车键查看词云图样例及目录
     set /p tmp=查看样例效果后请返回本窗口，继续下一步骤...
     start "" ".\Temp-dataset\results\wordcloud\zh_unit_testing_task\colormap_viridis.png"
     start "" ".\Temp-dataset\results\wordcloud\zh_unit_testing_task"
     echo=
-    echo 任务配置教程: https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8
+    set /p tmp=请按回车键查看主题总结markdown文档...
+    start "" ".\Temp-dataset\results\tfidf_analysis\zh_unit_testing_task\zh_unit_testing_task.top_5.md"
+    echo=
+    echo 如何配置自己的任务？教程指引 ==> https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8
     echo=
     set /p tmp=请按回车键打开参数文件，开始配置您自己的任务...
-    copy .\Temp-dataset\configs\notion.test.yaml .\Temp-dataset\configs\notion.yaml /y
+    copy /y ".\Temp-dataset\configs\notion.test.yaml" ".\Temp-dataset\configs\notion.yaml" > nul
     start "" ".\Temp-dataset\configs\notion.yaml"
     echo=
-    echo /p tmp="请按回车键进入主菜单..."
+    echo /p tmp=请按回车键进入主菜单...
     cls
 ) else (
     echo=
@@ -28,7 +31,7 @@ color 0a
 echo ================= ☆ Notion 自然语言处理 ☆ =====================
 echo=
 echo 作者:  Dario Zhang
-echo 版本:  v1.0.5.1
+echo 版本:  v1.0.6
 echo 代码:  https://github.com/dario-github/notion-nlp
 echo 描述:  从Notion数据库中读取文本并进行自然语言处理分析
 echo=
@@ -71,7 +74,7 @@ goto main
 
 :: 执行单个任务
 :three
-set /p name=请输入参数文件中的任务名，输入[info]查看所有任务信息: 
+set /p name=请输入参数文件中的任务名，输入 info 查看所有任务信息: 
 if not defined name goto three
 if %name% == info goto one
 .\notion-nlp-win64.exe run-task --task-name %name% --config-file ".\Temp-dataset\configs\notion.yaml"

@@ -109,8 +109,9 @@ def download_webfile(url: str, target_dir: str):
     import urllib.request
 
     # 下载 `url` 中的文件到 `target_dir` 目录下
-    urllib.request.urlretrieve(url, Path(target_dir) / os.path.basename(url))
-    logging.info(f"Downloaded {url} to {target_dir}.")
+    file_path = Path(target_dir) / os.path.basename(url)
+    urllib.request.urlretrieve(url, file_path)
+    logging.info(f"Downloaded {file_path}")
     # 在目标目录记录下载过的网址，避免重复下载
     with open(Path(target_dir) / ".DOWNLOAD_RECORDS", "a", encoding="utf-8") as f:
         f.write(url + "\n")
