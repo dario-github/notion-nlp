@@ -297,7 +297,7 @@ class NotionTextAnalysis(NotionDBText):
             top_n=top_n,
         )
         logging.info(
-            f"{self.task_name} result markdown have been saved to {output_dir.absolute()}"
+            f"{self.task_name} result markdown have been saved to {tfidf_output_dir.absolute()}"
         )
 
         # 词云图

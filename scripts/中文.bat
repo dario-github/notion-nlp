@@ -4,15 +4,16 @@ color 0a
 :: 首次执行脚本：下载资源文件
 if not exist ".\Temp-dataset\configs\notion.yaml" (
     echo 检测到脚本首次执行，将下载资源文件并执行样例任务，请耐心等待 1-3 min...
-    .\notion-nlp-win64.exe first-try || ((echo "太可惜了~发现未知错误，请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl") && exit) && echo=
+    .\notion-nlp-win64.exe first-try || ((echo "太可惜了~发现未知错误，请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl") && pause) 
     echo 样例任务已执行完毕，请按回车键打开词云图样例及目录
     set /p tmp=查看样例效果后请返回本窗口，继续下一步骤...
     start "" ".\Temp-dataset\results\wordcloud\zh_unit_testing_task\colormap_viridis.png"
     start "" ".\Temp-dataset\results\wordcloud\zh_unit_testing_task"
-    echo "任务配置教程: https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8"
+    echo=
+    echo 任务配置教程: https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8
     echo=
     set /p tmp=请按回车键打开参数文件，开始配置您自己的任务...
-    ren .\Temp-dataset\configs\notion.test.yaml notion.yaml
+    copy .\Temp-dataset\configs\notion.test.yaml .\Temp-dataset\configs\notion.yaml /y
     start "" ".\Temp-dataset\configs\notion.yaml"
     echo=
     echo /p tmp="请按回车键进入主菜单..."
@@ -23,6 +24,7 @@ if not exist ".\Temp-dataset\configs\notion.yaml" (
 
 color 0a
 :main
+color 0a
 echo ================= ☆ Notion 自然语言处理 ☆ =====================
 echo=
 echo 作者:  Dario Zhang
@@ -39,7 +41,7 @@ echo=
 echo 1. 查看任务信息
 echo 2. 运行所有任务
 echo 3. 运行指定任务
-echo 4. 字符幸运鹦鹉
+echo 4. 观赏幸运鹦鹉
 
 echo=
 set /p opt=选项 (输入序号):
@@ -381,6 +383,4 @@ For /L %%i in (0 1 25)Do (
  If %%i EQU 25 %$Cout% /H + /Y 34 /X 1 /N
 )
 
-cls
-
-goto main
+start "" "%~f0"

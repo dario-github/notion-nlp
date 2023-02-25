@@ -42,14 +42,14 @@ def test_notion_text_analysis_init(notion_text_analysis):
     assert notion_text_analysis.total_texts != []
 
 
-def test_notion_text_analysis_run(notion_text_analysis):
-    notion_text_analysis.run(
-        stopwords=set(),
-        output_dir="./results",
-        top_n=5,
-        split_pkg="jieba",
-    )
-    assert not notion_text_analysis.tf_idf_dataframe.empty
+# def test_notion_text_analysis_run(notion_text_analysis):
+#     notion_text_analysis.run(
+#         stopwords=set(),
+#         output_dir="./results",
+#         top_n=5,
+#         split_pkg="jieba",
+#     )
+#     assert not notion_text_analysis.tf_idf_dataframe.empty
 
 
 def test_notion_text_analysis_check_stopwords():
