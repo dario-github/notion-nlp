@@ -63,8 +63,10 @@ class NotionDBText:
                 total_pages.extend(respond["results"])
                 has_more = respond["has_more"]
                 next_cursor = respond["next_cursor"]
-        logging.info(f"{len(total_pages)} pages in task when {arrow.now()}")
-        logging.info(f"{passed_pages} pages passed when {arrow.now()}")
+        logging.info(
+            f"{len(total_pages)} pages in task, read {passed_pages} pages failed"
+        )
+
         return total_pages
 
     def read_blocks(self, pages: List):
@@ -86,7 +88,9 @@ class NotionDBText:
                 passed_blocks += 1
             else:
                 total_blocks.append(json.loads(r_page.text).get("results", []))
-        logging.info(f"passed {passed_blocks} blocks")
+        logging.info(
+            f"{sum([len(x) for x in total_blocks])} blocks in task, {passed_blocks} blocks passed"
+        )
         return total_blocks
 
     def read_rich_text(self, blocks: List):
@@ -115,8 +119,6 @@ class NotionDBText:
                     )
                     passed_texts += 1
             total_texts.append(page_texts)
-        logging.info(
-            f"{sum([len(x) for x in total_texts])} texts in task when {arrow.now()}"
-        )
-        logging.info(f"{passed_texts} texts passed when {arrow.now()}")
+        logging.info(f"{sum([len(x) for x in total_texts])} texts in task")
+        logging.info(f"{passed_texts} texts passed")
         return total_texts

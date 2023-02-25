@@ -32,6 +32,9 @@ def check_resource():
     )
     if not test_config_path.exists():
         test_config_path.parent.mkdir(exist_ok=True, parents=True)
+        logging.info(
+            f"Downloading test config file from {ResourceParams.test_config_file_url()}"
+        )
         download_webfile(ResourceParams.test_config_file_url(), test_config_path.parent)
         logging.info(f"init config success, file path: {test_config_path}")
 
@@ -43,6 +46,7 @@ def check_resource():
     )
     if not jieba_dict_path.exists():
         jieba_dict_path.parent.mkdir(exist_ok=True, parents=True)
+        logging.info(f"Downloading jieba dict from {ResourceParams.jieba_dict_url()}")
         download_webfile(ResourceParams.jieba_dict_url(), jieba_dict_path.parent)
         logging.info(f"download jieba dict success, file path: {jieba_dict_path}")
 
@@ -177,14 +181,6 @@ def run_all_tasks(
     Args:
         config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/notion.yaml".
     """
-    # 配置日志参数
-    config_log(
-        EXEC_DIR.stem,
-        "run_all_tasks",
-        log_root=(EXEC_DIR / "logs").as_posix(),
-        print_terminal=True,
-        enable_monitor=False,
-    )
     # 打印所有任务信息
     task_info(config_file)
     # 获取参数类

@@ -15,11 +15,11 @@
     <a href="https://codecov.io/gh/dario-github/notion-nlp">
       <img alt="codecov" src="https://codecov.io/gh/dario-github/notion-nlp/branch/main/graph/badge.svg?token=ehzYhousD3" />
     </a>
-    <a href="https://github.com/dario-github/notion-nlp/graphs/contributors">
-      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion-nlp" />
-    </a>
     <a href="https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fdario-github%2Fnotion-nlp">
       <img alt="visitors" src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fdario-github%2Fnotion-nlp&countColor=%2337d67a&style=flat" />
+    </a>
+    <a href="www.paypal.me/dariozhang">
+      <img alt="visitors" src="https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang" />
     </a>
   </p>
   
@@ -41,15 +41,15 @@ Now, the tool can:
 
 - Generate thematic summaries of your Notion notes.
 
-  ===> [Example thematic summary]((./docs/en_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md)) <===
+  ==> [Example thematic summary]((./docs/en_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md)) <==
 
 - Support multiple languages. I have added stopword lists for several languages including Chinese, English, Russian, French, Japanese, and German. Users can also customize their own stopword lists.
 
-  ===> [Stopword lists for multiple languages](./resources/stopwords/) <===
+  ==> [Stopword lists for multiple languages](./resources/stopwords/) <==
 
 - Support multiple tasks. Users can configure multiple databases and corresponding filtering and sorting conditions to create rich analysis tasks.
 
-  ===> [Example configuration file](./configs/notion.sample.yaml) <===
+  ==> [Example configuration file](./configs/notion.sample.yaml) <==
 
   For example, I have added the following tasks:
 
@@ -201,9 +201,9 @@ python3.8 -m pip install notion-nlp
 - [Join the discussion](https://github.com/dario-github/notion-nlp/discussions/new/choose)
 - [Submit an issue](https://github.com/dario-github/notion-nlp/issues/new/choose)
 
-### :gift_heart: Join the List of Contributors
+### :gift_heart: Join the List of Contributors ![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang)
 
-- <img src=./docs/pictures/Alipay.jpg width=25% />
+<img src=./docs/pictures/Web3WalletBTC.jpg width=15% style="display:inline-block"/><img src=./docs/pictures/Alipay.jpg width=15% style="display:inline-block"/>
 
 ## Development
 

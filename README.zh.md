@@ -15,11 +15,11 @@
     <a href="https://codecov.io/gh/dario-github/notion-nlp">
       <img alt="codecov" src="https://codecov.io/gh/dario-github/notion-nlp/branch/main/graph/badge.svg?token=ehzYhousD3" />
     </a>
-    <a href="https://github.com/dario-github/notion-nlp/graphs/contributors">
-      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion-nlp" />
-    </a>
     <a href="https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fdario-github%2Fnotion-nlp">
       <img alt="visitors" src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fdario-github%2Fnotion-nlp&countColor=%2337d67a&style=flat" />
+    </a>
+    <a href="www.paypal.me/dariozhang">
+      <img alt="visitors" src="https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang" />
     </a>
   </p>
   
@@ -41,15 +41,15 @@
 
 - 为你的notion笔记生成一份主题总结
   
-  ===> [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md) <===
+  ==> [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md) <==
 
 - 支持多语种。添加了中英俄法日德等语种的停用词表，也可自定义停用词表。
   
-  ===> [多语种停用词](./resources/stopwords/) <===
+  ==> [多语种停用词](./resources/stopwords/) <==
 
 - 支持多任务。用户可以在配置文件中添加多个数据库和对应筛选排序条件来组成丰富的分析任务。
 
-  ===> [配置文件样例](./configs/notion.sample.yaml) <===
+  ==> [配置文件样例](./configs/notion.sample.yaml) <==
 
   例如，我添加了以下任务：
 
@@ -202,9 +202,9 @@ python3.8 -m pip install notion-nlp
 - [参与讨论](https://github.com/dario-github/notion-nlp/discussions/new/choose) 
 - [提交问题](https://github.com/dario-github/notion-nlp/issues/new/choose)
 
-### :gift_heart: 加入贡献者名单
+### :gift_heart: 加入贡献者名单 ![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang)
 
-- <img src=./docs/pictures/Alipay.jpg width=25% />
+<img src=./docs/pictures/Web3WalletBTC.jpg width=15% style="display:inline-block"/><img src=./docs/pictures/Alipay.jpg width=15% style="display:inline-block"/>
 
 ## 开发
 

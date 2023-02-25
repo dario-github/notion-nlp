@@ -151,7 +151,6 @@ unittest_results
 !/notion-nlp-dataset/configs/notion.sample.yaml
 
 resources/fonts/sharefonts.net.txt
-
 /scripts/*
 !/scripts/*.sh
 !/scripts/*.bat
