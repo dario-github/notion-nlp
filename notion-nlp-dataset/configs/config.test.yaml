@@ -1,0 +1,53 @@
+tasks :  # task list
+  - 
+    run : True
+    name : chinese-simple task # Custom name for differentiation of output file
+    description : unit testing task in chinese-simple corpus # Description of the current task, used to record what the task is to do
+    visual:
+      font_show: "chinese.stzhongs.ttf"
+      colormap: "all"
+    nlp:
+      seg_pkg : "jieba"
+      textclean :
+        discard_startswith: 
+          - "#"
+          - "@"
+        sentence_length: 
+          - 9
+          - 999
+    api:
+      notion: # notion API info
+        token : 'secret_V0kve3TRxDFg3IiPEy216VfEExeaV9T7dpPnmjIy5uf'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
+        database_id : '119943c69f5d477dacb124a093e202ce' # database id
+        extra : # Options for filtering and sorting the database
+          filter :
+            property : Tags
+            multi_select :
+              contains : chinese-simple
+  - 
+    run : True
+    name : English task # Custom name for differentiation of output file
+    description : unit testing task in English corpus # Description of the current task, used to record what the task is to do
+    visual:
+      font_show: "chinese.stzhongs.ttf"
+      colormap: "all"
+    nlp:
+      seg_pkg : "jieba"
+      top_n: 7
+    api:
+      notion: # notion API info
+        token : 'secret_V0kve3TRxDFg3IiPEy216VfEExeaV9T7dpPnmjIy5uf'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
+        database_id : '119943c69f5d477dacb124a093e202ce' # database id
+        extra : # Options for filtering and sorting the database
+          filter :
+            property : Tags
+            multi_select :
+              contains : english
+  -
+    run : False
+    name : discarded_task # Custom name for differentiation of output file
+    description : discarded unit testing task # Description of the current task, used to record what the task is to do
+    api:
+      notion: # notion API info
+        token : 'secret_V0kve3TRxDFg3IiPEy216VfEExeaV9T7dpPnmjIy5uf'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
+        database_id : '119943c69f5d477dacb124a093e202ce' # database id
