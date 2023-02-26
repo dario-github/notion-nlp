@@ -24,13 +24,13 @@ class NotionDBText:
     读取数据库中所有富文本信息
     """
 
-    def __init__(self, header: dict, database_id: str, extra_data: dict = {}):
-        self.header = header  # todo 改为获取token？，header是API类自带的属性，不应该从外部获取
+    def __init__(self, token: str, database_id: str, extra_data: dict = {}):
+        self.api_params = NotionParams(token)
+        self.api_params.database_id = database_id
+        self.header = self.api_params.header
         self.database_id = database_id
         self.extra_data = extra_data
         self.total_texts, self.total_blocks, self.total_pages = [[]] * 3
-        self.api_params = NotionParams()
-        self.api_params.database_id = database_id
 
     def read(self):
         self.total_pages = self.read_pages()
@@ -119,5 +119,7 @@ class NotionDBText:
                     )
                     passed_texts += 1
             total_texts.append(page_texts)
-        logging.info(f"{sum([len(x) for x in total_texts])} texts in task, read {passed_texts} texts failed")
+        logging.info(
+            f"{sum([len(x) for x in total_texts])} texts in task, read {passed_texts} texts failed"
+        )
         return total_texts

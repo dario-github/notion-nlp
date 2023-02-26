@@ -2,7 +2,7 @@
 
 color 0a
 :: 首次执行脚本：下载资源文件
-if not exist ".\Temp-dataset\configs\notion.yaml" (
+if not exist ".\Temp-dataset\configs\config.yaml" (
     echo 检测到脚本首次执行，将下载资源文件并执行样例任务，请耐心等待 1-3 min...
     .\notion-nlp-win64.exe first-try || ((echo 太可惜了~发现未知错误，请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl) && pause) 
     echo 样例任务已执行完毕，请按回车键查看词云图样例及目录
@@ -16,8 +16,8 @@ if not exist ".\Temp-dataset\configs\notion.yaml" (
     echo 如何配置自己的任务？教程指引 ==> https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8
     echo=
     set /p tmp=请按回车键打开参数文件，开始配置您自己的任务...
-    copy /y ".\Temp-dataset\configs\notion.test.yaml" ".\Temp-dataset\configs\notion.yaml" > nul
-    start "" ".\Temp-dataset\configs\notion.yaml"
+    copy /y ".\Temp-dataset\configs\config.test.yaml" ".\Temp-dataset\configs\config.yaml" > nul
+    start "" ".\Temp-dataset\configs\config.yaml"
     echo=
     echo /p tmp=请按回车键进入主菜单...
     cls
@@ -60,14 +60,14 @@ goto main
 
 :: 查看任务信息
 :one
-.\notion-nlp-win64.exe task-info --config-file ".\Temp-dataset\configs\notion.yaml"
+.\notion-nlp-win64.exe task-info --config-file ".\Temp-dataset\configs\config.yaml"
 IF %ERRORLEVEL% EQU 0 GOTO endresult
 echo 未找到参数文件或配置错误，请按照教程检查配置文件
 goto main
 
 :: 执行所有任务
 :two
-.\notion-nlp-win64.exe run-all-tasks --config-file ".\Temp-dataset\configs\notion.yaml"
+.\notion-nlp-win64.exe run-all-tasks --config-file ".\Temp-dataset\configs\config.yaml"
 IF %ERRORLEVEL% EQU 0 GOTO endresult
 echo 未找到参数文件或配置错误，请按照教程检查配置文件
 goto main
@@ -77,7 +77,7 @@ goto main
 set /p name=请输入参数文件中的任务名，输入 info 查看所有任务信息: 
 if not defined name goto three
 if %name% == info goto one
-.\notion-nlp-win64.exe run-task --task-name %name% --config-file ".\Temp-dataset\configs\notion.yaml"
+.\notion-nlp-win64.exe run-task --task-name %name% --config-file ".\Temp-dataset\configs\config.yaml"
 IF %ERRORLEVEL% EQU 0 GOTO endresult
 echo 未找到参数文件或配置错误，请按照教程检查配置文件
 goto main

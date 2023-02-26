@@ -1,1 +1,1 @@
-from . import api, nlp, task
+from . import api, nlp, task, visual

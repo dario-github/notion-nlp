@@ -10,19 +10,17 @@ import jieba
 import pandas as pd
 from functional import seq
 from functional.pipeline import Sequence
-from PIL import Image
 from tabulate import tabulate
-from wordcloud import WordCloud
 
 from notion_nlp.core.api import NotionDBText
+from notion_nlp.core.visual import word_cloud_plot
 from notion_nlp.parameter.config import (
-    CleanTextParams,
     PathParams,
     ResourceParams,
-    TextAnalysisParams,
+    TextCleanParams,
+    VisualParams,
 )
 from notion_nlp.parameter.error import NLPError
-from notion_nlp.parameter.utils import unzip_webfile
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
 EXEC_DIR = Path.cwd()
@@ -33,35 +31,35 @@ class NotionTextAnalysis(NotionDBText):
 
     def __init__(
         self,
-        header: dict,
+        token: str,
         task_name: str,
-        task_describe: str,
+        task_description: str,
         database_id: str,
         extra_data: dict,
     ):
         """初始化
 
         Args:
-            header (dict): header信息
+            token (str): token信息
             task_name (str): 任务名
-            task_describe (str): 任务描述
+            task_description (str): 任务描述
             database_id (str): 数据库ID
             extra_data (dict): 筛选排序的附加信息
         """
-        super().__init__(header, database_id, extra_data)
-        logging.info(f"Task: {task_name}, Desc: {task_describe}")
+        super().__init__(token, database_id, extra_data)
+        logging.info(f"Task: {task_name}, Desc: {task_description}")
         self.read()
         logging.info(f"{task_name} has these unsupported types: {self.unsupported_types}")
 
         jieba.set_dictionary(
             EXEC_DIR
             / PathParams.jieba.value
-            / os.path.basename(ResourceParams.jieba_dict_url())
+            / os.path.basename(ResourceParams.jieba_dict_url)
         )
         jieba.initialize()
 
         self.task_name = task_name
-        self.task_describe = task_describe
+        self.task_description = task_description
         self.database_id = database_id
         self.extra_data = extra_data
 
@@ -70,7 +68,8 @@ class NotionTextAnalysis(NotionDBText):
         stopwords: set = set(),
         output_dir: Path = EXEC_DIR,
         top_n: int = 5,
-        split_pkg: str = "jieba",
+        seg_pkg: str = "jieba",
+        colormap: str = "cividis",
     ):
         """运行任务
 
@@ -78,18 +77,18 @@ class NotionTextAnalysis(NotionDBText):
             stopwords (set, optional): 停用词集合. Defaults to set().
             output_dir (pathlib.Path, optional): 输出目录. Defaults to Path('./').
             top_n (int, optional): 输出得分排名前n个词. Defaults to 5.
-            split_pkg (str, optional): 分词包. Defaults to "jieba".
+            seg_pkg (str, optional): 分词包. Defaults to "jieba".
         """
         # 把page中的段落分句
         self.total_texts = [
             list(chain.from_iterable([split_paragraphs(text) for text in page_texts]))
             for page_texts in self.total_texts
         ]
-        self.handling_sentences(stopwords, split_pkg)
+        self.handling_sentences(stopwords, seg_pkg)
 
         # 输出多种NLP技术的分析结果
         self.tf_idf_dataframe = self.tf_idf(self.sequence)
-        self.output(self.task_name, self.task_describe, output_dir, top_n)
+        self.output(self.task_name, self.task_description, output_dir, top_n, colormap)
 
     @staticmethod
     def check_stopwords(word: str, stopwords: set):
@@ -116,16 +115,16 @@ class NotionTextAnalysis(NotionDBText):
             Bool: 是否符合要求
         """
         # 不要'#'开头的，因为可能是作为标签输入的，也可以用来控制一些分版本的重复内容
-        for head in CleanTextParams.discard_startswith():
+        for head in TextCleanParams.discard_startswith():
             if text.startswith(head):
                 return False
         # 一个正常的句子的字数在中文和英文中都有很大的差异，以下是两种语言中句子的平均字数：
         # 中文：一个正常的句子通常包含12 - 20个汉字，但是也可能更长。在写作中，句子的长度可以根据需要进行调整，但一般不会超过30个汉字。
         # 英文：一个正常的句子通常包含10 - 20个单词，但是也可能更长。在写作中，句子的长度可以根据需要进行调整，但一般不会超过30个单词。
         # 需要注意的是，这只是一个平均值，实际上句子的长度可以根据需要进行调整，取决于句子的复杂性、写作风格以及句子所要表达的内容等因素。
-        if len(text) < CleanTextParams.min_sentence_length():
+        if len(text) < TextCleanParams.min_sentence_length():
             return False
-        if len(text) > CleanTextParams.max_sentence_length():
+        if len(text) > TextCleanParams.max_sentence_length():
             return False
         return True
 
@@ -141,13 +140,16 @@ class NotionTextAnalysis(NotionDBText):
         def _jieba(sentence):
             return jieba.lcut(sentence, HMM=True)
 
-        pkg_map = dict(jieba=_jieba)
+        def _jieba_for_search(sentence):
+            return jieba.lcut_for_search(sentence, HMM=True)
+
+        pkg_map = dict(jieba=_jieba, jieba_for_search=_jieba_for_search)
 
         if pkg not in pkg_map:
             raise NLPError(f"No module named {pkg}")
         return pkg_map[pkg](sentence)
 
-    def handling_sentences(self, stopwords: set, split_pkg: str):
+    def handling_sentences(self, stopwords: set, seg_pkg: str):
         """处理所有文本：分词、清洗、建立映射
 
         Args:
@@ -172,8 +174,8 @@ class NotionTextAnalysis(NotionDBText):
             if self.check_sentence_available(text)
         ]
         # 分词
-        logging.info(f"Use {split_pkg} to split sentences")
-        split_text_list = [self.split_sentence(text, pkg=split_pkg) for text in text_list]
+        logging.info(f"Use {seg_pkg} to split sentences")
+        split_text_list = [self.split_sentence(text, pkg=seg_pkg) for text in text_list]
 
         # 剔除停用词
         self.sequence = seq(split_text_list).map(
@@ -251,15 +253,16 @@ class NotionTextAnalysis(NotionDBText):
     def output(
         self,
         task_name: str,
-        task_describe: str,
+        task_description: str,
         output_dir: Path = EXEC_DIR,
         top_n=5,
+        colormap="all",
     ):
         """输出tf-idf分析结果
 
         Args:
             task_name (str): 任务名
-            task_describe (str): 任务描述
+            task_description (str): 任务描述
             output_dir (Path, optional): 输出路径. Defaults to Path('./').
             top_n (int, optional): 需要输出得分前n的词. Defaults to 5.
         """
@@ -275,54 +278,78 @@ class NotionTextAnalysis(NotionDBText):
         task_name_clean = re.sub(r"\s", "_", task_name.strip())
 
         # tfidf方法的输出路径
-        tfidf_output_dir = output_dir / PathParams.tfidf_analysis.value
+        tfidf_output_dir = output_dir / PathParams.tfidf_analysis.value / task_name_clean
         tfidf_output_dir.mkdir(exist_ok=True, parents=True)
 
         # 文件后缀
-        result_attr_list = ["by_mean_drop_maxmin", "by_max", "by_sum"]
-        for attr in result_attr_list:
-            func = getattr(self, attr, self.empty_func)(self.tf_idf_dataframe)
+        # used_attr = "by_mean_drop_maxmin"
+        # used_extra = dict(inclusive="neither")
+        used_attr = "by_sum"
+        used_extra = {}
+        full_attr_list = [(used_attr, used_extra)] + [
+            ("by_sum", None),
+            ("by_max", None),
+            ("by_mean_drop_maxmin", dict(inclusive="right")),
+            ("by_mean_drop_maxmin", dict(inclusive="left")),
+            ("by_mean_drop_maxmin", dict(inclusive="both")),
+            ("by_mean_drop_maxmin", dict(inclusive="neither")),
+        ]
+        for attr, extra in full_attr_list:
+            extra = extra if extra else {}
+            func = getattr(self, attr, self.empty_func)(self.tf_idf_dataframe, **extra)
             if func.empty:
                 continue
-            func.to_csv(
-                tfidf_output_dir / task_name_clean / f"{task_name_clean}.{attr}.csv", header=["score"]
+            extra_str = (
+                ".".join([f"{x}_{y}" for x, y in extra.items()]) if extra else "no_extra"
             )
-
+            func.to_csv(
+                tfidf_output_dir / f"{task_name_clean}.{attr}.{extra_str}.csv",
+                header=["score"],
+            )
+        # 选用一种算总分的方法
+        tfidf_df = getattr(self, used_attr, self.empty_func)(
+            self.tf_idf_dataframe, **used_extra
+        )
         # 输出高分词
         self.top_freq(
-            df=self.tf_idf_dataframe,
+            df=tfidf_df,
             file_name=f"{task_name_clean}.top_{top_n}.md",
-            output_dir=tfidf_output_dir / task_name_clean,
-            task_describe=task_describe,
+            output_dir=tfidf_output_dir,
+            task_description=task_description,
             top_n=top_n,
         )
         logging.info(
-            f"{self.task_name} result markdown have been saved to {tfidf_output_dir.absolute() / task_name_clean}"
+            f"{self.task_name} result markdown have been saved to {tfidf_output_dir.absolute()}"
         )
 
         # 词云图
         wordcloud_save_path = output_dir / PathParams.wordcloud.value
         word_cloud_plot(
-            self.by_mean_drop_maxmin(self.tf_idf_dataframe),
+            tfidf_df,
             task_name=task_name_clean,
             save_path=wordcloud_save_path,
-            colormap="all",
+            colormap=colormap,
         )
         logging.info(f"word cloud plot saved to {wordcloud_save_path.absolute()}")
 
     def top_freq(
-        self, df: pd.DataFrame, file_name: str, output_dir, task_describe: str, top_n: int
+        self,
+        df: pd.DataFrame,
+        file_name: str,
+        output_dir,
+        task_description: str,
+        top_n: int,
     ):
         """检查高频词
 
         Args:
             df (pd.DataFrame): 词表与tf-idf的关联dataframe
             file_name (str): 输出的文件名
-            task_describe (str): 任务描述
+            task_description (str): 任务描述
             top_n (int): 需要输出得分前n的词
         """
         # todo top_freq是通用方法，要从类中拆出来
-        top_n_words = self.by_mean_drop_maxmin(df).head(top_n)
+        top_n_words = df.head(top_n)
         print(
             tabulate(
                 pd.DataFrame(top_n_words),
@@ -331,7 +358,7 @@ class NotionTextAnalysis(NotionDBText):
             )
         )
         with open(output_dir / file_name, "w", encoding="utf-8") as f:
-            f.write("# " + task_describe + "\n\n")
+            f.write("# " + task_description + "\n\n")
             f.write("## Top " + str(top_n) + " words\n\n")
             f.write("|Word|Score|\n|---|---|\n")
             top_words = [f"|{word}|{score}|" for word, score in top_n_words.items()]
@@ -349,7 +376,7 @@ class NotionTextAnalysis(NotionDBText):
                 f.write("\n\n")
 
     @staticmethod
-    def by_mean_drop_maxmin(df: pd.DataFrame):
+    def by_mean_drop_maxmin(df: pd.DataFrame, *args, **kwargs):
         """去除最大最小值，计算均值，逆序
 
         Args:
@@ -361,12 +388,16 @@ class NotionTextAnalysis(NotionDBText):
         # 剔除最大最小值，求均值
         df_drop_maxmin = df.copy()
         for col in df.columns:
-            df_drop_maxmin[col] = df[col][df[col].between(df[col].min(), df[col].max())]
+            df_drop_maxmin[col] = df[col][
+                df[col].between(
+                    df[col].min(), df[col].max(), inclusive=kwargs.get("inclusive")
+                )
+            ]
             df_drop_maxmin[col].dropna(inplace=True)
         return df_drop_maxmin.mean().sort_values(ascending=False)
 
     @staticmethod
-    def by_max(df: pd.DataFrame):
+    def by_max(df: pd.DataFrame, *args, **kwargs):
         """按词在不同文档中最大值逆序
 
         Args:
@@ -379,7 +410,7 @@ class NotionTextAnalysis(NotionDBText):
         return df.max(axis=0).sort_values(ascending=False)
 
     @staticmethod
-    def by_sum(df: pd.DataFrame):
+    def by_sum(df: pd.DataFrame, *args, **kwargs):
         """按词在不同文档中的分数和逆序
 
         Args:
@@ -416,97 +447,6 @@ class NotionTextAnalysis(NotionDBText):
 #     return idfDict
 
 
-def word_cloud_plot(
-    word_cloud_dataframe: pd.DataFrame,
-    task_name: str = "word_cloud",
-    save_path: str = (EXEC_DIR / PathParams.wordcloud.value).as_posix(),
-    background_path: Optional[str] = None,  # todo 背景图片可以加到task的参数中，每个task的词云图背景不一样，也可以随机
-    font_path: Optional[str] = None,
-    width: int = 800,  # todo 词云图的宽、高也放到task参数中（作为可选项）
-    height: int = 450,
-    colormap: str = "viridis",  # todo 词云图的颜色也是可选项，可以指定自己想要的颜色
-):
-    """绘制词云图
-
-    Args:
-        word_cloud_dataframe (pd.DataFrame): _description_
-        task_name (str, optional): _description_. Defaults to "word_cloud".
-        save_path (str, optional): _description_. Defaults to (EXEC_DIR / PathParams.wordcloud.value").as_posix().
-        background_path (Optional[str], optional): _description_. Defaults to None.
-        font_path (Optional[str], optional): _description_. Defaults to None.
-        width (int, optional): _description_. Defaults to 800.
-        height (int, optional): _description_. Defaults to 450.
-        colormap (str, optional): _description_. Defaults to "viridis".
-
-    Raises:
-        ValueError: _description_
-        ValueError: _description_
-    """
-    data_dict = dict(word_cloud_dataframe)
-
-    # 设置词云图的基本参数
-    # colormap: 全部生成/随机1张/指定类型  # todo 将该功能扩展出去
-    colormap_list = [colormap]
-    colormap_commands = ["random", "all"]  # 这个是用于代码逻辑的，就不抽象到参数类了
-    if colormap == "random":
-        colormap_list = [random.choice(TextAnalysisParams.colormap_types())]
-    elif colormap == "all":
-        colormap_list = TextAnalysisParams.colormap_types()
-    elif colormap not in TextAnalysisParams.colormap_types():
-        raise ValueError(
-            f"{colormap} is not in {TextAnalysisParams.colormap_types() + colormap_commands}"
-        )
-
-    # 判断是否需要下载字体
-    font_path = (
-        font_path
-        or (EXEC_DIR / PathParams.fonts.value / TextAnalysisParams.font_show()).as_posix()
-    )
-    if not Path(font_path).exists():
-        Path(font_path).parent.mkdir(exist_ok=True, parents=True)
-        unzip_webfile(TextAnalysisParams.font_url(), Path(font_path).parent.as_posix())
-    # 如果不是字体文件，抛出异常
-    elif not (font_path.lower().endswith(".ttf") or font_path.lower().endswith(".otf")):
-        raise ValueError(f"{font_path} is not a ttf or otf file")
-
-    for colormap in colormap_list:
-        wc = WordCloud(
-            width=width,
-            height=height,
-            colormap=colormap,
-            font_path=font_path,
-            prefer_horizontal=1,
-            mode="RGBA" if background_path else "RGB",
-            background_color="rgba(255, 255, 255, 0)" if background_path else "white",
-        )
-        wc.generate_from_frequencies(data_dict)
-
-        outfile_path = Path(save_path) / task_name / f"colormap_{colormap}.png"
-        outfile_path.parent.mkdir(exist_ok=True, parents=True)
-        wc.to_file(outfile_path)
-
-        if background_path:
-            # Image process
-            image = Image.fromarray(wc.to_array())
-            background = Image.open(background_path).convert("RGBA")
-            background = background.resize(image.size)
-            new_image = Image.alpha_composite(background, image)
-            # Save
-            bkg_name, _ = Path(background_path).name.split(".", 1)
-            name, ext = outfile_path.name.split(".", 1)
-            new_name = f"{name}.{bkg_name}.{ext}"
-            new_path = outfile_path.parent / new_name
-            new_image.save(new_path)
-            # fig = plt.imshow(new_image)
-            # fig.axes.get_xaxis().set_visible(False)
-            # fig.axes.get_yaxis().set_visible(False)
-            # plt.savefig(outfile_path,
-            #             bbox_inches='tight',
-            #             pad_inches=0,
-            #             format='png',
-            #             dpi=300)
-
-
 def split_paragraphs(paragraph: str) -> List[str]:
     """把段落按句号、分号、问号等分隔符切分为句子
 
@@ -520,5 +460,5 @@ def split_paragraphs(paragraph: str) -> List[str]:
 
     # 匹配中英文标点符号后面可能跟着的零个或多个空白字符，再匹配一个非空白字符。其中，中英文标点符号包括句号（。）、分号（；）、问号（？）、感叹号（！）和英文标点符号（.、;、?、!）
     pattern = r"(?<=[\n。；？！\.;?!])\s*(?=[^\s\n。；？！\.;?!])"
-    sentences = re.split(pattern, paragraph)
+    sentences = re.split(pattern, paragraph.replace("\n", ". "))
     return sentences

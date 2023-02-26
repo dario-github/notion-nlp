@@ -3,9 +3,10 @@ import logging
 import os
 import traceback
 from pathlib import Path
-from typing import Optional
-from tqdm import tqdm
+from typing import List, Optional, Tuple
+
 from tabulate import tabulate
+from tqdm import tqdm
 
 from notion_nlp.core.nlp import NotionTextAnalysis
 from notion_nlp.parameter.config import (
@@ -27,15 +28,15 @@ def check_resource():
     test_config_path = (
         EXEC_DIR
         / PathParams.configs.value
-        / os.path.basename(ResourceParams.test_config_file_url())
+        / os.path.basename(ResourceParams.test_config_file_url)
     )
     if not test_config_path.exists():
         test_config_path.parent.mkdir(exist_ok=True, parents=True)
         logging.info(
-            f"Downloading test config file from {ResourceParams.test_config_file_url()}"
+            f"Downloading test config file from {ResourceParams.test_config_file_url}"
         )
         download_webfile(
-            ResourceParams.test_config_file_url(), test_config_path.parent.as_posix()
+            ResourceParams.test_config_file_url.value, test_config_path.parent.as_posix()
         )
         logging.info(f"init config success, file path: {test_config_path}")
 
@@ -43,14 +44,12 @@ def check_resource():
     jieba_dict_path = (
         EXEC_DIR
         / PathParams.jieba.value
-        / os.path.basename(ResourceParams.jieba_dict_url())
+        / os.path.basename(ResourceParams.jieba_dict_url)
     )
     if not jieba_dict_path.exists():
         jieba_dict_path.parent.mkdir(exist_ok=True, parents=True)
-        logging.info(f"Downloading jieba dict from {ResourceParams.jieba_dict_url()}")
-        download_webfile(
-            ResourceParams.jieba_dict_url(), jieba_dict_path.parent.as_posix()
-        )
+        logging.info(f"Downloading jieba dict from {ResourceParams.jieba_dict_url}")
+        download_webfile(ResourceParams.jieba_dict_url, jieba_dict_path.parent.as_posix())
 
 
 def first_try():
@@ -67,22 +66,24 @@ def first_try():
     )
 
 
-def task_info(config_file: str = (EXEC_DIR / PathParams.notion_config.value).as_posix()):
+def task_info(
+    config_file: str = (EXEC_DIR / PathParams.notion_config.value).as_posix(),
+    sort_by: List[Tuple[str, bool]] = [("run", True), ("name", False)],
+    exclude: List[str] = ["extra", "database_id"],
+):
     """查看任务信息
 
     Args:
-        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/notion.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
     """
     config = load_config(config_file)
-    if not config.tasks:
+    if not config.tasks_with_diff_name:
         raise ConfigError("No tasks provided.")
+    table_header, table_row = config.to_sorted_table_row(keys=sort_by, exclude=exclude)
     print(
         tabulate(
-            sorted(
-                [task.to_table_row()[:-1] for task in config.tasks],
-                key=lambda x: (-x[2], x[0]),
-            ),
-            headers=config.tasks[0].columns[:-1],
+            table_row,
+            headers=table_header,
             tablefmt="rounded_grid",
         )
     )
@@ -99,6 +100,8 @@ def run_task(
     stopfiles_postfix: str = "stopwords.txt",
     top_n: int = 5,
     output_dir: str = (EXEC_DIR).as_posix(),
+    colormap: str = "cividis",
+    seg_pkg: str = "jieba",
 ):
     """运行单个任务，任务字典或任务名必须传入一个
 
@@ -107,7 +110,7 @@ def run_task(
         task_json (str, optional): 任务信息json字符串. Defaults to None.
         task_name (str, optional): 任务名. Defaults to None.
         token (str, optional): 任务token. Defaults to None.
-        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/notion.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
         download_stopwords (bool, optional): 是否下载停用词. Defaults to False.
         stopfiles_dir (str, optional): 停用词文件目录. Defaults to "notion_nlp/stopwords".
         stopfiles_postfix (str, optional): 停用词文件后缀. Defaults to "stopwords.txt".
@@ -128,7 +131,7 @@ def run_task(
             raise ConfigError("Task or Task Name, there must be one.")
         config = load_config(config_file)
         # request的header信息
-        notion_header = config.notion.header
+        notion_header = NotionParams(config.notion.token).header
         # 如果task/task_json为空，就检查输入的task_name是否存在
         if not task and not task_json:
             # 查找task_name是否存在，如果存在，就检查是否激活中
@@ -158,7 +161,7 @@ def run_task(
     # 至此，task已确定获取
     # 任务名称及描述
     task_name = task.name
-    task_describe = task.describe
+    task_description = task.description
     # 需要读取的database ID
     database_id = task.database_id
 
@@ -169,9 +172,15 @@ def run_task(
     extra_data = task.extra
     try:
         notion_text_analysis = NotionTextAnalysis(
-            notion_header, task_name, task_describe, database_id, extra_data
+            notion_header, task_name, task_description, database_id, extra_data
         )
-        notion_text_analysis.run(stopwords, output_dir=output_dir, top_n=top_n)
+        notion_text_analysis.run(
+            stopwords,
+            seg_pkg=seg_pkg,
+            output_dir=output_dir,
+            top_n=top_n,
+            colormap=colormap,
+        )
     except Exception as e:
         # 提取 traceback 信息
         tb = traceback.extract_tb(e.__traceback__)
@@ -185,14 +194,15 @@ def run_all_tasks(
     """运行所有任务
 
     Args:
-        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/notion.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
     """
     # 打印所有任务信息
     task_info(config_file)
     # 获取参数类
     config = load_config(config_file)
-    tasks_to_run = [task for task in config.tasks if task.run]
+    tasks_to_run = [task for task in config.tasks_with_diff_name if task.run]
     logging.info(
-        f"Running {len(tasks_to_run)} tasks: {[task.name for task in tasks_to_run]}")
+        f"Running {len(tasks_to_run)} tasks: {[task.name for task in tasks_to_run]}"
+    )
     for task in tqdm(tasks_to_run, desc="Total Tasks"):
-        run_task(task=task, token=config.notion.token)
+        run_task(task=task, config_file=config_file)

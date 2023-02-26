@@ -1,11 +1,65 @@
+"""
+NOTE:
+默认参数、文本信息都放在XXXParams里，用 @property 装饰
+处理这些信息的通用方法都放在XXXClass里，用 @statemethod 装饰
+Param要继承对应的Class，以减少方法冗余
+"""
+
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
-
-from pydantic import BaseModel
+from typing import ClassVar, List, Mapping, Optional, Tuple
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
+
+
+class CommanClass:
+    """参数处理时的通用方法"""
+
+    def check_and_fill_missing_params(self, standard_params):
+        """检查参数是否有缺失，并填充缺失的参数"""
+        return self.create_default_object(self.__dict__, self.__str__, standard_params)
+
+    def create_default_object(
+        self, kwargs: Mapping, var_name: str, basis_class: ClassVar
+    ):
+        """根据给定的 Mapping 键值对，返回一个承载了 kwargs 中 var_name 属性的 basis_class 对象。
+
+        Args:
+            default (_type_): _description_
+            basis_class (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        return basis_class(**kwargs.get(var_name, basis_class()).__dict__)
+
+
+class APIClass(CommanClass):
+    """用于定义api.py中使用到的参数，作为各种笔记软件API参数类的父类，减少方法冗余"""
+
+    # todo 待将子类方法抽象出来
+
+    def __init__(self) -> None:
+        pass
+
+
+class NLPClass(CommanClass):
+    """用于定义nlp.py中使用到的参数，作为各种NLP技术参数类的父类，减少方法冗余"""
+
+    # todo 待将子类方法抽象出来
+
+    def __init__(self) -> None:
+        pass
+
+
+class VisualClass(CommanClass):
+    """用于定义visual.py中使用到的参数，作为各种可视化技术参数类的父类，减少方法冗余"""
+
+    # todo 待将子类方法抽象出来
+
+    def __init__(self) -> None:
+        pass
 
 
 class ConfigPath(str, Enum):
@@ -14,8 +68,8 @@ class ConfigPath(str, Enum):
     value = Path("configs")
     # todo 支持其他笔记软件的API
     # 用pathlib来自适应不同平台的路径分隔符
-    notion = value / "notion.yaml"
-    notion_test = value / "notion.test.yaml"
+    notion = value / "config.yaml"
+    notion_test = value / "config.test.yaml"
 
     def __str__(self):
         return self.value
@@ -71,73 +125,48 @@ class PathParams(str, Enum):
         return self.value
 
 
-class APIParams:
-    """用于定义api.py中使用到的参数，作为各种笔记软件API参数类的父类，减少方法冗余"""
-
-    # todo 待将子类方法抽象出来
-
-    def __init__(self) -> None:
-        pass
-
-
-class NLPParams:
-    """用于定义nlp.py中使用到的参数，作为各种NLP技术参数类的父类，减少方法冗余"""
-
-    # todo 待将子类方法抽象出来
-
-    def __init__(self) -> None:
-        pass
-
-
-class ResourceParams:
+class ResourceParams(str, Enum):
     """资源参数类"""
 
-    @staticmethod
-    def test_config_file_url() -> str:
-        """测试配置文件的url"""
-        return "https://raw.githubusercontent.com/dario-github/notion-nlp/main/notion-nlp-dataset/configs/notion.test.yaml"
+    # 测试配置文件的url
+    test_config_file_url = "https://raw.githubusercontent.com/dario-github/notion-nlp/main/notion-nlp-dataset/configs/config.test.yaml"
 
-    @staticmethod
-    def font_url() -> str:
-        """字体文件的url"""
-        return (
-            "https://www.wfonts.com/download/data/2014/06/01/stzhongsong/stzhongsong.zip"
-        )
+    # 字体文件的url
+    font_url = (
+        "https://www.wfonts.com/download/data/2014/06/01/stzhongsong/stzhongsong.zip"
+    )
 
-    @staticmethod
-    def multilingual_stopwords_url() -> str:
-        """多语言停用词文件的url"""
-        return "https://github.com/dario-github/notion-nlp/raw/main/notion-nlp-dataset/resources/stopwords/multilingual_stopwords.zip"
+    # 多语言停用词文件的url
+    multilingual_stopwords_url = "https://github.com/dario-github/notion-nlp/raw/main/notion-nlp-dataset/resources/stopwords/multilingual_stopwords.zip"
 
-    @staticmethod
-    def jieba_dict_url() -> str:
-        """jieba 停用词词典的url"""
-        return "https://github.com/fxsjy/jieba/raw/master/jieba/dict.txt"
+    # jieba 停用词词典的url
+    jieba_dict_url = "https://github.com/fxsjy/jieba/raw/master/jieba/dict.txt"
 
 
-class CleanTextParams(NLPParams, ResourceParams):
+class TextCleanParams(NLPClass):
     """数据清洗参数类"""
 
-    @staticmethod
-    def discard_startswith() -> List[str]:
-        return ["#", "@"]
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
+        self.discard_startswith = ["#", "@"]
+        self.sentence_length = [9, 999]
+        self.__dict__.update(kwargs)
 
-    @staticmethod
-    def min_sentence_length() -> int:
-        return 9
+    @property
+    def min_sentence_length(self) -> int:
+        return self._sentence_length[0]
 
-    @staticmethod
-    def max_sentence_length() -> int:
-        return 999
+    @property
+    def max_sentence_length(self) -> int:
+        return self._sentence_length[1]
 
 
-class TextAnalysisParams(NLPParams, ResourceParams):
-    """文本分析参数类"""
-
-    @staticmethod
-    def colormap_types() -> List:
-        """颜色映射类型"""
-        return [
+class VisualParams(VisualClass):
+    def __init__(self, **kwargs):
+        self.colormap = "all"  # 私有属性，存储colormap的值
+        self.font_show = "chinese.stzhongs.ttf"
+        # colormap_types不由参数文件配置
+        self._colormap_types = [
             "viridis",
             "plasma",
             "inferno",
@@ -150,24 +179,56 @@ class TextAnalysisParams(NLPParams, ResourceParams):
             "RdYlGn",
             "jet",
         ]
+        self.__dict__.update(kwargs)
 
-    @staticmethod
-    def font_show() -> str:
-        return "chinese.stzhongs.ttf"
+    @property
+    def colormap_types(self) -> List:
+        """颜色映射类型"""
+        return self._colormap_types
 
 
-class NotionParams(APIParams):
+class NLPParams(NLPClass):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.textclean: TextCleanParams = TextCleanParams()
+        self.seg_pkg = "jieba"
+        self.top_n = 5
+        self.__dict__.update(kwargs)
+
+
+class APIParams(APIClass):
+    def __init__(self, **kwargs):
+        super().__init__()
+        # self._notion = NotionParams()
+        # todo 还有其他笔记应用和社交媒体的API
+        self.__dict__.update(kwargs)
+
+
+class TaskParams(CommanClass):
+    """文本分析参数类"""
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
+        # self._visual = VisualParams(**kwargs.get("visual", VisualParams()).__dict__)
+        self.run: bool = True
+        self.description: str = "task description"
+        self.visual: VisualParams = VisualParams()
+        self.nlp: NLPParams = NLPParams()
+        # api必须要有，所以不设置初始值
+        self.__dict__.update(kwargs)
+
+
+class NotionParams(APIClass):
     """
     让 header 属性中的值自动更新。
     header 属性被定义为一个属性方法，并且使用 token 属性来生成 header 的值。当你修改 token 属性时，header 属性的值会自动更新。
     """
 
-    def __init__(self, token: Optional[str] = None, api_version: str = "2022-06-28"):
+    def __init__(self, **kwargs):
         super().__init__()
-        self._token = token
-        self.api_version = api_version  # 预留了notion API版本自定义的属性，但考虑到版本不兼容本项目代码的问题，不建议使用
-        self._database_id = None
+        self.api_version: str = "2022-06-28"
         self._page_id = None
+        self.__dict__.update(kwargs)
 
     @property
     def block_types(self):
@@ -191,28 +252,12 @@ class NotionParams(APIParams):
         ]
 
     @property
-    def token(self):
-        return self._token
-
-    @token.setter
-    def token(self, value):
-        self._token = value
-
-    @property
     def header(self):
         return {
             "Authorization": f"Bearer {self.token}",
             "Notion-Version": self.api_version,
             "Content-Type": "application/json",
         }
-
-    @property
-    def database_id(self):
-        return self._database_id
-
-    @database_id.setter
-    def database_id(self, value):
-        self._database_id = value
 
     @property
     def url_get_pages(self):
@@ -231,57 +276,18 @@ class NotionParams(APIParams):
         return f"https://api.notion.com/v1/blocks/{self.page_id}/children"
 
 
-class TaskParams:
-    """任务参数类"""
+class ConfigParams(CommanClass):
+    """处理参数文件的类"""
 
-    def __init__(
-        self,
-        name: str,
-        database_id: str,
-        run: bool = True,
-        describe: str = "task description",
-        extra: dict = {},
-    ):
-        """Task Params
-        Args:
-            name (str): Custom name for differentiation of output file
-            database_id (str): notion database id
-            run (bool, optional): run or stop task. Defaults to True.
-            describe (str, optional): Description of the current task,
-                                      used to record what the task is to do.
-                                      Defaults to 'task description'.
-            extra (dict, optional): Extra parameters for the task. Defaults to {}.
-        """
-        self.columns = ["name", "describe", "run", "database_id", "extra"]
-        self.name = name
-        self.describe = describe
-        self.run = run
-        self.database_id = database_id
-        self.extra = extra
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
 
-    def to_table_row(self):
-        return [self.name, self.describe, self.run, self.database_id, self.extra]
-
-    def to_dict(self):
-        return {
-            "name": self.name,
-            "describe": self.describe,
-            "run": self.run,
-            "database_id": self.database_id,
-            "extra": self.extra,
-        }
-
-
-class ConfigParams:
-    """具有请求request所需所有参数的类"""
-
-    def __init__(self, token, tasks: List[TaskParams]):
-        self.notion: APIParams = NotionParams(token)
-        self.tasks: List[TaskParams] = self.process_task_name(tasks)
-        self.tasks_map: dict = {task.name: task for task in self.tasks}
+    @property
+    def tasks_with_diff_name(self):
+        return self.process_task_name(self.tasks)
 
     @staticmethod
-    def process_task_name(tasks: List[TaskParams]):
+    def process_task_name(tasks):
         # Check whether the task name is the same
         name_cnt_map = dict()
         for k, task in enumerate(tasks):
@@ -292,3 +298,46 @@ class ConfigParams:
             else:
                 name_cnt_map[task.name] = 1
         return tasks
+
+    def to_table_row(self, exclude: List[str] = []):
+        table_header = [x for x in self.tasks[0].__dict__.keys() if x not in exclude]
+        table_row = [
+            [value for key, value in task.__dict__.items() if key not in exclude]
+            for task in self.tasks
+        ]
+        return table_header, table_row
+
+    def to_sorted_table_row(self, keys: List[Tuple[str, bool]], exclude: List[str] = []):
+        table_header, table_row = self.to_table_row(exclude)
+        key_index = [(table_header.index(key), reverse) for key, reverse in keys]
+        sorted_table_row = sorted(
+            table_row,
+            key=lambda x: [-x[idx] if reverse else x[idx] for idx, reverse in key_index],
+        )
+        return table_header, sorted_table_row
+
+    @property
+    def tasks_map(self):
+        return {task.name: task for task in self.tasks_with_diff_name}
+
+
+def dict_to_class(data, last_key: str = "config"):
+    class_map = dict(
+        config=ConfigParams,
+        task=TaskParams,
+        visual=VisualParams,
+        nlp=NLPParams,
+        textclean=TextCleanParams,
+        api=APIParams,
+        notion=NotionParams,
+    )
+    if last_key not in class_map.keys():
+        return data
+    if isinstance(data, dict):
+        return class_map.get(last_key, ConfigParams)(
+            **{k: dict_to_class(v, k) for k, v in data.items()}
+        )
+    elif isinstance(data, list):
+        return [dict_to_class(v, last_key) for v in data]
+    else:
+        return data

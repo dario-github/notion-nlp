@@ -6,7 +6,7 @@ import json
 from notion_nlp.parameter.utils import load_config, load_stopwords
 from notion_nlp.core.task import run_task, run_all_tasks, check_resource
 
-from notion_nlp.parameter.config import TaskParams, ConfigParams, PathParams
+from notion_nlp.parameter.config import TaskParams, ConfigParams, PathParams, NotionParams
 from notion_nlp.parameter.log import config_log
 from notion_nlp.parameter.error import NLPError, ConfigError, TaskError
 from notion_nlp.core.api import NotionDBText
@@ -29,13 +29,15 @@ def notion_text_analysis(notion_config):
 
     task = notion_config.tasks[0]
 
-    header = notion_config.notion.header
+    header = NotionParams(notion_config.notion.token).header
     task_name = task.name
-    task_describe = task.describe
+    task_description = task.description
     database_id = task.database_id
     extra_data = task.extra
 
-    return NotionTextAnalysis(header, task_name, task_describe, database_id, extra_data)
+    return NotionTextAnalysis(
+        header, task_name, task_description, database_id, extra_data
+    )
 
 
 def test_notion_text_analysis_init(notion_text_analysis):
@@ -47,7 +49,7 @@ def test_notion_text_analysis_init(notion_text_analysis):
 #         stopwords=set(),
 #         output_dir="./results",
 #         top_n=5,
-#         split_pkg="jieba",
+#         seg_pkg="jieba",
 #     )
 #     assert not notion_text_analysis.tf_idf_dataframe.empty
 
@@ -77,15 +79,15 @@ def test_notion_text_analysis_split_sentence():
 def test_notion_text_analysis_handling_sentences(notion_text_analysis):
     notion_text_analysis.total_texts = []
     with pytest.raises(NLPError):
-        notion_text_analysis.handling_sentences(stopwords=set(), split_pkg="jieba")
+        notion_text_analysis.handling_sentences(stopwords=set(), seg_pkg="jieba")
     notion_text_analysis.total_texts = [["今天天气不错，适合出去玩", "#hello"]]
     with pytest.raises(NLPError):
         notion_text_analysis.handling_sentences(
-            stopwords={"今天天气", "不错", "，", "适合", "出去玩"}, split_pkg="jieba"
+            stopwords={"今天天气", "不错", "，", "适合", "出去玩"}, seg_pkg="jieba"
         )
     notion_text_analysis.total_texts = [["#hello"]]
     with pytest.raises(NLPError):
-        notion_text_analysis.handling_sentences(stopwords=set(), split_pkg="jieba")
+        notion_text_analysis.handling_sentences(stopwords=set(), seg_pkg="jieba")
 
 
 # @pytest.mark.usefixtures("notion_config")
@@ -96,8 +98,8 @@ class TestNotionDBText:
         task = config.tasks[0]
         self.database_id = task.database_id
         self.extra_data = task.extra
-        self.header = config.notion.header
-        self.db_text = NotionDBText(self.header, self.database_id, self.extra_data)
+        self.token = config.notion.token
+        self.db_text = NotionDBText(self.token, self.database_id, self.extra_data)
 
     @patch("requests.post")
     def test_read_pages(self, mock_post):
@@ -137,7 +139,7 @@ class TestNotionDBText:
 def mock_task():
     # 定义一个mock task用于测试
     return TaskParams(
-        name="test", describe="testing", database_id="123", extra=[], run=True
+        name="test", description="testing", database_id="123", extra=[], run=True
     )
 
 

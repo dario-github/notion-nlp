@@ -49,7 +49,7 @@ Now, the tool can:
 
 - Support multiple tasks. Users can configure multiple databases and corresponding filtering and sorting conditions to create rich analysis tasks.
 
-  ==> [Example configuration file](./configs/notion.sample.yaml) <==
+  ==> [Example configuration file](./configs/config.sample.yaml) <==
 
   For example, I have added the following tasks:
 
@@ -79,11 +79,11 @@ python3.8 -m pip install notion-nlp
 
 ## Quick use
 
-- Configuration file reference ``configs/notion.sample.yaml`` (hereinafter config, please rename to ``notion.yaml`` as your own configuration file)
+- Configuration file reference ``configs/config.sample.yaml`` (hereinafter config, please rename to ``config.yaml`` as your own configuration file)
 
 ### Get the integration token
 
-- In [notion integrations](https://www.notion.so/my-integrations/) create a new integration, get your own token and fill in the token in the notion.yaml file afterwards.
+- In [notion integrations](https://www.notion.so/my-integrations/) create a new integration, get your own token and fill in the token in the config.yaml file afterwards.
 
   > Graphic Tutorial: [tango](https://app.tango.us/app/workflow/6e53c348-79b6-4ed3-8c75-46f5ddb996da?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown](./docs/tango/get_the_integration_token.md)
 
@@ -95,7 +95,7 @@ python3.8 -m pip install notion-nlp
 
 ### Configure the filter sort database entry extra parameter
 
-- The task's extra is used to filter and sort the database, see [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object) for format and content, the [notion.sample.yaml](./configs/notion.sample.yaml) file already provides 2 configurations.
+- The task's extra is used to filter and sort the database, see [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object) for format and content, the [config.sample.yaml](./configs/config.sample.yaml) file already provides 2 configurations.
 
 ### Run all tasks
 
@@ -108,7 +108,7 @@ python3.8 -m pip install notion-nlp
 
   ```Python
   from notion_nlp import run_all_tasks
-  config_file = "./configs/notion.yaml"
+  config_file = "./configs/config.yaml"
   run_all_tasks(config_file)
   ```
 
@@ -140,7 +140,7 @@ python3.8 -m pip install notion-nlp
       from notion_nlp import run_task
       task_name = "task_1"
       database_id = "your_database_id"
-      config_file="./configs/notion.yaml"
+      config_file="./configs/config.yaml"
 
       # Option 1
       run_task(task_name=task_name, config_file=config_file)

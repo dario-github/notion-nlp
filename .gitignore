@@ -145,12 +145,13 @@ unittest_results
 /notion-nlp-dataset/resources/wordcloud
 /notion-nlp-dataset/resources/backgrounds
 /notion-nlp-dataset/resources/jieba
-/notion-nlp-dataset/configs/notion.yaml
+/notion-nlp-dataset/configs/config.yaml
 !/notion-nlp-dataset/resources/stopwords/multilingual_stopwords.zip
-!/notion-nlp-dataset/configs/notion.test.yaml
-!/notion-nlp-dataset/configs/notion.sample.yaml
+!/notion-nlp-dataset/configs/config.test.yaml
+!/notion-nlp-dataset/configs/config.sample.yaml
 
 resources/fonts/sharefonts.net.txt
 /scripts/*
 !/scripts/*.sh
 !/scripts/*.bat
+scripts/test.bat

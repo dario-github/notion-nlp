@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Optional
+
 import typer
 
 from notion_nlp.core.task import check_resource
@@ -39,6 +40,7 @@ def run_task(
     stopfiles_postfix: Optional[str] = "stopwords.txt",
     top_n: Optional[int] = 5,
     output_dir: Optional[str] = (EXEC_DIR).as_posix(),
+    colormap: Optional[str] = "all",
 ):
     """This function is designed to execute a task and produce the results specified in the `task_json` file, which can be specified directly or by referencing a `task_name`.
 
@@ -60,6 +62,8 @@ def run_task(
         Used to determine which `n` entities are considered most important when computing results.By default, it uses `5`.
     `output_dir`: Optional[str], optional
         The directory where results should be written. By default, it uses `EXEC_DIR`.
+    `colormap`: Optional[str], optional
+        The colormap used to display results. By default, it uses `"all"`.
     """
     _run_task(
         None,
@@ -72,6 +76,7 @@ def run_task(
         stopfiles_postfix,
         top_n,
         output_dir,
+        colormap,
     )
 
 

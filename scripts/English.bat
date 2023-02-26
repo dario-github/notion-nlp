@@ -3,10 +3,10 @@
 color 0a
 
 :main
-echo ==================== ¡î Notion Natural Language Processing ¡î =====================
+echo ==================== ï¿½ï¿½ Notion Natural Language Processing ï¿½ï¿½ =====================
 echo=
 echo Author:      Dario Zhang
-echo Version:     v1.0.5.1
+echo Version:     v1.0.6
 echo Code:        https://github.com/dario-github/notion-nlp
 echo Description: Read text from Notion database 
 echo              and perform natural language processing analysis
@@ -38,7 +38,7 @@ goto main
 
 :one
 .\notion-nlp-win64.exe first-try || (set /p tmp=Oops~ Unknown error, please ask the author to handle it, and remember to copy the error log above~ Paste the log here ==> https://reurl.cc/b7nDkl && exit)
-start notepad ".\Temp-dataset\configs\notion.test.yaml"
+start notepad ".\Temp-dataset\configs\config.test.yaml"
 start explorer ".\Temp-dataset\results"
 echo The parameter file example and generated result example have been opened, please modify the parameter file according to the usage instructions: https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8
 set /p tmp=Execution completed, press Enter to return to the menu...
@@ -46,16 +46,16 @@ cls
 goto main
 
 :two
-set /p file=Please enter the parameter file path [Default: .\Temp-dataset\configs\notion.yaml]:
-if not defined file set file=.\Temp-dataset\configs\notion.yaml
+set /p file=Please enter the parameter file path [Default: .\Temp-dataset\configs\config.yaml]:
+if not defined file set file=.\Temp-dataset\configs\config.yaml
 .\notion-nlp-win64.exe task-info --config-file %file% || ((echo Parameter file not found or configuration error) && (goto two))
 set /p tmp=Execution completed, press Enter to return to the menu...
 cls
 goto main
 
 :three
-set /p file=Please enter the parameter file path [Default: .\Temp-dataset\configs\notion.yaml]:
-if not defined file set file=.\Temp-dataset\configs\notion.yaml
+set /p file=Please enter the parameter file path [Default: .\Temp-dataset\configs\config.yaml]:
+if not defined file set file=.\Temp-dataset\configs\config.yaml
 .\notion-nlp-win64.exe run-all-tasks --config-file %file% || ((echo Parameter file not found or configuration error) && (goto three))
 set /p tmp=Execution completed, press Enter to return to the menu...
 cls
@@ -64,8 +64,8 @@ goto main
 :four
 set /p name=Please enter the task name in the parameter file
 if not defined four goto four
-set /p file=Please enter the parameter file path [Default: .\Temp-dataset\configs\notion.yaml]:
-if not defined file set file=.\Temp-dataset\configs\notion.yaml
+set /p file=Please enter the parameter file path [Default: .\Temp-dataset\configs\config.yaml]:
+if not defined file set file=.\Temp-dataset\configs\config.yaml
 .\notion-nlp-win64.exe run-task --task-name %name% --config-file %file% || ((echo Parameter file not found or configuration error) && (goto four))
 set /p tmp=Execution completed, press Enter to return to the menu...
 cls
