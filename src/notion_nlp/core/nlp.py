@@ -18,7 +18,7 @@ from notion_nlp.parameter.config import (
     PathParams,
     ResourceParams,
     TextCleanParams,
-    VisualParams,
+    TaskParams
 )
 from notion_nlp.parameter.error import NLPError
 
@@ -30,26 +30,18 @@ class NotionTextAnalysis(NotionDBText):
     """分析notion富文本信息"""
 
     def __init__(
-        self,
-        token: str,
-        task_name: str,
-        task_description: str,
-        database_id: str,
-        extra_data: dict,
+        self, task: TaskParams
     ):
         """初始化
 
         Args:
-            token (str): token信息
-            task_name (str): 任务名
-            task_description (str): 任务描述
-            database_id (str): 数据库ID
-            extra_data (dict): 筛选排序的附加信息
+            task (TaskParams): 任务参数
         """
-        super().__init__(token, database_id, extra_data)
-        logging.info(f"Task: {task_name}, Desc: {task_description}")
+        self.task = task
+        super().__init__(task.api.notion)
+        logging.info(f"Task: {task.name}, Desc: {task.description}")
         self.read()
-        logging.info(f"{task_name} has these unsupported types: {self.unsupported_types}")
+        logging.info(f"{task.name} has these unsupported types: {self.unsupported_types}")
 
         jieba.set_dictionary(
             EXEC_DIR
@@ -58,18 +50,10 @@ class NotionTextAnalysis(NotionDBText):
         )
         jieba.initialize()
 
-        self.task_name = task_name
-        self.task_description = task_description
-        self.database_id = database_id
-        self.extra_data = extra_data
-
     def run(
         self,
         stopwords: set = set(),
         output_dir: Path = EXEC_DIR,
-        top_n: int = 5,
-        seg_pkg: str = "jieba",
-        colormap: str = "cividis",
     ):
         """运行任务
 
@@ -84,11 +68,11 @@ class NotionTextAnalysis(NotionDBText):
             list(chain.from_iterable([split_paragraphs(text) for text in page_texts]))
             for page_texts in self.total_texts
         ]
-        self.handling_sentences(stopwords, seg_pkg)
+        self.handling_sentences(stopwords, self.task.nlp.seg_pkg)
 
         # 输出多种NLP技术的分析结果
         self.tf_idf_dataframe = self.tf_idf(self.sequence)
-        self.output(self.task_name, self.task_description, output_dir, top_n, colormap)
+        self.output(self.task.name, self.task.description, output_dir, self.task.nlp.top_n, self.task.visual.colormap)
 
     @staticmethod
     def check_stopwords(word: str, stopwords: set):
@@ -104,8 +88,7 @@ class NotionTextAnalysis(NotionDBText):
         word = word.strip().lower()
         return word in stopwords or word.isdigit() or not word
 
-    @staticmethod
-    def check_sentence_available(text: str):
+    def check_sentence_available(self, text: str):
         """检查句子是否符合要求
 
         Args:
@@ -115,16 +98,16 @@ class NotionTextAnalysis(NotionDBText):
             Bool: 是否符合要求
         """
         # 不要'#'开头的，因为可能是作为标签输入的，也可以用来控制一些分版本的重复内容
-        for head in TextCleanParams.discard_startswith():
+        for head in self.task.nlp.textclean.discard_startswith:
             if text.startswith(head):
                 return False
         # 一个正常的句子的字数在中文和英文中都有很大的差异，以下是两种语言中句子的平均字数：
         # 中文：一个正常的句子通常包含12 - 20个汉字，但是也可能更长。在写作中，句子的长度可以根据需要进行调整，但一般不会超过30个汉字。
         # 英文：一个正常的句子通常包含10 - 20个单词，但是也可能更长。在写作中，句子的长度可以根据需要进行调整，但一般不会超过30个单词。
         # 需要注意的是，这只是一个平均值，实际上句子的长度可以根据需要进行调整，取决于句子的复杂性、写作风格以及句子所要表达的内容等因素。
-        if len(text) < TextCleanParams.min_sentence_length():
+        if len(text) < self.task.nlp.textclean.min_sentence_length:
             return False
-        if len(text) > TextCleanParams.max_sentence_length():
+        if len(text) > self.task.nlp.textclean.max_sentence_length:
             return False
         return True
 
@@ -162,7 +145,7 @@ class NotionTextAnalysis(NotionDBText):
         # 检查数据库中获取的富文本是否为空
         if not self.total_texts:
             logging.error(
-                f"该任务未获取到符合条件的文本，请检查筛选条件。database ID: {self.database_id}; extra data: {self.extra_data}"
+                f"该任务未获取到符合条件的文本，请检查筛选条件。database ID: {self.task.api.database_id}; extra data: {self.task.api.extra}"
             )
             raise NLPError("empty rich texts.")
 
@@ -186,7 +169,7 @@ class NotionTextAnalysis(NotionDBText):
         # 检查序列是否为空
         if not any(self.sequence):
             logging.error(
-                f"该任务未获取到符合条件的文本，请检查停用词。database ID: {self.database_id}; extra data: {self.extra_data}"
+                f"该任务未获取到符合条件的文本，请检查停用词。database ID: {self.task.api.database_id}; extra data: {self.task.api.extra}"
             )
             raise NLPError("empty rich texts.")
 
@@ -198,7 +181,7 @@ class NotionTextAnalysis(NotionDBText):
         # 检查词表是否为空
         if not self.unique_words:
             logging.error(
-                f"词表为空，请检查筛选条件及停用词。database ID: {self.database_id}; extra data: {self.extra_data}"
+                f"词表为空，请检查筛选条件及停用词。database ID: {self.task.api.database_id}; extra data: {self.task.api.extra}"
             )
             raise NLPError("empty unique words")
         logging.info(f"unique words: {len(self.unique_words)}")
@@ -319,7 +302,7 @@ class NotionTextAnalysis(NotionDBText):
             top_n=top_n,
         )
         logging.info(
-            f"{self.task_name} result markdown have been saved to {tfidf_output_dir.absolute()}"
+            f"{self.task.name} result markdown have been saved to {tfidf_output_dir.absolute()}"
         )
 
         # 词云图
@@ -350,6 +333,7 @@ class NotionTextAnalysis(NotionDBText):
         """
         # todo top_freq是通用方法，要从类中拆出来
         top_n_words = df.head(top_n)
+        print("\n", "-" * 3, f"| Top {top_n} Words |", "-" * 3, "\n")
         print(
             tabulate(
                 pd.DataFrame(top_n_words),

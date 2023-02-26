@@ -45,14 +45,15 @@ def word_cloud_plot(
     # 设置词云图的基本参数
     # colormap: 全部生成/随机1张/指定类型  # todo 将该功能扩展出去
     colormap_list = [colormap]
+    colormap_types = VisualParams.colormap_types.value
     colormap_commands = ["random", "all"]  # 这个是用于代码逻辑的，就不抽象到参数类了
     if colormap == "random":
-        colormap_list = [random.choice(VisualParams.colormap_types)]
+        colormap_list = [random.choice(colormap_types)]
     elif colormap == "all":
-        colormap_list = VisualParams.colormap_types
-    elif colormap not in VisualParams.colormap_types:
+        colormap_list = colormap_types
+    elif colormap not in colormap_types:
         raise ValueError(
-            f"{colormap} is not in {VisualParams.colormap_types + colormap_commands}"
+            f"{colormap} is not in {colormap_types + colormap_commands}"
         )
 
     # 判断是否需要下载字体

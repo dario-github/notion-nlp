@@ -13,7 +13,10 @@ from notion_nlp.parameter.config import (
     ResourceParams,
     TaskParams,
     TextCleanParams,
-    dict_to_class,
+    VisualParams,
+    NLPParams,
+    APIParams,
+    NotionParams
 )
 
 
@@ -75,6 +78,28 @@ def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopword
     logging.info(f"Loaded {len(stopwords)} stopwords.")
 
     return stopwords | punctuation
+
+
+def dict_to_class(data, last_key: str = "config"):
+    class_map = dict(
+        config=ConfigParams,
+        tasks=TaskParams,
+        visual=VisualParams,
+        nlp=NLPParams,
+        textclean=TextCleanParams,
+        api=APIParams,
+        notion=NotionParams,
+    )
+    if last_key not in class_map.keys():
+        return data
+    if isinstance(data, dict):
+        return class_map.get(last_key, ConfigParams)(
+            **{k: dict_to_class(v, k) for k, v in data.items()}
+        )
+    elif isinstance(data, list):
+        return [dict_to_class(v, last_key) for v in data]
+    else:
+        return data
 
 
 def load_config(config_file: str) -> ConfigParams:

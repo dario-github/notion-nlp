@@ -154,11 +154,11 @@ class TextCleanParams(NLPClass):
 
     @property
     def min_sentence_length(self) -> int:
-        return self._sentence_length[0]
+        return self.sentence_length[0]
 
     @property
     def max_sentence_length(self) -> int:
-        return self._sentence_length[1]
+        return self.sentence_length[1]
 
 
 class VisualParams(VisualClass):
@@ -319,25 +319,7 @@ class ConfigParams(CommanClass):
     @property
     def tasks_map(self):
         return {task.name: task for task in self.tasks_with_diff_name}
-
-
-def dict_to_class(data, last_key: str = "config"):
-    class_map = dict(
-        config=ConfigParams,
-        task=TaskParams,
-        visual=VisualParams,
-        nlp=NLPParams,
-        textclean=TextCleanParams,
-        api=APIParams,
-        notion=NotionParams,
-    )
-    if last_key not in class_map.keys():
-        return data
-    if isinstance(data, dict):
-        return class_map.get(last_key, ConfigParams)(
-            **{k: dict_to_class(v, k) for k, v in data.items()}
-        )
-    elif isinstance(data, list):
-        return [dict_to_class(v, last_key) for v in data]
-    else:
-        return data
+    
+    @staticmethod
+    def get_task_by_name(self, task_name: str):
+        return self.tasks_map.get(task_name)

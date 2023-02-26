@@ -29,11 +29,11 @@ def notion_text_analysis(notion_config):
 
     task = notion_config.tasks[0]
 
-    header = NotionParams(notion_config.notion.token).header
+    header = NotionParams(task.api.notion.token).header
     task_name = task.name
     task_description = task.description
-    database_id = task.database_id
-    extra_data = task.extra
+    database_id = task.api.notion.database_id
+    extra_data = task.api.notion.extra
 
     return NotionTextAnalysis(
         header, task_name, task_description, database_id, extra_data
@@ -96,8 +96,8 @@ class TestNotionDBText:
     def setup_class(self):
         config = load_config(PROJECT_ROOT_DIR / PathParams.notion_test_config.value)
         task = config.tasks[0]
-        self.database_id = task.database_id
-        self.extra_data = task.extra
+        self.database_id = task.api.notion.database_id
+        self.extra_data = task.api.notion.extra
         self.token = config.notion.token
         self.db_text = NotionDBText(self.token, self.database_id, self.extra_data)
 

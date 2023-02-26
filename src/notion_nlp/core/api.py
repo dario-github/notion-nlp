@@ -19,17 +19,13 @@ from notion_nlp.parameter.config import NotionParams
 # http.mount("https://", adapter)
 
 
-class NotionDBText:
+class NotionDBText:  # 不能继承NotionParams, 本类是方法类，不应成为参数类的子类
     """
     读取数据库中所有富文本信息
     """
 
-    def __init__(self, token: str, database_id: str, extra_data: dict = {}):
-        self.api_params = NotionParams(token)
-        self.api_params.database_id = database_id
-        self.header = self.api_params.header
-        self.database_id = database_id
-        self.extra_data = extra_data
+    def __init__(self, notion_params: NotionParams):
+        self.params = notion_params
         self.total_texts, self.total_blocks, self.total_pages = [[]] * 3
 
     def read(self):
@@ -48,15 +44,15 @@ class NotionDBText:
         # 有下一页时，继续读取
         while has_more:
             if next_cursor:
-                self.extra_data["start_cursor"] = next_cursor
+                self.params.extra["start_cursor"] = next_cursor
             try:
                 r_database = requests.post(
-                    url=self.api_params.url_get_pages,
-                    headers=self.header,
-                    data=json.dumps(self.extra_data),
+                    url=self.params.url_get_pages,
+                    headers=self.params.header,
+                    data=json.dumps(self.params.extra),
                 )
             except Exception:
-                logging.error(f"read page failed, database id: {self.database_id}")
+                logging.error(f"read page failed, database id: {self.params.database_id}")
                 passed_pages += 1
             else:
                 respond = json.loads(r_database.text)
@@ -77,11 +73,11 @@ class NotionDBText:
         passed_blocks = 0
         for page in tqdm(pages, desc="read blocks"):
             page_id = page["id"]
-            self.api_params.page_id = page_id
+            self.params.page_id = page_id
             try:
                 r_page = requests.get(
-                    url=self.api_params.url_get_blocks,
-                    headers=self.header,
+                    url=self.params.url_get_blocks,
+                    headers=self.params.header,
                 )
             except Exception:
                 logging.error(f"read block failed, page id: {page_id}")
@@ -103,7 +99,7 @@ class NotionDBText:
         for page_blocks in blocks:
             page_texts = []
             for block in page_blocks:
-                if block["type"] not in self.api_params.block_types:
+                if block["type"] not in self.params.block_types:
                     self.unsupported_types.add(block["type"])
                     continue
                 try:

@@ -16,7 +16,7 @@ from notion_nlp.parameter.config import (
     TaskParams,
 )
 from notion_nlp.parameter.error import ConfigError, TaskError
-from notion_nlp.parameter.utils import download_webfile, load_config, load_stopwords
+from notion_nlp.parameter.utils import download_webfile, load_config, load_stopwords, dict_to_class
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
 EXEC_DIR = Path.cwd()
@@ -69,7 +69,7 @@ def first_try():
 def task_info(
     config_file: str = (EXEC_DIR / PathParams.notion_config.value).as_posix(),
     sort_by: List[Tuple[str, bool]] = [("run", True), ("name", False)],
-    exclude: List[str] = ["extra", "database_id"],
+    exclude: List[str] = ["visual", "nlp", "api"],
 ):
     """查看任务信息
 
@@ -80,6 +80,7 @@ def task_info(
     if not config.tasks_with_diff_name:
         raise ConfigError("No tasks provided.")
     table_header, table_row = config.to_sorted_table_row(keys=sort_by, exclude=exclude)
+    print("\n", "-" * 10, "|  All Tasks Info  |", "-" * 10, "\n")
     print(
         tabulate(
             table_row,
@@ -93,15 +94,11 @@ def run_task(
     task=None,
     task_json: Optional[str] = None,
     task_name: Optional[str] = None,
-    token: Optional[str] = None,
     config_file: str = (EXEC_DIR / PathParams.notion_config.value).as_posix(),
     download_stopwords: bool = False,
     stopfiles_dir: str = (EXEC_DIR / PathParams.stopwords.value).as_posix(),
     stopfiles_postfix: str = "stopwords.txt",
-    top_n: int = 5,
     output_dir: str = (EXEC_DIR).as_posix(),
-    colormap: str = "cividis",
-    seg_pkg: str = "jieba",
 ):
     """运行单个任务，任务字典或任务名必须传入一个
 
@@ -109,77 +106,60 @@ def run_task(
         task (TaskParams, optional): 任务信息参数类. Defaults to None.
         task_json (str, optional): 任务信息json字符串. Defaults to None.
         task_name (str, optional): 任务名. Defaults to None.
-        token (str, optional): 任务token. Defaults to None.
         config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
         download_stopwords (bool, optional): 是否下载停用词. Defaults to False.
         stopfiles_dir (str, optional): 停用词文件目录. Defaults to "notion_nlp/stopwords".
         stopfiles_postfix (str, optional): 停用词文件后缀. Defaults to "stopwords.txt".
-        top_n (int, optional): 返回top_n的结果. Defaults to 5.
-        output_dir (str, optional): 输出目录. Defaults to "notion_nlp/results".
 
     Raises:
         ConfigError: 检查任务信息字典和任务名是否存在
         TaskError: 检查任务是否存在或禁用
     """
-    if top_n < 1:
-        raise ValueError("top_n must be a positive integer")
-    # 以下的操作都是为了获取两个参数：notion_header和task参数类
-    # 如果config文件存在，可以不用提供token，只需task_name或task其中之一即可
+    # 以下的操作都是为了获取task参数类
+    # 如果config文件存在，只需task_name或task其中之一即可
     if Path(config_file).exists():
         # task/task_json/task_name 至少提供一个
         if not task and not task_json and not task_name:
             raise ConfigError("Task or Task Name, there must be one.")
         config = load_config(config_file)
-        # request的header信息
-        notion_header = NotionParams(config.notion.token).header
+
         # 如果task/task_json为空，就检查输入的task_name是否存在
         if not task and not task_json:
             # 查找task_name是否存在，如果存在，就检查是否激活中
-            if task_name not in config.tasks_map:
-                raise TaskError(f"{task_name} does not exist.")
+            task = config.get_task_by_name(task_name)
+            if not task:
+                logging.warning(f"{task_name} does not exist.")
+                return
             else:
-                task = config.tasks_map[task_name]
+                token = task.api.notion.token
             # 检查task是否处于激活中
             if not task.run:
-                raise TaskError(
-                    f"{task_name} has been set to stop running. Check the parameters."
-                )
-    # 如果config文件不存在，就必须提供token和task/task_json
+                logging.warning(f"{task_name} has been set to stop running. Check the parameters.")
+                return
+
+    # 如果config文件不存在，就必须提供task/task_json
     else:
-        if not token:
-            raise ConfigError("Token is required.")
-        notion_header = NotionParams(token).header
-    # 至此，notion_header已确定获取
-    # task为空，就从task_json构建参数类，至此，完成参数类构建
-    if not task:
-        try:
-            task = json.loads(task_json)
-        except json.JSONDecodeError:
-            raise ConfigError("Invalid task json.")
-        else:
-            task = TaskParams(**task)  # 转为参数类
-    # 至此，task已确定获取
-    # 任务名称及描述
-    task_name = task.name
-    task_description = task.description
-    # 需要读取的database ID
-    database_id = task.database_id
+        if not task and not task_json:
+            raise ConfigError("Task or Task Json, there must be one.")
+        # task为空，就从task_json构建参数类，至此，完成参数类构建
+        elif not task:
+            try:
+                task_dict = json.loads(task_json)
+            except json.JSONDecodeError:
+                raise ConfigError("Invalid task json.")
+            else:
+                task = dict_to_class(task_dict, "tasks")  # 转为参数类
+        # 至此，task已确定获取
 
     # 停用词
     stopwords = load_stopwords(stopfiles_dir, stopfiles_postfix, download_stopwords)
 
     # 筛选 property，这里的 Label 是上述 database 中的属性
-    extra_data = task.extra
     try:
-        notion_text_analysis = NotionTextAnalysis(
-            notion_header, task_name, task_description, database_id, extra_data
-        )
+        notion_text_analysis = NotionTextAnalysis(task)
         notion_text_analysis.run(
             stopwords,
-            seg_pkg=seg_pkg,
             output_dir=output_dir,
-            top_n=top_n,
-            colormap=colormap,
         )
     except Exception as e:
         # 提取 traceback 信息
@@ -205,4 +185,4 @@ def run_all_tasks(
         f"Running {len(tasks_to_run)} tasks: {[task.name for task in tasks_to_run]}"
     )
     for task in tqdm(tasks_to_run, desc="Total Tasks"):
-        run_task(task=task, config_file=config_file)
+        run_task(task=task)
