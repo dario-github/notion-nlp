@@ -1,0 +1,20 @@
+changelog:
+  categories:
+    - title: '🚀 New Features'
+      labels:
+        - 'type::rocket:'
+    - title: '🐞 Bug Fixes'
+      labels:
+        - 'type::bug:'
+    - title: '⬆️ Dependency Updates'
+      labels:
+        - 'type:dependencies'
+    - title: '📖 Documentation improvements'
+      labels:
+        - 'type::memo:'
+    - title: '⛔️ Security'
+      labels:
+        - 'type:security'
+    - title: '👻 Internal changes'
+      labels:
+        - 'type:internal'

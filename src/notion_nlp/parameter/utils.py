@@ -9,14 +9,14 @@ from typing import List
 from unicodedata import category
 
 from notion_nlp.parameter.config import (
+    APIParams,
     ConfigParams,
+    NLPParams,
+    NotionParams,
     ResourceParams,
     TaskParams,
     TextCleanParams,
     VisualParams,
-    NLPParams,
-    APIParams,
-    NotionParams
 )
 
 
@@ -45,7 +45,7 @@ def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopword
     params = ResourceParams
     if not bool(stopfiles):
         # 下载 `params.multilingual_stopwords_url` 中指定的多语言停用词文件，并解压到 `stopfiles_dir` 目录下
-        unzip_webfile(params.multilingual_stopwords_url, stopfiles_dir)
+        unzip_webfile(params.multilingual_stopwords_url.value, stopfiles_dir)
         stopfiles = load_local_files(stopfiles_dir, stopfiles_postfix)
 
     # 如果已经有文件，但仍需要下载停用词，检查是否已下载过，如果未下载过，则添加自定义的停用词
@@ -53,9 +53,9 @@ def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopword
         # 检查下载记录文件，获取已下载的文件列表
         with open(Path(stopfiles_dir) / ".DOWNLOAD_RECORDS", "r", encoding="utf-8") as f:
             downloaded_files = set([line.strip() for line in f])
-        if params.multilingual_stopwords_url not in downloaded_files:
+        if params.multilingual_stopwords_url.value not in downloaded_files:
             # 下载 `params.multilingual_stopwords_url` 中指定的多语言停用词文件，并解压到 `stopfiles_dir` 目录下
-            unzip_webfile(params.multilingual_stopwords_url, stopfiles_dir)
+            unzip_webfile(params.multilingual_stopwords_url.value, stopfiles_dir)
             stopfiles = load_local_files(stopfiles_dir, stopfiles_postfix)
 
     if not bool(stopfiles):

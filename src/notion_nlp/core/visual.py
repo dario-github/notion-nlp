@@ -43,24 +43,22 @@ def word_cloud_plot(
     data_dict = dict(word_cloud_dataframe)
 
     # 设置词云图的基本参数
-    # colormap: 全部生成/随机1张/指定类型  # todo 将该功能扩展出去
+    # colormap: 全部生成/随机1张/指定类型
     colormap_list = [colormap]
-    colormap_types = VisualParams.colormap_types.value
+    colormap_types = VisualParams.colormap_types()
     colormap_commands = ["random", "all"]  # 这个是用于代码逻辑的，就不抽象到参数类了
     if colormap == "random":
         colormap_list = [random.choice(colormap_types)]
     elif colormap == "all":
         colormap_list = colormap_types
     elif colormap not in colormap_types:
-        raise ValueError(
-            f"{colormap} is not in {colormap_types + colormap_commands}"
-        )
+        raise ValueError(f"{colormap} is not in {colormap_types + colormap_commands}")
 
     # 判断是否需要下载字体
     font_path = font_path or (EXEC_DIR / PathParams.fonts.value / font_show).as_posix()
     if not Path(font_path).exists():
         Path(font_path).parent.mkdir(exist_ok=True, parents=True)
-        unzip_webfile(ResourceParams.font_url, Path(font_path).parent.as_posix())
+        unzip_webfile(ResourceParams.font_url.value, Path(font_path).parent.as_posix())
     # 如果不是字体文件，抛出异常
     elif not (font_path.lower().endswith(".ttf") or font_path.lower().endswith(".otf")):
         raise ValueError(f"{font_path} is not a ttf or otf file")

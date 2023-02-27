@@ -165,8 +165,13 @@ class VisualParams(VisualClass):
     def __init__(self, **kwargs):
         self.colormap = "all"  # 私有属性，存储colormap的值
         self.font_show = "chinese.stzhongs.ttf"
-        # colormap_types不由参数文件配置
-        self._colormap_types = [
+
+        self.__dict__.update(kwargs)
+
+    @staticmethod
+    def colormap_types():
+        """颜色映射类型 colormap_types不由参数文件配置"""
+        return [
             "viridis",
             "plasma",
             "inferno",
@@ -179,12 +184,6 @@ class VisualParams(VisualClass):
             "RdYlGn",
             "jet",
         ]
-        self.__dict__.update(kwargs)
-
-    @property
-    def colormap_types(self) -> List:
-        """颜色映射类型"""
-        return self._colormap_types
 
 
 class NLPParams(NLPClass):
@@ -282,7 +281,6 @@ class ConfigParams(CommanClass):
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
-    @property
     def tasks_with_diff_name(self):
         return self.process_task_name(self.tasks)
 
@@ -316,10 +314,6 @@ class ConfigParams(CommanClass):
         )
         return table_header, sorted_table_row
 
-    @property
-    def tasks_map(self):
-        return {task.name: task for task in self.tasks_with_diff_name}
-    
     @staticmethod
     def get_task_by_name(self, task_name: str):
-        return self.tasks_map.get(task_name)
+        return {task.name: task for task in self.tasks_with_diff_name}.get(task_name)

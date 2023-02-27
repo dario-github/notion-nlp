@@ -16,7 +16,12 @@ from notion_nlp.parameter.config import (
     TaskParams,
 )
 from notion_nlp.parameter.error import ConfigError, TaskError
-from notion_nlp.parameter.utils import download_webfile, load_config, load_stopwords, dict_to_class
+from notion_nlp.parameter.utils import (
+    dict_to_class,
+    download_webfile,
+    load_config,
+    load_stopwords,
+)
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
 EXEC_DIR = Path.cwd()
@@ -28,12 +33,12 @@ def check_resource():
     test_config_path = (
         EXEC_DIR
         / PathParams.configs.value
-        / os.path.basename(ResourceParams.test_config_file_url)
+        / os.path.basename(ResourceParams.test_config_file_url.value)
     )
     if not test_config_path.exists():
         test_config_path.parent.mkdir(exist_ok=True, parents=True)
         logging.info(
-            f"Downloading test config file from {ResourceParams.test_config_file_url}"
+            f"Downloading test config file from {ResourceParams.test_config_file_url.value}"
         )
         download_webfile(
             ResourceParams.test_config_file_url.value, test_config_path.parent.as_posix()
@@ -44,12 +49,14 @@ def check_resource():
     jieba_dict_path = (
         EXEC_DIR
         / PathParams.jieba.value
-        / os.path.basename(ResourceParams.jieba_dict_url)
+        / os.path.basename(ResourceParams.jieba_dict_url.value)
     )
     if not jieba_dict_path.exists():
         jieba_dict_path.parent.mkdir(exist_ok=True, parents=True)
-        logging.info(f"Downloading jieba dict from {ResourceParams.jieba_dict_url}")
-        download_webfile(ResourceParams.jieba_dict_url, jieba_dict_path.parent.as_posix())
+        logging.info(f"Downloading jieba dict from {ResourceParams.jieba_dict_url.value}")
+        download_webfile(
+            ResourceParams.jieba_dict_url.value, jieba_dict_path.parent.as_posix()
+        )
 
 
 def first_try():
@@ -77,7 +84,7 @@ def task_info(
         config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
     """
     config = load_config(config_file)
-    if not config.tasks_with_diff_name:
+    if not config.tasks_with_diff_name():
         raise ConfigError("No tasks provided.")
     table_header, table_row = config.to_sorted_table_row(keys=sort_by, exclude=exclude)
     print("\n", "-" * 10, "|  All Tasks Info  |", "-" * 10, "\n")
@@ -88,6 +95,7 @@ def task_info(
             tablefmt="rounded_grid",
         )
     )
+    print("\n")
 
 
 def run_task(
@@ -95,7 +103,7 @@ def run_task(
     task_json: Optional[str] = None,
     task_name: Optional[str] = None,
     config_file: str = (EXEC_DIR / PathParams.notion_config.value).as_posix(),
-    download_stopwords: bool = False,
+    download_stopwords: bool = True,
     stopfiles_dir: str = (EXEC_DIR / PathParams.stopwords.value).as_posix(),
     stopfiles_postfix: str = "stopwords.txt",
     output_dir: str = (EXEC_DIR).as_posix(),
@@ -128,13 +136,13 @@ def run_task(
             # 查找task_name是否存在，如果存在，就检查是否激活中
             task = config.get_task_by_name(task_name)
             if not task:
-                logging.warning(f"{task_name} does not exist.")
+                raise TaskError(f"{task_name} does not exist.")
                 return
-            else:
-                token = task.api.notion.token
             # 检查task是否处于激活中
             if not task.run:
-                logging.warning(f"{task_name} has been set to stop running. Check the parameters.")
+                raise TaskError(
+                    f"{task_name} has been set to stop running. Check the parameters."
+                )
                 return
 
     # 如果config文件不存在，就必须提供task/task_json
@@ -150,6 +158,7 @@ def run_task(
             else:
                 task = dict_to_class(task_dict, "tasks")  # 转为参数类
         # 至此，task已确定获取
+    assert isinstance(task, TaskParams), "task must be TaskParams."
 
     # 停用词
     stopwords = load_stopwords(stopfiles_dir, stopfiles_postfix, download_stopwords)
@@ -158,7 +167,7 @@ def run_task(
     try:
         notion_text_analysis = NotionTextAnalysis(task)
         notion_text_analysis.run(
-            stopwords,
+            stopwords=stopwords,
             output_dir=output_dir,
         )
     except Exception as e:
@@ -180,9 +189,14 @@ def run_all_tasks(
     task_info(config_file)
     # 获取参数类
     config = load_config(config_file)
-    tasks_to_run = [task for task in config.tasks_with_diff_name if task.run]
+    tasks_to_run = [task for task in config.tasks_with_diff_name() if task.run]
     logging.info(
         f"Running {len(tasks_to_run)} tasks: {[task.name for task in tasks_to_run]}"
     )
     for task in tqdm(tasks_to_run, desc="Total Tasks"):
-        run_task(task=task)
+        run_task(task=task, config_file=config_file)
+
+
+if __name__ == "__main__":
+    # 获取参数类
+    run_all_tasks(config_file=EXEC_DIR / PathParams.notion_test_config.value)

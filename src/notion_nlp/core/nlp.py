@@ -17,8 +17,8 @@ from notion_nlp.core.visual import word_cloud_plot
 from notion_nlp.parameter.config import (
     PathParams,
     ResourceParams,
+    TaskParams,
     TextCleanParams,
-    TaskParams
 )
 from notion_nlp.parameter.error import NLPError
 
@@ -29,9 +29,7 @@ EXEC_DIR = Path.cwd()
 class NotionTextAnalysis(NotionDBText):
     """分析notion富文本信息"""
 
-    def __init__(
-        self, task: TaskParams
-    ):
+    def __init__(self, task: TaskParams):
         """初始化
 
         Args:
@@ -46,7 +44,7 @@ class NotionTextAnalysis(NotionDBText):
         jieba.set_dictionary(
             EXEC_DIR
             / PathParams.jieba.value
-            / os.path.basename(ResourceParams.jieba_dict_url)
+            / os.path.basename(ResourceParams.jieba_dict_url.value)
         )
         jieba.initialize()
 
@@ -72,7 +70,13 @@ class NotionTextAnalysis(NotionDBText):
 
         # 输出多种NLP技术的分析结果
         self.tf_idf_dataframe = self.tf_idf(self.sequence)
-        self.output(self.task.name, self.task.description, output_dir, self.task.nlp.top_n, self.task.visual.colormap)
+        self.output(
+            task_name=self.task.name,
+            task_description=self.task.description,
+            output_dir=output_dir,
+            top_n=self.task.nlp.top_n,
+            colormap=self.task.visual.colormap,
+        )
 
     @staticmethod
     def check_stopwords(word: str, stopwords: set):
@@ -145,7 +149,7 @@ class NotionTextAnalysis(NotionDBText):
         # 检查数据库中获取的富文本是否为空
         if not self.total_texts:
             logging.error(
-                f"该任务未获取到符合条件的文本，请检查筛选条件。database ID: {self.task.api.database_id}; extra data: {self.task.api.extra}"
+                f"该任务未获取到符合条件的文本，请检查筛选条件。database ID: {self.task.api.notion.database_id}; extra data: {self.task.api.notion.extra}"
             )
             raise NLPError("empty rich texts.")
 
@@ -169,7 +173,7 @@ class NotionTextAnalysis(NotionDBText):
         # 检查序列是否为空
         if not any(self.sequence):
             logging.error(
-                f"该任务未获取到符合条件的文本，请检查停用词。database ID: {self.task.api.database_id}; extra data: {self.task.api.extra}"
+                f"该任务未获取到符合条件的文本，请检查停用词。database ID: {self.task.api.notion.database_id}; extra data: {self.task.api.notion.extra}"
             )
             raise NLPError("empty rich texts.")
 
@@ -181,7 +185,7 @@ class NotionTextAnalysis(NotionDBText):
         # 检查词表是否为空
         if not self.unique_words:
             logging.error(
-                f"词表为空，请检查筛选条件及停用词。database ID: {self.task.api.database_id}; extra data: {self.task.api.extra}"
+                f"词表为空，请检查筛选条件及停用词。database ID: {self.task.api.notion.database_id}; extra data: {self.task.api.notion.extra}"
             )
             raise NLPError("empty unique words")
         logging.info(f"unique words: {len(self.unique_words)}")
@@ -237,9 +241,9 @@ class NotionTextAnalysis(NotionDBText):
         self,
         task_name: str,
         task_description: str,
+        top_n: int,
+        colormap: str,
         output_dir: Path = EXEC_DIR,
-        top_n=5,
-        colormap="all",
     ):
         """输出tf-idf分析结果
 
@@ -341,6 +345,7 @@ class NotionTextAnalysis(NotionDBText):
                 tablefmt="rounded_grid",
             )
         )
+        print("\n")
         with open(output_dir / file_name, "w", encoding="utf-8") as f:
             f.write("# " + task_description + "\n\n")
             f.write("## Top " + str(top_n) + " words\n\n")

@@ -155,3 +155,6 @@ resources/fonts/sharefonts.net.txt
 !/scripts/*.sh
 !/scripts/*.bat
 scripts/test.bat
+.vscode/settings.json
+*.dat
+.vscode/launch.json

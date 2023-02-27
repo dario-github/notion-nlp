@@ -7,13 +7,13 @@ if not exist ".\Temp-dataset\configs\config.yaml" (
     .\notion-nlp-win64.exe first-try || ((echo 太可惜了~发现未知错误，请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl) && pause) 
     echo 样例任务已执行完毕，请按回车键查看词云图样例及目录
     set /p tmp=查看样例效果后请返回本窗口，继续下一步骤...
-    start "" ".\Temp-dataset\results\wordcloud\zh_unit_testing_task\colormap_viridis.png"
-    start "" ".\Temp-dataset\results\wordcloud\zh_unit_testing_task"
+    start "" ".\Temp-dataset\results\wordcloud\chinese-simple_task\colormap_viridis.png"
+    start "" ".\Temp-dataset\results\wordcloud\chinese-simple_task"
     echo=
     set /p tmp=请按回车键查看主题总结markdown文档...
-    start "" ".\Temp-dataset\results\tfidf_analysis\zh_unit_testing_task\zh_unit_testing_task.top_5.md"
+    start "" ".\Temp-dataset\results\tfidf_analysis\chinese-simple_task\chinese-simple_task.top_5.md"
     echo=
-    echo 如何配置自己的任务？教程指引 ==> https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8
+    echo "如何配置自己的任务？教程指引 ==> https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8"
     echo=
     set /p tmp=请按回车键打开参数文件，开始配置您自己的任务...
     copy /y ".\Temp-dataset\configs\config.test.yaml" ".\Temp-dataset\configs\config.yaml" > nul
