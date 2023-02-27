@@ -74,7 +74,7 @@ goto main
 
 :: 执行单个任务
 :three
-set /p name=请输入参数文件中的任务名，输入 info 查看所有任务信息: 
+set /p name=请输入参数文件中的任务名，如包含空格，请用双引号包裹任务名，输入 info 查看所有任务信息: 
 if not defined name goto three
 if %name% == info goto one
 .\notion-nlp-win64.exe run-task --task-name %name% --config-file ".\Temp-dataset\configs\config.yaml"

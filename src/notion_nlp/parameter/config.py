@@ -314,6 +314,5 @@ class ConfigParams(CommanClass):
         )
         return table_header, sorted_table_row
 
-    @staticmethod
     def get_task_by_name(self, task_name: str):
-        return {task.name: task for task in self.tasks_with_diff_name}.get(task_name)
+        return {task.name: task for task in self.tasks_with_diff_name()}.get(task_name)

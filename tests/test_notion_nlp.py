@@ -19,7 +19,7 @@ from notion_nlp.parameter.log import config_log
 from notion_nlp.parameter.error import NLPError, ConfigError, TaskError
 from notion_nlp.core.api import NotionDBText
 from notion_nlp.core.nlp import NotionTextAnalysis
-from memory_profiler import profile
+
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent
 EXEC_DIR = Path.cwd()
@@ -81,15 +81,15 @@ def test_notion_text_analysis_handling_sentences(notion_text_analysis):
         notion_text_analysis.handling_sentences(stopwords=set(), seg_pkg="jieba")
 
 
-# @pytest.fixture
-# def mock_task():
-#     # 定义一个mock task用于测试
-#     return TaskParams(
-#         name="test",
-#         description="testing",
-#         api=APIParams(notion=NotionParams(database_id="123")),
-#         run=True,
-#     )
+@pytest.fixture
+def mock_task():
+    # 定义一个mock task用于测试
+    return TaskParams(
+        name="test",
+        description="testing",
+        api=APIParams(notion=NotionParams(database_id="123")),
+        run=True,
+    )
 
 
 def test_run_task_with_valid_task(notion_config):

@@ -33,14 +33,11 @@ def run_all_tasks(
 def run_task(
     task_json: Optional[str] = None,
     task_name: Optional[str] = None,
-    token: Optional[str] = None,
     config_file: Optional[str] = (EXEC_DIR / PathParams.notion_config.value).as_posix(),
     download_stopwords: Optional[bool] = True,
     stopfiles_dir: Optional[str] = (EXEC_DIR / PathParams.stopwords.value).as_posix(),
     stopfiles_postfix: Optional[str] = "stopwords.txt",
-    top_n: Optional[int] = 5,
-    output_dir: Optional[str] = (EXEC_DIR).as_posix(),
-    colormap: Optional[str] = "all",
+    output_dir: Optional[str] = (EXEC_DIR).as_posix()
 ):
     """This function is designed to execute a task and produce the results specified in the `task_json` file, which can be specified directly or by referencing a `task_name`.
 
@@ -66,17 +63,14 @@ def run_task(
         The colormap used to display results. By default, it uses `"all"`.
     """
     _run_task(
-        None,
-        task_json,
-        task_name,
-        token,
-        config_file,
-        download_stopwords,
-        stopfiles_dir,
-        stopfiles_postfix,
-        top_n,
-        output_dir,
-        colormap,
+        task=None,
+        task_json=task_json,
+        task_name=task_name,
+        config_file=config_file,
+        download_stopwords=download_stopwords,
+        stopfiles_dir=stopfiles_dir,
+        stopfiles_postfix=stopfiles_postfix,
+        output_dir=output_dir,
     )
 
 

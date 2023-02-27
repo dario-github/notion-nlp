@@ -158,3 +158,4 @@ scripts/test.bat
 .vscode/settings.json
 *.dat
 .vscode/launch.json
+logs/notion-nlp/app.log.*
