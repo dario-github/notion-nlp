@@ -3,8 +3,13 @@
 color 0a
 :: 首次执行脚本：下载资源文件
 if not exist ".\Temp-dataset\configs\config.yaml" (
-    echo 检测到脚本首次执行，将下载资源文件并执行样例任务，请耐心等待 1-3 min...
-    .\notion-nlp-win64.exe first-try || ((echo 太可惜了~发现未知错误，请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl) && pause) 
+    echo 检测到脚本首次执行，将下载资源文件并执行引导，请耐心等待 1-3 min...
+    .\notion-nlp-win64.exe first-try
+    IF NOT %ERRORLEVEL% EQU 0 (
+      echo "太可惜了~发现未知错误，请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl"
+      set /p tmp=请按任意键退出脚本...
+      exit)
+    else (
     echo 样例任务已执行完毕，请按回车键查看词云图样例及目录
     set /p tmp=查看样例效果后请返回本窗口，继续下一步骤...
 ::    start "" ".\Temp-dataset\results\wordcloud\chinese-simple_task\colormap_viridis.png"
@@ -21,6 +26,7 @@ if not exist ".\Temp-dataset\configs\config.yaml" (
     echo=
     echo /p tmp=请按回车键进入主菜单...
     cls
+    )
 ) else (
     echo=
 )

@@ -41,17 +41,17 @@
 
 - 为你的notion笔记生成一份主题总结
   
-  ==> [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md) <==
+  :memo: [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md)
 
 - 支持多语种。添加了中英俄法日德等语种的停用词表，也可自定义停用词表。
   
-  ==> [多语种停用词](./resources/stopwords/) <==
+  :earth_asia: [多语种停用词](./resources/stopwords/)
 
 - 支持多任务。用户可以在配置文件中添加多个数据库和对应筛选排序条件来组成丰富的分析任务。
 
-  ==> [配置文件样例](./configs/config.sample.yaml) <==
+  :mag: [配置文件样例](./configs/config.sample.yaml)
 
-  例如，我添加了以下任务：
+  例如，可以添加以下任务：
 
   - :thinking: 近一年的思考
   - :triangular_flag_on_post: 本年度总结优化
@@ -65,19 +65,48 @@
 
 ```mermaid
 flowchart TB
-
-A[(Notion Database)] --> B([通过 API 读取富文本]) --> C([分词/清洗/建立词句映射]) --> D[/计算 TF-IDF/] --> E[[将 top-n 关键词及所在语句输出为 markdown 格式]]
+A1[(从笔记软件处获取自己的密钥 token )]
+B2[自定义NLP模块参数]
+B3[自定义视觉展示模块参数]
+B1[配置API密钥及对应数据库ID]
+C1((运行任务))
+D1([通过 API 读取富文本]) 
+D2([分词/清洗/建立词句映射])
+D3[/计算 TF-IDF/]
+E1{{关键词及来源语句 markdown}}
+E2{{多种配色风格的词云图}}
+  
+  A1 -- 配置任务参数 --> 参数类型
+  subgraph 参数类型
+  B1
+  B2
+  B3
+  end
+  B1 & B2 & B3 --> C1
+  C1 --> 计算模块
+  subgraph 计算模块
+  D1 --> D2 --> D3
+  end
+  计算模块 --> 可视化模块
+  subgraph 可视化模块
+  E1
+  E2
+  end
 ```
 
 </div>
 
-## 安装
+## 安装与使用
+
+- Windows系统
+
+  下载最新zip文件，解压缩后双击start.bat
 
 ```shell
 python3.8 -m pip install notion-nlp
 ```
 
-## 使用
+## 自定义参数文件
 
 - 配置文件参照 [config.sample.yaml](./configs/config.sample.yaml) (下称 config, 建议重命名为`config.yaml`作为自己的配置文件)
 
