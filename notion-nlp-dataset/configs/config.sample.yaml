@@ -1,0 +1,33 @@
+tasks :  # task list
+  - 
+    run : True
+    name : Thinking past year # Custom name for differentiation of output file
+    description : Thinking in the past year from the Memo database # Description of the current task, used to record what the task is to do
+    visual:
+      font_show: "xxx.ttf"  # Your font file name, endswith ttf or otf
+      colormap: "random"  # colormap type
+    nlp:
+      seg_pkg : "jieba"  # segmentation package
+      top_n: 7  # output top n words
+      textclean :
+        discard_startswith:  # discard startswith
+          - "#"
+          - "@"
+        sentence_length:  # sentence length limitation, [min, max]
+          - 9
+          - 999
+    api:
+      notion: # notion API info
+        token : 'here is your own notion intergration token'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
+        database_id : 'here is your database id for analysis' # database id
+        extra : # Options for filtering and sorting the database
+          filter :
+            property : Tags
+            multi_select :
+              contains : thinking
+  - # Completing the simplest task configuration required to run computes all the text of the database
+    name : simplest task # Custom name for differentiation of output file
+    api:
+      notion: # notion API info
+        token : 'here is your own notion intergration token'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/
+        database_id : 'here is your database id for analysis' # database id

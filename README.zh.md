@@ -15,11 +15,11 @@
     <a href="https://codecov.io/gh/dario-github/notion-nlp">
       <img alt="codecov" src="https://codecov.io/gh/dario-github/notion-nlp/branch/main/graph/badge.svg?token=ehzYhousD3" />
     </a>
-    <a href="https://github.com/dario-github/notion-nlp/graphs/contributors">
-      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/dario-github/notion-nlp" />
-    </a>
     <a href="https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fdario-github%2Fnotion-nlp">
       <img alt="visitors" src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fdario-github%2Fnotion-nlp&countColor=%2337d67a&style=flat" />
+    </a>
+    <a href="www.paypal.me/dariozhang">
+      <img alt="visitors" src="https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang" />
     </a>
   </p>
   
@@ -41,15 +41,15 @@
 
 - 为你的notion笔记生成一份主题总结
   
-  ===> [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md) <===
+  ==> [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md) <==
 
 - 支持多语种。添加了中英俄法日德等语种的停用词表，也可自定义停用词表。
   
-  ===> [多语种停用词](./resources/stopwords/) <===
+  ==> [多语种停用词](./resources/stopwords/) <==
 
 - 支持多任务。用户可以在配置文件中添加多个数据库和对应筛选排序条件来组成丰富的分析任务。
 
-  ===> [配置文件样例](./configs/notion.sample.yaml) <===
+  ==> [配置文件样例](./configs/config.sample.yaml) <==
 
   例如，我添加了以下任务：
 
@@ -79,11 +79,11 @@ python3.8 -m pip install notion-nlp
 
 ## 使用
 
-- 配置文件参照 [notion.sample.yaml](./configs/notion.sample.yaml) (下称 config, 建议重命名为`notion.yaml`作为自己的配置文件)
+- 配置文件参照 [config.sample.yaml](./configs/config.sample.yaml) (下称 config, 建议重命名为`config.yaml`作为自己的配置文件)
 
 ### 获取integration的token
 
-- 在 [notion integrations](https://www.notion.so/my-integrations/)新建一个integration，获取自己的 token ，填入 notion.yaml 文件的 token 后。
+- 在 [notion integrations](https://www.notion.so/my-integrations/)新建一个integration，获取自己的 token ，填入 config.yaml 文件的 token 后。
 
   > 图文教程：[tango网页版](https://app.tango.us/app/workflow/6e53c348-79b6-4ed3-8c75-46f5ddb996da?utm_source=markdown&utm_medium=markdown&utm_campaign=workflow%20export%20links) / [markdown格式](./docs/tango/get_the_integration_token.zh.md)
 
@@ -95,7 +95,7 @@ python3.8 -m pip install notion-nlp
 
 ### 配置筛选排序数据库条目的extra参数
 
-- task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。[notion.sample.yaml](./configs/notion.sample.yaml) 文件已提供2种配置。
+- task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。[config.sample.yaml](./configs/config.sample.yaml) 文件已提供2种配置。
 
 
 ### 执行所有任务
@@ -110,7 +110,7 @@ python3.8 -m pip install notion-nlp
 
   ```python
   from notion_nlp import run_all_tasks
-  config_file = "./configs/notion.yaml"
+  config_file = "./configs/config.yaml"
   run_all_tasks(config_file)
   ```
 
@@ -142,7 +142,7 @@ python3.8 -m pip install notion-nlp
       from notion_nlp import run_task
       task_name = "task_1"
       database_id = "your_database_id"
-      config_file="./configs/notion.yaml"
+      config_file="./configs/config.yaml"
 
       # 方式一
       run_task(task_name=task_name, config_file=config_file)
@@ -202,9 +202,9 @@ python3.8 -m pip install notion-nlp
 - [参与讨论](https://github.com/dario-github/notion-nlp/discussions/new/choose) 
 - [提交问题](https://github.com/dario-github/notion-nlp/issues/new/choose)
 
-### :gift_heart: 加入贡献者名单
+### :gift_heart: 加入贡献者名单 ![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang)
 
-- <img src=./docs/pictures/Alipay.jpg width=25% />
+<img src=./docs/pictures/Web3WalletBTC.jpg width=15% style="display:inline-block"/><img src=./docs/pictures/Alipay.jpg width=15% style="display:inline-block"/>
 
 ## 开发
 

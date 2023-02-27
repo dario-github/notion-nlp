@@ -1,4 +1,6 @@
 import logging
+import shutil
+import ssl
 import sys
 from functools import reduce
 from glob import glob
@@ -6,7 +8,16 @@ from pathlib import Path
 from typing import List
 from unicodedata import category
 
-from notion_nlp.parameter.config import CleanTextParams, ConfigParams, TaskParams
+from notion_nlp.parameter.config import (
+    APIParams,
+    ConfigParams,
+    NLPParams,
+    NotionParams,
+    ResourceParams,
+    TaskParams,
+    TextCleanParams,
+    VisualParams,
+)
 
 
 def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopwords: bool):
@@ -31,10 +42,10 @@ def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopword
     stopfiles = load_local_files(stopfiles_dir, stopfiles_postfix)
 
     # 如果缺失停用词文件，下载
-    params = CleanTextParams()
+    params = ResourceParams
     if not bool(stopfiles):
         # 下载 `params.multilingual_stopwords_url` 中指定的多语言停用词文件，并解压到 `stopfiles_dir` 目录下
-        unzip_webfile(params.multilingual_stopwords_url(), stopfiles_dir)
+        unzip_webfile(params.multilingual_stopwords_url.value, stopfiles_dir)
         stopfiles = load_local_files(stopfiles_dir, stopfiles_postfix)
 
     # 如果已经有文件，但仍需要下载停用词，检查是否已下载过，如果未下载过，则添加自定义的停用词
@@ -42,9 +53,9 @@ def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopword
         # 检查下载记录文件，获取已下载的文件列表
         with open(Path(stopfiles_dir) / ".DOWNLOAD_RECORDS", "r", encoding="utf-8") as f:
             downloaded_files = set([line.strip() for line in f])
-        if params.multilingual_stopwords_url not in downloaded_files:
+        if params.multilingual_stopwords_url.value not in downloaded_files:
             # 下载 `params.multilingual_stopwords_url` 中指定的多语言停用词文件，并解压到 `stopfiles_dir` 目录下
-            unzip_webfile(params.multilingual_stopwords_url, stopfiles_dir)
+            unzip_webfile(params.multilingual_stopwords_url.value, stopfiles_dir)
             stopfiles = load_local_files(stopfiles_dir, stopfiles_postfix)
 
     if not bool(stopfiles):
@@ -67,6 +78,28 @@ def load_stopwords(stopfiles_dir: str, stopfiles_postfix: str, download_stopword
     logging.info(f"Loaded {len(stopwords)} stopwords.")
 
     return stopwords | punctuation
+
+
+def dict_to_class(data, last_key: str = "config"):
+    class_map = dict(
+        config=ConfigParams,
+        tasks=TaskParams,
+        visual=VisualParams,
+        nlp=NLPParams,
+        textclean=TextCleanParams,
+        api=APIParams,
+        notion=NotionParams,
+    )
+    if last_key not in class_map.keys():
+        return data
+    if isinstance(data, dict):
+        return class_map.get(last_key, ConfigParams)(
+            **{k: dict_to_class(v, k) for k, v in data.items()}
+        )
+    elif isinstance(data, list):
+        return [dict_to_class(v, last_key) for v in data]
+    else:
+        return data
 
 
 def load_config(config_file: str) -> ConfigParams:
@@ -92,9 +125,10 @@ def load_config(config_file: str) -> ConfigParams:
     # yaml.constructor.add_constructor("!join", join)
 
     with open(config_file, "r", encoding="utf-8") as f:
-        config = yaml.load(f)
-    tasks = [TaskParams(**task) for task in config["tasks"]]
-    config = ConfigParams(config["notion"]["token"], tasks)
+        data = yaml.load(f)
+    config = dict_to_class(data)
+    # todo 检查config中的结构和参数是否有错误，匹配为正确的参数类，填充缺失值为对应默认值
+    # config = origin_config.check_and_fill_missing_params(origin_config)
     return config
 
 
@@ -109,8 +143,14 @@ def download_webfile(url: str, target_dir: str):
     import urllib.request
 
     # 下载 `url` 中的文件到 `target_dir` 目录下
-    urllib.request.urlretrieve(url, Path(target_dir) / os.path.basename(url))
-    logging.info(f"Downloaded {url} to {target_dir}.")
+    file_path = Path(target_dir) / os.path.basename(url)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)  # 创建一个SSLContext对象，指定TLSv1.2协议
+    with urllib.request.urlopen(
+        url, context=context
+    ) as response:  # 打开一个URL，传入SSLContext对象
+        with open(file_path, "wb") as file:  # 打开一个文件对象，传入'wb'模式
+            shutil.copyfileobj(response, file)  # 将URL的内容复制到文件对象
+    logging.info(f"Downloaded {file_path}")
     # 在目标目录记录下载过的网址，避免重复下载
     with open(Path(target_dir) / ".DOWNLOAD_RECORDS", "a", encoding="utf-8") as f:
         f.write(url + "\n")
