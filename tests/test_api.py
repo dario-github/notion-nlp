@@ -40,7 +40,6 @@ class TestNotionDBText:
         notiondbtext.read()
         assert notiondbtext.total_pages == fake_response["results"]
 
-
     def test_read_blocks_success(self):
         # 创建一个伪造的NotionParams实例
         mock_params = MagicMock()

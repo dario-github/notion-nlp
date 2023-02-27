@@ -37,7 +37,7 @@ def run_task(
     download_stopwords: Optional[bool] = True,
     stopfiles_dir: Optional[str] = (EXEC_DIR / PathParams.stopwords.value).as_posix(),
     stopfiles_postfix: Optional[str] = "stopwords.txt",
-    output_dir: Optional[str] = (EXEC_DIR).as_posix()
+    output_dir: Optional[str] = (EXEC_DIR).as_posix(),
 ):
     """This function is designed to execute a task and produce the results specified in the `task_json` file, which can be specified directly or by referencing a `task_name`.
 
