@@ -20,19 +20,19 @@ class CommanClass:
         """检查参数是否有缺失，并填充缺失的参数"""
         return self.create_default_object(self.__dict__, self.__str__, standard_params)
 
-    def create_default_object(
-        self, kwargs: Mapping, var_name: str, basis_class: ClassVar
-    ):
-        """根据给定的 Mapping 键值对，返回一个承载了 kwargs 中 var_name 属性的 basis_class 对象。
+    # def create_default_object(
+    #     self, kwargs: Mapping, var_name: str, basis_class
+    # ):
+    #     """根据给定的 Mapping 键值对，返回一个承载了 kwargs 中 var_name 属性的 basis_class 对象。
 
-        Args:
-            default (_type_): _description_
-            basis_class (_type_): _description_
+    #     Args:
+    #         default (_type_): _description_
+    #         basis_class (_type_): _description_
 
-        Returns:
-            _type_: _description_
-        """
-        return basis_class(**kwargs.get(var_name, basis_class()).__dict__)
+    #     Returns:
+    #         _type_: _description_
+    #     """
+    #     return basis_class(**kwargs.get(var_name, basis_class()).__dict__)
 
 
 class APIClass(CommanClass):
@@ -226,6 +226,7 @@ class NotionParams(APIClass):
     def __init__(self, **kwargs):
         super().__init__()
         self.api_version: str = "2022-06-28"
+        self.extra: dict = {}
         self._page_id = None
         self.__dict__.update(kwargs)
 

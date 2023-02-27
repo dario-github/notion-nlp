@@ -41,6 +41,8 @@ class NotionDBText:  # 不能继承NotionParams, 本类是方法类，不应成�
         passed_pages = 0
         has_more = True
         next_cursor = ""
+        failed_attempts = 0
+        failed_limit = 5
         # 有下一页时，继续读取
         while has_more:
             if next_cursor:
@@ -51,10 +53,18 @@ class NotionDBText:  # 不能继承NotionParams, 本类是方法类，不应成�
                     headers=self.params.header,
                     data=json.dumps(self.params.extra),
                 )
-            except Exception:
+            except Exception as e:
+                failed_attempts += 1
                 logging.error(f"read page failed, database id: {self.params.database_id}")
                 passed_pages += 1
+                # 失败次数超出上限后，抛出异常
+                if failed_attempts > failed_limit:
+                    logging.warning(
+                        f"Failed to read pages, failed attempts: {failed_attempts}, please check your config file. {e}"
+                    )
+                    raise e
             else:
+                failed_attempts = 0
                 respond = json.loads(r_database.text)
                 total_pages.extend(respond["results"])
                 has_more = respond["has_more"]

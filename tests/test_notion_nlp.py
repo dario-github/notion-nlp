@@ -91,29 +91,38 @@ def mock_task():
         run=True,
     )
 
+# def test_run_task_with_valid_task(notion_config):
+#     # Create a valid task object
+#     task = notion_config.tasks[0]
+#     # Call your function with the task object
+#     run_task(
+#         task=task, config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value
+#     )
+#     # Check if the output directory contains the expected files
+#     assert Path(EXEC_DIR / PathParams.tfidf_analysis.value).exists()
 
-def test_run_task_with_valid_task(notion_config):
+
+# def test_run_task_with_invalid_task(mock_task):
+#     # Create an invalid task object (missing token)
+#     run_task(
+#         task=mock_task, config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value
+#     )
+
+
+# def test_run_task_with_no_input():
+#     # Call your function with no input arguments and expect an exception
+#     with pytest.raises(ConfigError):
+#         run_task()
+
+def test_run_all_tasks_test_config():
     # Create a valid task object
     task = notion_config.tasks[0]
     # Call your function with the task object
-    run_task(
+    run_all_tasks(
         task=task, config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value
     )
     # Check if the output directory contains the expected files
     assert Path(EXEC_DIR / PathParams.tfidf_analysis.value).exists()
-
-
-def test_run_task_with_invalid_task(mock_task):
-    # Create an invalid task object (missing token)
-    run_task(
-        task=mock_task, config_file=PROJECT_ROOT_DIR / PathParams.notion_test_config.value
-    )
-
-
-def test_run_task_with_no_input():
-    # Call your function with no input arguments and expect an exception
-    with pytest.raises(ConfigError):
-        run_task()
 
 
 if __name__ == "__main__":

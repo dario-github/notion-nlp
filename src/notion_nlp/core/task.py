@@ -195,8 +195,3 @@ def run_all_tasks(
     )
     for task in tqdm(tasks_to_run, desc="Total Tasks"):
         run_task(task=task, config_file=config_file)
-
-
-if __name__ == "__main__":
-    # 获取参数类
-    run_all_tasks(config_file=EXEC_DIR / PathParams.notion_test_config.value)
