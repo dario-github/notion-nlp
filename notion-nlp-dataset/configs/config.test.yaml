@@ -5,9 +5,9 @@ tasks :  # task list
     description : unit testing task in chinese-simple corpus # Description of the current task, used to record what the task is to do
     visual:
       font_show: "chinese.stzhongs.ttf"
-      colormap: "random"
+      colormap: "all"
     nlp:
-      seg_pkg : "jieba_for_search"
+      seg_pkg : "jieba"
       textclean :
         discard_startswith: 
           - "#"
