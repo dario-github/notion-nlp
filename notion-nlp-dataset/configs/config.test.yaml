@@ -33,7 +33,7 @@ tasks :  # task list
       colormap: "all"
     nlp:
       seg_pkg : "jieba"
-      top_n: 7
+      top_n: 5
     api:
       notion: # notion API info
         token : 'secret_V0kve3TRxDFg3IiPEy216VfEExeaV9T7dpPnmjIy5uf'  # Obtain your own token from notion intergration: https://www.notion.so/my-integrations/

@@ -7,11 +7,11 @@ echo Detected first-time script execution, downloading resource files and runnin
 .\notion-nlp-win64.exe first-try || ((echo Too bad~ An unknown error was detected, please ask the author to handle it and remember to copy the error log above~ Paste the log here ==> https://reurl.cc/b7nDkl) && pause)
 echo Example tasks have been executed, please press Enter to view the word cloud example and directory
 set /p tmp=Please return to this window after viewing the example effect to continue the next step...
-start "" ".\Temp-dataset\results\wordcloud\chinese-simple_task\colormap_viridis.png"
-start "" ".\Temp-dataset\results\wordcloud\chinese-simple_task"
+start "" ".\Temp-dataset\results\wordcloud\English_task\colormap_viridis.png"
+start "" ".\Temp-dataset\results\wordcloud\English_task"
 echo=
 set /p tmp=Please press Enter to view the summary markdown document of the theme...
-start "" ".\Temp-dataset\results\tfidf_analysis\chinese-simple_task\chinese-simple_task.top_5.md"
+start "" ".\Temp-dataset\results\tfidf_analysis\English_task\English_task.top_5.md"
 echo=
 echo "How to configure your own task? Tutorial guide ==> https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8"
 echo=
