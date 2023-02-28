@@ -25,10 +25,10 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -43,6 +43,9 @@ jobs:
         run: |
           python -m poetry install -n
           if [ -f requirements.txt ]; then python -m poetry run pip install -r requirements.txt; fi
+      - name: format
+        run: invoke check
+
       - name: tox
         run: python -m poetry run tox
         
