@@ -17,11 +17,11 @@ def word_cloud_plot(
     word_cloud_dataframe: pd.DataFrame,
     task_name: str = "word_cloud",
     save_path: str = (EXEC_DIR / PathParams.wordcloud.value).as_posix(),
-    background_path: Optional[str] = None,  # todo 背景图片可以加到task的参数中，每个task的词云图背景不一样，也可以随机
+    background_path: Optional[str] = None,  # TODO 背景图片可以加到task的参数中，每个task的词云图背景不一样，也可以随机
     font_path: Optional[str] = None,
-    width: int = 800,  # todo 词云图的宽、高也放到task参数中（作为可选项）
+    width: int = 800,  # TODO 词云图的宽、高也放到task参数中（作为可选项）
     height: int = 450,
-    colormap: str = "viridis",  # todo 词云图的颜色也是可选项，可以指定自己想要的颜色
+    colormap: str = "viridis",  # TODO 词云图的颜色也是可选项，可以指定自己想要的颜色
     font_show: str = "chinese.stzhongs.ttf",
 ):
     """绘制词云图

@@ -127,7 +127,7 @@ def load_config(config_file: str) -> ConfigParams:
     with open(config_file, "r", encoding="utf-8") as f:
         data = yaml.load(f)
     config = dict_to_class(data)
-    # todo 检查config中的结构和参数是否有错误，匹配为正确的参数类，填充缺失值为对应默认值
+    # TODO 检查config中的结构和参数是否有错误，匹配为正确的参数类，填充缺失值为对应默认值
     # config = origin_config.check_and_fill_missing_params(origin_config)
     return config
 

@@ -335,7 +335,7 @@ class NotionTextAnalysis(NotionDBText):
             task_description (str): 任务描述
             top_n (int): 需要输出得分前n的词
         """
-        # todo top_freq是通用方法，要从类中拆出来
+        # TODO top_freq是通用方法，要从类中拆出来
         top_n_words = df.head(top_n)
         print("\n", "-" * 3, f"| Top {top_n} Words |", "-" * 3, "\n")
         print(
@@ -445,7 +445,7 @@ def split_paragraphs(paragraph: str) -> List[str]:
     Returns:
         List[List[str]]: 切分后的句子列表
     """
-    # todo 改用成熟的句子切分工具，如 Stanford CoreNLP、NLTK 和 SpaCy 等，它们都能够处理多种语言中的句子切分问题。
+    # TODO 改用成熟的句子切分工具，如 Stanford CoreNLP、NLTK 和 SpaCy 等，它们都能够处理多种语言中的句子切分问题。
 
     # 匹配中英文标点符号后面可能跟着的零个或多个空白字符，再匹配一个非空白字符。其中，中英文标点符号包括句号（。）、分号（；）、问号（？）、感叹号（！）和英文标点符号（.、;、?、!）
     pattern = r"(?<=[\n。；？！\.;?!])\s*(?=[^\s\n。；？！\.;?!])"

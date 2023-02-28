@@ -38,7 +38,7 @@ class CommanClass:
 class APIClass(CommanClass):
     """用于定义api.py中使用到的参数，作为各种笔记软件API参数类的父类，减少方法冗余"""
 
-    # todo 待将子类方法抽象出来
+    # TODO 待将子类方法抽象出来
 
     def __init__(self) -> None:
         pass
@@ -47,7 +47,7 @@ class APIClass(CommanClass):
 class NLPClass(CommanClass):
     """用于定义nlp.py中使用到的参数，作为各种NLP技术参数类的父类，减少方法冗余"""
 
-    # todo 待将子类方法抽象出来
+    # TODO 待将子类方法抽象出来
 
     def __init__(self) -> None:
         pass
@@ -56,7 +56,7 @@ class NLPClass(CommanClass):
 class VisualClass(CommanClass):
     """用于定义visual.py中使用到的参数，作为各种可视化技术参数类的父类，减少方法冗余"""
 
-    # todo 待将子类方法抽象出来
+    # TODO 待将子类方法抽象出来
 
     def __init__(self) -> None:
         pass
@@ -66,7 +66,7 @@ class ConfigPath(str, Enum):
     """各种应用的配置文件路径类"""
 
     value = Path("configs")
-    # todo 支持其他笔记软件的API
+    # TODO 支持其他笔记软件的API
     # 用pathlib来自适应不同平台的路径分隔符
     notion = value / "config.yaml"
     notion_test = value / "config.test.yaml"
@@ -199,7 +199,7 @@ class APIParams(APIClass):
     def __init__(self, **kwargs):
         super().__init__()
         # self._notion = NotionParams()
-        # todo 还有其他笔记应用和社交媒体的API
+        # TODO 还有其他笔记应用和社交媒体的API
         self.__dict__.update(kwargs)
 
 
