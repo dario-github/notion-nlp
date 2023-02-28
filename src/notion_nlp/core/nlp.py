@@ -1,10 +1,9 @@
 import logging
 import os
-import random
 import re
 from itertools import chain
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 import jieba
 import pandas as pd
@@ -14,12 +13,7 @@ from tabulate import tabulate
 
 from notion_nlp.core.api import NotionDBText
 from notion_nlp.core.visual import word_cloud_plot
-from notion_nlp.parameter.config import (
-    PathParams,
-    ResourceParams,
-    TaskParams,
-    TextCleanParams,
-)
+from notion_nlp.parameter.config import PathParams, ResourceParams, TaskParams
 from notion_nlp.parameter.error import NLPError
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent

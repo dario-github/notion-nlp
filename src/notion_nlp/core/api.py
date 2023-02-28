@@ -3,7 +3,6 @@ import logging
 import traceback
 from typing import List
 
-import arrow
 import requests
 from tqdm import tqdm
 

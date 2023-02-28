@@ -8,7 +8,7 @@ Param要继承对应的Class，以减少方法冗余
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import ClassVar, List, Mapping, Optional, Tuple
+from typing import List, Tuple
 
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.parent.parent
 

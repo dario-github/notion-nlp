@@ -10,7 +10,6 @@ packages = [{include = "notion_nlp", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.8.10,<3.12"
 arrow = "1.2.3"
-pyfunctional = "^1.4.3"
 ruamel-yaml = "0.17.21"
 tqdm = "4.64.1"
 pandas = "1.5.3"
@@ -23,6 +22,7 @@ typer = "0.7.0"
 pydantic = "1.10.5"
 wordcloud = "1.8.2.2"
 matplotlib = "3.7.0"
+toolz = "^0.12.0"
 
 [tool.poetry.group.dev.dependencies]
 py = "^1.11.0"

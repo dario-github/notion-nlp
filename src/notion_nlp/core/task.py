@@ -10,12 +10,7 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 from notion_nlp.core.nlp import NotionTextAnalysis
-from notion_nlp.parameter.config import (
-    NotionParams,
-    PathParams,
-    ResourceParams,
-    TaskParams,
-)
+from notion_nlp.parameter.config import PathParams, ResourceParams, TaskParams
 from notion_nlp.parameter.error import ConfigError, TaskError
 from notion_nlp.parameter.utils import (
     dict_to_class,

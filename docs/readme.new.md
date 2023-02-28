@@ -45,4 +45,3 @@ Text-Miner will output a markdown file named `text-miner.md` and a word cloud im
 ## License and Contribution
 
 Text-Miner is licensed under MIT License. If you want to contribute to Text-Miner or report any issues or suggestions, please visit <https://github.com/dario-github/text-miner>.
-
