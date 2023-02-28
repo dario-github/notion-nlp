@@ -25,17 +25,17 @@ wordcloud = "1.8.2.2"
 matplotlib = "3.7.0"
 
 [tool.poetry.group.dev.dependencies]
-py = "1.11.0"
-pytest = "7.2.1"
-pytest-cover = "3.0.0"
-pytest-html = "3.1.1"
-black = "23.1.0"
-isort = "5.12.0"
-flake8 = "6.0.0"
-pylint = "2.16.2"
-tox = "3.28.0"
-invoke = "1.7.3"
-setuptools = "67.3.2"
+py = "^1.11.0"
+pytest = "^7.2.1"
+pytest-cover = "^3.0.0"
+pytest-html = "^3.1.1"
+black = "^23.1.0"
+isort = "^5.12.0"
+flake8 = "^6.0.0"
+pylint = "^2.16.2"
+tox = "^3.28.0"
+invoke = "^1.7.3"
+setuptools = "^67.3.2"
 sphinx = {version = "3.4.0", optional = true}
 sphinx-rtd-theme = {version = "0.5.0", optional = true}
 recommonmark = {version = "0.7.1", optional = true}

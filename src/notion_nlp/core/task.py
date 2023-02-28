@@ -5,6 +5,7 @@ import traceback
 from pathlib import Path
 from typing import List, Optional, Tuple
 
+import typer
 from tabulate import tabulate
 from tqdm import tqdm
 
@@ -87,8 +88,8 @@ def task_info(
     if not config.tasks_with_diff_name():
         raise ConfigError("No tasks provided.")
     table_header, table_row = config.to_sorted_table_row(keys=sort_by, exclude=exclude)
-    print("\n", "-" * 10, "|  All Tasks Info  |", "-" * 10, "\n")
-    print(
+    typer.echo("\n" + "-" * 10 + "|  All Tasks  |" + "-" * 10 + "\n")
+    typer.echo(
         tabulate(
             table_row,
             headers=table_header,
@@ -137,13 +138,11 @@ def run_task(
             task = config.get_task_by_name(task_name)
             if not task:
                 raise TaskError(f"{task_name} does not exist.")
-                return
             # 检查task是否处于激活中
             if not task.run:
                 raise TaskError(
                     f"{task_name} has been set to stop running. Check the parameters."
                 )
-                return
 
     # 如果config文件不存在，就必须提供task/task_json
     else:
@@ -174,7 +173,11 @@ def run_task(
         # 提取 traceback 信息
         tb = traceback.extract_tb(e.__traceback__)
         # 打印traceback 记录的文件名和行数
-        logging.error("".join(traceback.format_list(tb)) + e.__str__())
+        logging.info(f"Task [{task.name}] failed.")
+        logging.error("Error message: ", "".join(traceback.format_list(tb)) + e.__str__())
+        return False
+    else:
+        return True
 
 
 def run_all_tasks(
@@ -193,5 +196,7 @@ def run_all_tasks(
     logging.info(
         f"Running {len(tasks_to_run)} tasks: {[task.name for task in tasks_to_run]}"
     )
+    task_status = {}
     for task in tqdm(tasks_to_run, desc="Total Tasks"):
-        run_task(task=task, config_file=config_file)
+        task_status[task.name] = run_task(task=task, config_file=config_file)
+    return task_status

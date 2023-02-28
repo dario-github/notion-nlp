@@ -26,7 +26,10 @@ def first_try():
 def run_all_tasks(
     config_file: str = EXEC_DIR / PathParams.notion_config.value,
 ):
-    _run_all_tasks(config_file)
+    task_status = _run_all_tasks(config_file)
+    typer.echo(f"Task Execution Status: {task_status}")
+    if all(task_status) is False:
+        raise typer.Exit(1)
 
 
 @app.command()

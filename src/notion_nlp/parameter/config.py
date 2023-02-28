@@ -148,8 +148,8 @@ class TextCleanParams(NLPClass):
 
     def __init__(self, **kwargs) -> None:
         super().__init__()
-        self.discard_startswith = ["#", "@"]
-        self.sentence_length = [9, 999]
+        self.discard_startswith = ["#", "@", "http", "link"]
+        self.sentence_length = [5, 999]
         self.__dict__.update(kwargs)
 
     @property

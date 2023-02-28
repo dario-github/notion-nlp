@@ -30,8 +30,8 @@ class NotionDBText:  # 不能继承NotionParams, 本类是方法类，不应成�
 
     def read(self):
         self.total_pages = self.read_pages()
-        self.total_blocks = self.read_blocks(self.total_pages)
-        self.total_texts = self.read_rich_text(self.total_blocks)
+        self.total_blocks = self.read_blocks()
+        self.total_texts = self.read_rich_text()
 
     def read_pages(self):
         """
@@ -75,13 +75,13 @@ class NotionDBText:  # 不能继承NotionParams, 本类是方法类，不应成�
 
         return total_pages
 
-    def read_blocks(self, pages: List):
+    def read_blocks(self):
         """
         读取pages中所有blocks
         """
         total_blocks = []
         passed_blocks = 0
-        for page in tqdm(pages, desc="read blocks"):
+        for page in tqdm(self.total_pages, desc="read blocks"):
             page_id = page["id"]
             self.params.page_id = page_id
             try:
@@ -99,14 +99,14 @@ class NotionDBText:  # 不能继承NotionParams, 本类是方法类，不应成�
         )
         return total_blocks
 
-    def read_rich_text(self, blocks: List):
+    def read_rich_text(self):
         """
         读取blocks中所有rich text
         """
         total_texts = []
         passed_texts = 0
         self.unsupported_types = set()
-        for page_blocks in blocks:
+        for page_blocks in self.total_blocks:
             page_texts = []
             for block in page_blocks:
                 if block["type"] not in self.params.block_types:

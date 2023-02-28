@@ -1574,17 +1574,18 @@ pytest-cov = ">=2.0"
 
 [[package]]
 name = "pytest-html"
-version = "3.1.1"
+version = "3.2.0"
 description = "pytest plugin for generating HTML reports"
 category = "dev"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "pytest-html-3.1.1.tar.gz", hash = "sha256:3ee1cf319c913d19fe53aeb0bc400e7b0bc2dbeb477553733db1dad12eb75ee3"},
-    {file = "pytest_html-3.1.1-py3-none-any.whl", hash = "sha256:b7f82f123936a3f4d2950bc993c2c1ca09ce262c9ae12f9ac763a2401380b455"},
+    {file = "pytest-html-3.2.0.tar.gz", hash = "sha256:c4e2f4bb0bffc437f51ad2174a8a3e71df81bbc2f6894604e604af18fbe687c3"},
+    {file = "pytest_html-3.2.0-py3-none-any.whl", hash = "sha256:868c08564a68d8b2c26866f1e33178419bb35b1e127c33784a28622eb827f3f3"},
 ]
 
 [package.dependencies]
+py = ">=1.8.2"
 pytest = ">=5.0,<6.0.0 || >6.0.0"
 pytest-metadata = "*"
 
@@ -1828,14 +1829,14 @@ test = ["asv", "gmpy2", "mpmath", "pooch", "pytest", "pytest-cov", "pytest-timeo
 
 [[package]]
 name = "setuptools"
-version = "67.3.2"
+version = "67.4.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "setuptools-67.3.2-py3-none-any.whl", hash = "sha256:bb6d8e508de562768f2027902929f8523932fcd1fb784e6d573d2cafac995a48"},
-    {file = "setuptools-67.3.2.tar.gz", hash = "sha256:95f00380ef2ffa41d9bba85d95b27689d923c93dfbafed4aecd7cf988a25e012"},
+    {file = "setuptools-67.4.0-py3-none-any.whl", hash = "sha256:f106dee1b506dee5102cc3f3e9e68137bbad6d47b616be7991714b0c62204251"},
+    {file = "setuptools-67.4.0.tar.gz", hash = "sha256:e5fd0a713141a4a105412233c63dc4e17ba0090c8e8334594ac790ec97792330"},
 ]
 
 [package.extras]
@@ -2382,4 +2383,4 @@ doc = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.10,<3.12"
-content-hash = "d6b7c606f5d16834e9792091e058890fd3c2bf40ac2f97e069c18de49f9e15ee"
+content-hash = "ca217355ee046e64146d692e3b20d5f1de1c2ccb1aedbde01940a84f9a6c0f8f"

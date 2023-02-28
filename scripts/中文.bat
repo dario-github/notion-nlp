@@ -6,10 +6,9 @@ if not exist ".\Temp-dataset\configs\config.yaml" (
     echo 检测到脚本首次执行，将下载资源文件并执行引导，请耐心等待 1-3 min...
     .\notion-nlp-win64.exe first-try
     IF NOT %ERRORLEVEL% EQU 0 (
-      echo "太可惜了~发现未知错误，请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl"
+      echo "发现未知错误...请责令作者处理，记得复制上面的错误日志哦~到这里粘贴日志 ==> https://reurl.cc/b7nDkl"
       set /p tmp=请按任意键退出脚本...
       exit)
-    else (
     echo 样例任务已执行完毕，请按回车键查看词云图样例及目录
     set /p tmp=查看样例效果后请返回本窗口，继续下一步骤...
 ::    start "" ".\Temp-dataset\results\wordcloud\chinese-simple_task\colormap_viridis.png"
@@ -26,7 +25,6 @@ if not exist ".\Temp-dataset\configs\config.yaml" (
     echo=
     echo /p tmp=请按回车键进入主菜单...
     cls
-    )
 ) else (
     echo=
 )
@@ -34,14 +32,33 @@ if not exist ".\Temp-dataset\configs\config.yaml" (
 color 0a
 :main
 color 0a
-echo ================= ☆ Notion 自然语言处理 ☆ =====================
+echo                   ,zm.
+echo                  ,dd@[
+echo                v`    '\c
+echo               /        'i
+echo               [         ]
+echo              ,!-s       ]                         __
+echo              /  @!      ]          _____        ,/v/\
+echo             i`          !_m.   ,v/~     ~=.     [[ /Y
+echo             /            ]Mb_v/`          !.    [[  ]
+echo             [            ]][               t==_.[[  [
+echo             t            /W!               '~~=(L[  [
+echo              t           W@  '~~======c          '  [
+echo    ,__________Xm_g@@m__gm@@___       -_\            ]_______
+echo    W@@@@@@@@@@@@@@@@@@@@@@@@@@@@@mm.'i]WmmmW@@@@@@mmW@@@@@@@b
+echo   i@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@i
+echo   W@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
+echo  i@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@W
+echo !@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+echo=
+echo ================== ☆ Notion 自然语言处理 ☆ ======================
 echo=
 echo 作者:  Dario Zhang
 echo 版本:  v1.0.6
 echo 代码:  https://github.com/dario-github/notion-nlp
 echo 描述:  从Notion数据库中读取文本并进行自然语言处理分析
 echo=
-echo =====================   推广区   ==============================
+echo =========================   推广区   ============================
 echo=                                   
 echo 激励作者:  https://reurl.cc/7R3MeN
 echo=
