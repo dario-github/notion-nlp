@@ -159,3 +159,4 @@ scripts/test.bat
 *.dat
 .vscode/launch.json
 logs/notion-nlp/app.log.*
+PYPI_TOKEN
