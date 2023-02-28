@@ -1,5 +1,6 @@
 import json
 import logging
+import traceback
 from typing import List
 
 import arrow
@@ -59,10 +60,16 @@ class NotionDBText:  # 不能继承NotionParams, 本类是方法类，不应成�
                 passed_pages += 1
                 # 失败次数超出上限后，抛出异常
                 if failed_attempts > failed_limit:
-                    logging.warning(
-                        f"Failed to read pages, failed attempts: {failed_attempts}, please check your config file. {e}"
+                    tb = traceback.extract_tb(e.__traceback__)
+                    logging.error(
+                        f"Failed to read pages, failed attempts: {failed_attempts}, please check your config file. ",
+                        "".join(traceback.format_list(tb)) + e.__str__(),
                     )
-                    raise e
+                    raise ConnectionError(
+                        f"Failed to read pages, failed attempts: {failed_attempts}, please check your config file. "
+                        + "".join(traceback.format_list(tb))
+                        + e.__str__()
+                    )
             else:
                 failed_attempts = 0
                 respond = json.loads(r_database.text)

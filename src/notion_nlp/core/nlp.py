@@ -353,7 +353,7 @@ class NotionTextAnalysis(NotionDBText):
             top_words = [f"|{word}|{score}|" for word, score in top_n_words.items()]
             f.write("\n".join(top_words) + "\n\n")
             for word in top_n_words.index:
-                f.write("## " + word + f"{len(self.word2sents[word])} sentences", "\n\n")
+                f.write("## " + word + f"{len(self.word2sents[word])} sentences" + "\n\n")
                 f.write(
                     "\n\n".join(
                         [

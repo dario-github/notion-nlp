@@ -174,7 +174,7 @@ def run_task(
         tb = traceback.extract_tb(e.__traceback__)
         # 打印traceback 记录的文件名和行数
         logging.info(f"Task [{task.name}] failed.")
-        logging.error("Error message: ", "".join(traceback.format_list(tb)) + e.__str__())
+        logging.error("Error message: %s %s", "".join(traceback.format_list(tb)), e)
         return False
     else:
         return True

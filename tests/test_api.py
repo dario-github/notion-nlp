@@ -76,7 +76,10 @@ class TestNotionDBText:
 
         # 进行测试
         notiondbtext.total_pages = [{"id": "page1_id"}, {"id": "page2_id"}]
-        assert notiondbtext.read_blocks() == [fake_response["results"], fake_response["results"]]
+        assert notiondbtext.read_blocks() == [
+            fake_response["results"],
+            fake_response["results"],
+        ]
 
     def test_read_rich_text_success(self):
         # 创建一个伪造的响应结果
