@@ -49,7 +49,7 @@ echo=
 echo ============  Notion Natural Language Processing  =================
 echo=
 echo Author:      Dario Zhang
-echo Version:     v1.0.7
+echo Version:     v1.0.7.1
 echo Code:        https://github.com/dario-github/notion-nlp
 echo Description: Read text from the Notion database and perform natural echo              language processing analysis
 echo=
