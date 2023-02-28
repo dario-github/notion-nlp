@@ -45,11 +45,11 @@ Now, the tool can:
 
 - Support multiple languages. I have added stopword lists for several languages including Chinese, English, Russian, French, Japanese, and German. Users can also customize their own stopword lists.
 
-  :earth_asia: [Stopword lists for multiple languages](./resources/stopwords/)
+  :earth_asia: [Stopword lists for multiple languages](./notion-nlp-dataset/resources/stopwords/)
 
 - Support multiple tasks. Users can configure multiple databases and corresponding filtering and sorting conditions to create rich analysis tasks.
 
-  :mag: [Example configuration file](./configs/config.sample.yaml)
+  :mag: [Example configuration file](./notion-nlp-dataset/configs/config.sample.yaml)
 
   For example, I have added the following tasks:
 
@@ -130,7 +130,7 @@ E2{{Word cloud with multiple color styles}}
 
 ### Configure the filter sort database entry extra parameter
 
-- The task's extra is used to filter and sort the database, see [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object) for format and content, the [config.sample.yaml](./configs/config.sample.yaml) file already provides 2 configurations.
+- The task's extra is used to filter and sort the database, see [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object) for format and content, the [config.sample.yaml](./notion-nlp-dataset/configs/config.sample.yaml) file already provides 2 configurations.
 
 ### Run all tasks
 
@@ -183,7 +183,7 @@ E2{{Word cloud with multiple color styles}}
         from notion_nlp import run_task
         task_name = "task_1"
         database_id = "your_database_id"
-        config_file="./configs/config.yaml"
+        config_file="./notion-nlp-dataset/configs/config.yaml"
 
         # Option 1
         run_task(task_name=task_name, config_file=config_file)
@@ -231,7 +231,7 @@ E2{{Word cloud with multiple color styles}}
 
 ### :customs: Custom Stopword List
 
-- Add a text file in the [stopwords directory](./resources/stopwords/) with the suffix `stopwords.txt`, such as `custom.stopwords.txt`. Each stopword should be on a separate line in the file.
+- Add a text file in the [stopwords directory](./notion-nlp-dataset/resources/stopwords/) with the suffix `stopwords.txt`, such as `custom.stopwords.txt`. Each stopword should be on a separate line in the file.
 
 <!--
 ### Deploy Your Own Lightweight App

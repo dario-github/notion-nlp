@@ -45,11 +45,11 @@
 
 - 支持多语种。添加了中英俄法日德等语种的停用词表，也可自定义停用词表。
   
-  :earth_asia: [多语种停用词](./resources/stopwords/)
+  :earth_asia: [多语种停用词](./notion-nlp-dataset/resources/stopwords/)
 
 - 支持多任务。用户可以在配置文件中添加多个数据库和对应筛选排序条件来组成丰富的分析任务。
 
-  :mag: [配置文件样例](./configs/config.sample.yaml)
+  :mag: [配置文件样例](./notion-nlp-dataset/configs/config.sample.yaml)
 
   例如，可以添加以下任务：
 
@@ -185,7 +185,7 @@ E2{{多种配色风格的词云图}}
         from notion_nlp import run_task
         task_name = "task_1"
         database_id = "your_database_id"
-        config_file="./configs/config.yaml"
+        config_file="./notion-nlp-dataset/configs/config.yaml"
 
         # 方式一
         run_task(task_name=task_name, config_file=config_file)
@@ -233,7 +233,7 @@ E2{{多种配色风格的词云图}}
 
 ### :customs: 自定义停用词表
 
-- 在 [stopwords目录](./resources/stopwords/) 添加文本文件，后缀为`stopwords.txt`既可，如`custom_stopwords.txt`，文件格式为每行一个停用词。
+- 在 [stopwords目录](./notion-nlp-dataset/resources/stopwords/) 添加文本文件，后缀为`stopwords.txt`既可，如`custom_stopwords.txt`，文件格式为每行一个停用词。
 
 <!--
 ### 部署自己的轻应用
