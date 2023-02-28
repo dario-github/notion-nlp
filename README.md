@@ -41,15 +41,15 @@ Now, the tool can:
 
 - Generate thematic summaries of your Notion notes.
 
-  ==> [Example thematic summary]((./docs/en_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md)) <==
+  :memo: [Example thematic summary]((./docs/sample/English_task.top_5.md))
 
 - Support multiple languages. I have added stopword lists for several languages including Chinese, English, Russian, French, Japanese, and German. Users can also customize their own stopword lists.
 
-  ==> [Stopword lists for multiple languages](./resources/stopwords/) <==
+  :earth_asia: [Stopword lists for multiple languages](./resources/stopwords/)
 
 - Support multiple tasks. Users can configure multiple databases and corresponding filtering and sorting conditions to create rich analysis tasks.
 
-  ==> [Example configuration file](./configs/config.sample.yaml) <==
+  :mag: [Example configuration file](./configs/config.sample.yaml)
 
   For example, I have added the following tasks:
 
@@ -65,21 +65,56 @@ I am pleased to share this tool and hope it can be helpful to you. :laughing:
 
 ```mermaid
 flowchart TB
+A1[(Get personal access token from note-taking software)]
+B2[Customize NLP module parameters]
+B3[Customize visualization module parameters]
+B1[Configure API key and corresponding database ID]
+C1((Run task))
+D1([Read rich text via API]) 
+D2([Segment/Clean/Build word-sentence mapping])
+D3[/Calculate TF-IDF/]
+E1{{Markdown of keywords and source sentences}}
+E2{{Word cloud with multiple color styles}}
 
-A[(Notion Database)] --> B([read rich text via API]) --> C([split word / cleaning / word-phrase mapping]) --> D[/calculate TF-IDF/] --> E[[Output the top-n keywords and their corresponding sentences in markdown format]]
+  A1 -- Configure_task_parameters --> Parameter_types
+  subgraph Parameter_types
+  B1
+  B2
+  B3
+  end
+  B1 & B2 & B3 --> C1
+  C1 --> Calculation_module
+  subgraph Calculation_module
+  D1 --> D2 --> D3
+  end
+  Calculation_module --> Visualization_module
+  subgraph Visualization_module
+  E1
+  E2
+  end
 ```
 
 </div>
 
-## Installation
+## Installation and Usage
 
-```shell
-python3.8 -m pip install notion-nlp
-```
+- Windows System
 
-## Quick use
+  Download [the latest release](https://github.com/dario-github/notion-nlp/releases) of the `Windows` version `zip` file, extract it, and double-click `start.bat` to follow the script prompts and start experiencing.
 
-- Configuration file reference ``configs/config.sample.yaml`` (hereinafter config, please rename to ``config.yaml`` as your own configuration file)
+
+
+- Linux System
+  - Method 1: Download [the latest release](https://github.com/dario-github/notion-nlp/releases) of the `Linux` version `zip` file, extract it, open the terminal in the current directory, and enter `./notion-nlp-linux --help` to view the command details.
+  - Method 2: Install the package from `PyPI` to the `Python` environment.
+  
+    ```shell
+    pip install notion-nlp
+    ```
+
+## Configure Tasks
+
+- Configuration file reference [config.sample.yaml](./notion-nlp-dataset/configs/config.sample.yaml) (hereinafter config, please rename to ``config.yaml`` as your own configuration file)
 
 ### Get the integration token
 
@@ -99,90 +134,98 @@ python3.8 -m pip install notion-nlp
 
 ### Run all tasks
 
-- Run from command line
-  ```Shell
-  python3.8 -m notion_nlp run-all-tasks --config-file /path/to/your/config/file
-  ```
+- Select "Run all tasks" through Windows interactive script
 
-- Run from Python code
+- Call using terminal or Python code after installing the package from PyPI
 
-  ```Python
-  from notion_nlp import run_all_tasks
-  config_file = "./configs/config.yaml"
-  run_all_tasks(config_file)
-  ```
+  - Run from command line
+  
+    ```Shell
+    python3.8 -m notion_nlp run-all-tasks --config-file /path/to/your/config/file
+    ```
+
+  - Run from Python code
+
+    ```Python
+    from notion_nlp import run_all_tasks
+    config_file = "./notion-nlp-dataset/configs/config.yaml"
+    run_all_tasks(config_file)
+    ```
 
 ### Run a single task
 
-- In the `run_task` command, you can specify the task in several ways, including:
+- Select "Run specified task" through Windows interactive script
+- Call using terminal or Python code after installing the package from PyPI
 
-  - `task`: an instance of `TaskParams`;
-  - `task_json`: a JSON string representing the task information;
-  - `task_name`: the name of the task.
+  - In the `run_task` command, you can specify the task in several ways, including:
 
-- If `config_file` exists, you can use `task_name` to specify the task. Note that the task needs to be activated, otherwise an exception will be thrown. If `config_file` does not exist, you need to provide a `token` and either `TaskParams` or `task_json`.
+    - `task`: an instance of `TaskParams`;
+    - `task_json`: a JSON string representing the task information;
+    - `task_name`: the name of the task.
 
-  - With an existing `config` file, pass in `task name`/`task json`/`task parameter class`
+  - If `config_file` exists, you can use `task_name` to specify the task. Note that the task needs to be activated, otherwise an exception will be thrown. If `config_file` does not exist, you need to provide a `token` and either `TaskParams` or `task_json`.
 
-    - Run from command line
+    - With an existing `config` file, pass in `task name`/`task json`/`task parameter class`
 
-      ```shell
-      # Option 1
-      python3.8 -m notion_nlp run-task --task-name task_1 --config-file /path/to/your/config/file
+      - Run from command line
 
-      # Option 2
-      python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --config-file /path/to/your/config/file
-      ```
+        ```shell
+        # Option 1
+        python3.8 -m notion_nlp run-task --task-name task_1 --config-file /path/to/your/config/file
 
-    - Run from Python code
-  
-      ```python
-      from notion_nlp import run_task
-      task_name = "task_1"
-      database_id = "your_database_id"
-      config_file="./configs/config.yaml"
+        # Option 2
+        python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --config-file /path/to/your/config/file
+        ```
 
-      # Option 1
-      run_task(task_name=task_name, config_file=config_file)
+      - Run from Python code
+    
+        ```python
+        from notion_nlp import run_task
+        task_name = "task_1"
+        database_id = "your_database_id"
+        config_file="./configs/config.yaml"
 
-      # Option 2 (not recommended for Python code)
-      import json
-      task_info = {"name": task_name, "database_id": database_id}
-      run_task(task_json=json.dumps(task_info, ensure_ascii=False), config_file=config_file)
+        # Option 1
+        run_task(task_name=task_name, config_file=config_file)
 
-      # Option 3 (recommended)
-      from notion_nlp.parameter.config import TaskParams
-      task = TaskParams(name=task_name, database_id=database_id)
-      run_task(task=task, config_file=config_file)
-      ```
+        # Option 2 (not recommended for Python code)
+        import json
+        task_info = {"name": task_name, "database_id": database_id}
+        run_task(task_json=json.dumps(task_info, ensure_ascii=False), config_file=config_file)
 
-  - Without a `config` file, pass in `token` and `task json`/`task parameter class`
+        # Option 3 (recommended)
+        from notion_nlp.parameter.config import TaskParams
+        task = TaskParams(name=task_name, database_id=database_id)
+        run_task(task=task, config_file=config_file)
+        ```
 
-    - Run from command line
+    - Without a `config` file, pass in `token` and `task json`/`task parameter class`
 
-      ```shell
-      # Option 1
-      python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --token 'your_notion_integration_token'
-      ```
+      - Run from command line
 
-    - Run from Python code
+        ```shell
+        # Option 1
+        python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --token 'your_notion_integration_token'
+        ```
 
-      ```python
-      from notion_nlp import run_task
-      task_name = "task_1"
-      database_id = "your_database_id"
-      notion_token = "your_notion_integration_token"
+      - Run from Python code
 
-      # Option 1 (not recommended for Python code)
-      import json
-      task_info = {"name": task_name, "database_id": database_id}
-      run_task(task_json=json.dumps(task_info, ensure_ascii=False), token=notion_token)
+        ```python
+        from notion_nlp import run_task
+        task_name = "task_1"
+        database_id = "your_database_id"
+        notion_token = "your_notion_integration_token"
 
-      # Option 2 (recommended)
-      from notion_nlp.parameter.config import TaskParams
-      task = TaskParams(name=task_name, database_id=database_id)
-      run_task(task=task, token=notion_token)
-      ```
+        # Option 1 (not recommended for Python code)
+        import json
+        task_info = {"name": task_name, "database_id": database_id}
+        run_task(task_json=json.dumps(task_info, ensure_ascii=False), token=notion_token)
+
+        # Option 2 (recommended)
+        from notion_nlp.parameter.config import TaskParams
+        task = TaskParams(name=task_name, database_id=database_id)
+        run_task(task=task, token=notion_token)
+        ```
 
 ## Enhance Personal Experience
 
@@ -201,7 +244,7 @@ python3.8 -m pip install notion-nlp
 - [Join the discussion](https://github.com/dario-github/notion-nlp/discussions/new/choose)
 - [Submit an issue](https://github.com/dario-github/notion-nlp/issues/new/choose)
 
-### :gift_heart: Join the List of Contributors ![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang)
+### :gift_heart: Buy the author a cup of coffee and request a personalized customization.  ![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang)
 
 <img src=./docs/pictures/Web3WalletBTC.jpg width=15% style="display:inline-block"/><img src=./docs/pictures/Alipay.jpg width=15% style="display:inline-block"/>
 
@@ -226,12 +269,12 @@ python3.8 -m pip install notion-nlp
 
 ## Note
 
-- The word segmentation tool has two built-in options: jieba/pkuseg. (Considering adding language analysis to automatically select the most suitable word segmentation tool for that language.)
+- The word segmentation tool has two built-in options: jieba/~~pkuseg~~. (Considering adding language analysis to automatically select the most suitable word segmentation tool for that language.)
 
   - jieba is used by default.
-  - pkuseg cannot be installed with poetry and needs to be installed manually with pip. In addition, this library is slow and requires high memory usage. It has been tested that a VPS with less than 1G memory needs to load virtual memory to use it.
+  - ~~pkuseg cannot be installed with poetry and needs to be installed manually with pip. In addition, this library is slow and requires high memory usage. It has been tested that a VPS with less than 1G memory needs to load virtual memory to use it.~~
 
-- The analysis method using tf-idf is too simple. Consider integrating the API of LLM (such as chatGPT) for further analysis.
+- The analysis method using tf-idf is too simple. Consider integrating the API of LLM (such as openAI GPT-3) for further analysis.
 
 ## Contributions
 

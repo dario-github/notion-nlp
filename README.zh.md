@@ -41,7 +41,7 @@
 
 - 为你的notion笔记生成一份主题总结
   
-  :memo: [主题总结样例](./docs/zh_unit_testing_task.tf_idf.analysis_result.top5_word_with_sentences.md)
+  :memo: [主题总结样例](./docs/sample/chinese-simple_task.top_5.md)
 
 - 支持多语种。添加了中英俄法日德等语种的停用词表，也可自定义停用词表。
   
@@ -100,15 +100,21 @@ E2{{多种配色风格的词云图}}
 
 - Windows系统
 
-  下载最新zip文件，解压缩后双击start.bat
+  下载 [最新 release](https://github.com/dario-github/notion-nlp/releases) 的`windows`版本`zip`文件，解压缩后双击`start.bat`，跟随脚本引导开始体验。
 
-```shell
-python3.8 -m pip install notion-nlp
-```
+- Linux 系统
 
-## 自定义参数文件
+  - 方式一：下载 [最新 release](https://github.com/dario-github/notion-nlp/releases) 的`linux`版本`zip`文件，解压缩后在当前目录打开终端，输入`./notion-nlp-linux --help`查看命令详情。
+  
+  - 方式二：通过`PyPI`安装包到`python`环境
+  
+      ```shell
+      pip install notion-nlp
+      ```
 
-- 配置文件参照 [config.sample.yaml](./configs/config.sample.yaml) (下称 config, 建议重命名为`config.yaml`作为自己的配置文件)
+## 配置任务
+
+- 配置文件参照 [config.sample.yaml](./notion-nlp-dataset/configs/config.sample.yaml) (下称 config, 建议重命名为`config.yaml`作为自己的配置文件)
 
 ### 获取integration的token
 
@@ -124,101 +130,110 @@ python3.8 -m pip install notion-nlp
 
 ### 配置筛选排序数据库条目的extra参数
 
-- task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。[config.sample.yaml](./configs/config.sample.yaml) 文件已提供2种配置。
+- task 的 extra 是用来筛选和排序 database，格式和内容参考 [notion filter API](https://developers.notion.com/reference/post-database-query-filter#property-filter-object)。[config.sample.yaml](./notion-nlp-dataset/configs/config.sample.yaml) 文件已提供2种配置。
 
 
 ### 执行所有任务
 
-- 通过命令行执行
+- 通过windows交互脚本，选择“运行所有任务”
 
-  ```shell
-  python3.8 -m notion_nlp run-all-tasks --config-file 您的配置文件路径
-  ```
+- 从PyPI安装包后使用终端或python代码调用
 
-- 通过 Python 调用
+  - 通过命令行执行
 
-  ```python
-  from notion_nlp import run_all_tasks
-  config_file = "./configs/config.yaml"
-  run_all_tasks(config_file)
-  ```
+    ```shell
+    python3.8 -m notion_nlp run-all-tasks --config-file 您的配置文件路径
+    ```
+
+  - 通过 Python 调用
+
+    ```python
+    from notion_nlp import run_all_tasks
+    config_file = "./notion-nlp-dataset/configs/config.yaml"
+    run_all_tasks(config_file)
+    ```
 
 ### 执行单个任务
 
-- 在run_task命令中，支持多种方式来指定任务，包括：
+- 通过windows交互脚本，选择“运行指定任务”
 
-  - task；参数类；
-  - task_json：任务信息json字符串；
-  - task_name：任务名。
+- 从PyPI安装包后使用终端或python代码调用
 
-- 如果config_file存在，则可以使用task_name进行指定，同时还需要满足任务为激活状态，否则会抛出异常。如果config_file不存在，则需要提供token和参数类或任务信息json字符串中的任意一种。
+  - 在run_task命令中，支持多种方式来指定任务，包括：
 
-  - 已有`config`文件，传入`task name`/`task json`/`task 参数类`
-  
-    - 通过命令行执行
+    - task；参数类；
+    - task_json：任务信息json字符串；
+    - task_name：任务名。
 
-      ```shell
-      # 方式一
-      python3.8 -m notion_nlp run-task --task-name task_1 --config-file 您的配置文件路径
+  - 如果config_file存在，则可以使用task_name进行指定，同时还需要满足任务为激活状态，否则会抛出异常。如果config_file不存在，则需要提供token和参数类或任务信息json字符串中的任意一种。
 
-      # 方式二
-      python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --config-file 您的配置文件路径
-      ```
+    - 已有`config`文件，传入`task name`/`task json`/`task 参数类`
+    
+      - 通过命令行执行
 
-    - 通过 Python 调用
+        ```shell
+        # 方式一
+        python3.8 -m notion_nlp run-task --task-name task_1 --config-file 您的配置文件路径
 
-      ```python
-      from notion_nlp import run_task
-      task_name = "task_1"
-      database_id = "your_database_id"
-      config_file="./configs/config.yaml"
+        # 方式二
+        python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --config-file 您的配置文件路径
+        ```
 
-      # 方式一
-      run_task(task_name=task_name, config_file=config_file)
+      - 通过 Python 调用
 
-      # 方式二（不推荐用于 Python 调用）
-      import json
-      task_info = {"name": task_name, "database_id": database_id}
-      run_task(task_json=json.dumps(task_info, ensure_ascii=False), config_file=config_file)
+        ```python
+        from notion_nlp import run_task
+        task_name = "task_1"
+        database_id = "your_database_id"
+        config_file="./configs/config.yaml"
 
-      # 方式三（推荐）
-      from notion_nlp.parameter.config import TaskParams
-      task = TaskParams(name=task_name, database_id=database_id)
-      run_task(task=task, config_file=config_file)
-      ```
+        # 方式一
+        run_task(task_name=task_name, config_file=config_file)
 
-  - 没有`config`文件，传入`token`和`task json`/`task 参数类`
+        # 方式二（不推荐用于 Python 调用）
+        import json
+        task_info = {"name": task_name, "database_id": database_id}
+        run_task(task_json=json.dumps(task_info, ensure_ascii=False), config_file=config_file)
 
-    - 通过命令行执行
+        # 方式三（推荐）
+        from notion_nlp.parameter.config import TaskParams
+        task = TaskParams(name=task_name, database_id=database_id)
+        run_task(task=task, config_file=config_file)
+        ```
 
-      ```shell
-      # 方式一
-      python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --token '您的 Notion Integration Token'
-      ```
+    - 没有`config`文件，传入`token`和`task json`/`task 参数类`
 
-    - 通过 Python 调用
+      - 通过命令行执行
 
-      ```python
-      from notion_nlp import run_task
-      task_name = "task_1"
-      database_id = "your_database_id"
-      notion_token = "your_notion_integration_token"
+        ```shell
+        # 方式一
+        python3.8 -m notion_nlp run-task --task-json '{"name": "task_1", "database_id": "your_database_id"}' --token '您的 Notion Integration Token'
+        ```
 
-      # 方式一（不推荐用于 Python 调用）
-      import json
-      task_info = {"name": task_name, "database_id": database_id}
-      run_task(task_json=json.dumps(task_info, ensure_ascii=False), token=notion_token)
+      - 通过 Python 调用
 
-      # 方式二（推荐）
-      from notion_nlp.parameter.config import TaskParams
-      task = TaskParams(name=task_name, database_id=database_id)
-      run_task(task=task, token=notion_token)
-      ```
+        ```python
+        from notion_nlp import run_task
+        task_name = "task_1"
+        database_id = "your_database_id"
+        notion_token = "your_notion_integration_token"
+
+        # 方式一（不推荐用于 Python 调用）
+        import json
+        task_info = {"name": task_name, "database_id": database_id}
+        run_task(task_json=json.dumps(task_info, ensure_ascii=False), token=notion_token)
+
+        # 方式二（推荐）
+        from notion_nlp.parameter.config import TaskParams
+        task = TaskParams(name=task_name, database_id=database_id)
+        run_task(task=task, token=notion_token)
+        ```
 
 ## 增强个人体验
 
 ### :customs: 自定义停用词表
-- 在 [stopwords目录](./resources/stopwords/) 添加文本文件，后缀为`stopwords.txt`既可，如`custom.stopwords.txt`，文件内停用词每行一个。
+
+- 在 [stopwords目录](./resources/stopwords/) 添加文本文件，后缀为`stopwords.txt`既可，如`custom_stopwords.txt`，文件格式为每行一个停用词。
 
 <!--
 ### 部署自己的轻应用
@@ -231,7 +246,7 @@ python3.8 -m pip install notion-nlp
 - [参与讨论](https://github.com/dario-github/notion-nlp/discussions/new/choose) 
 - [提交问题](https://github.com/dario-github/notion-nlp/issues/new/choose)
 
-### :gift_heart: 加入贡献者名单 ![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang)
+### :gift_heart: 请作者喝杯咖啡，定制私人需求 ![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg?link=https://www.paypal.me/dariozhang)
 
 <img src=./docs/pictures/Web3WalletBTC.jpg width=15% style="display:inline-block"/><img src=./docs/pictures/Alipay.jpg width=15% style="display:inline-block"/>
 
@@ -255,11 +270,12 @@ python3.8 -m pip install notion-nlp
 
 ## 问题
 
-- 分词工具内置了两种：jieba/pkuseg。（考虑加入语种解析，自动选用该语种最适合的分词工具）
+- 分词工具内置了两种：jieba/~~pkuseg~~。（考虑加入语种解析，自动选用该语种最适合的分词工具）
   - 默认使用jieba；
-  - pkuseg用poetry无法安装，需要手动pip安装，另外该库速度很慢，对内存要求较高，实测低于1G内存的VPS需要加载虚拟内存才能使用。
+  - ~~pkuseg用poetry无法安装，需要手动pip安装，另外该库速度很慢，对内存要求较高，实测低于1G内存的VPS需要加载虚拟内存才能使用。~~
 
-- tf-idf的分析方法过于简单，考虑接入LLM的API来做进一步分析（例如chatGPT）。
+- TF-IDF的分析方法过于简单，考虑接入LLM的API来做进一步分析（例如openAI GPT-3）。
+- Discussion中记录了一些优化想法，正在逐步实现。
 
 ## 贡献
 

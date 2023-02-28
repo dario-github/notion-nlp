@@ -349,11 +349,14 @@ class NotionTextAnalysis(NotionDBText):
         with open(output_dir / file_name, "w", encoding="utf-8") as f:
             f.write("# " + task_description + "\n\n")
             f.write("## Top " + str(top_n) + " words\n\n")
-            f.write("|Word|Score|\n|---|---|\n")
-            top_words = [f"|{word}|{score}|" for word, score in top_n_words.items()]
+            f.write("|Word|Score|Sentence number|\n|---|---|\n")
+            top_words = [
+                f"|{word}|{score}|{len(self.word2sents[word])}|"
+                for word, score in top_n_words.items()
+            ]
             f.write("\n".join(top_words) + "\n\n")
             for word in top_n_words.index:
-                f.write("## " + word + f"{len(self.word2sents[word])} sentences" + "\n\n")
+                f.write("## " + word + "\n\n")
                 f.write(
                     "\n\n".join(
                         [
