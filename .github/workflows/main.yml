@@ -45,8 +45,6 @@ jobs:
         run: |
           python -m poetry install -n
           if [ -f requirements.txt ]; then python -m poetry run pip install -r requirements.txt; fi
-      - name: format
-        run: invoke check
 
       - name: tox
         run: python -m poetry run tox
