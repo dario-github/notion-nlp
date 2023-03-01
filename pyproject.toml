@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "notion-nlp"
-version = "1.0.7.1"
+version = "1.0.7.2"
 description = "Reading rich text information from a Notion database and performing simple NLP analysis."
 authors = ["Dario Zhang <zdclink@gmail.com>"]
 license = "MIT license"
@@ -22,7 +22,7 @@ typer = "0.7.0"
 pydantic = "1.10.5"
 wordcloud = "1.8.2.2"
 matplotlib = "3.7.0"
-toolz = "^0.12.0"
+toolz = "0.12.0"
 
 [tool.poetry.group.dev.dependencies]
 py = "^1.11.0"

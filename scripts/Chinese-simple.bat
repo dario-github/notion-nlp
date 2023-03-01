@@ -36,7 +36,7 @@ color 0a
 echo ================== �� Notion ��Ȼ���Դ��� �� ======================
 echo=
 echo ����:  Dario Zhang
-echo �汾:  v1.0.7.1
+echo �汾:  v1.0.7.2
 echo ����:  https://github.com/dario-github/notion-nlp
 echo ����:  ��Notion���ݿ��ж�ȡ�ı���������Ȼ���Դ�������
 echo=

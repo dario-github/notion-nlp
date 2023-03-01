@@ -7,9 +7,8 @@ from typing import List
 
 import jieba
 import pandas as pd
-from functional import seq
-from functional.pipeline import Sequence
 from tabulate import tabulate
+from toolz.curried import map, pipe, reduce
 
 from notion_nlp.core.api import NotionDBText
 from notion_nlp.core.visual import word_cloud_plot
@@ -84,7 +83,7 @@ class NotionTextAnalysis(NotionDBText):
             Bool: 词语是否在停用词列表内
         """
         word = word.strip().lower()
-        return word in stopwords or word.isdigit() or not word
+        return word in stopwords or word.isdigit() or len(word) < 2
 
     def check_sentence_available(self, text: str):
         """检查句子是否符合要求
@@ -159,10 +158,15 @@ class NotionTextAnalysis(NotionDBText):
         split_text_list = [self.split_sentence(text, pkg=seg_pkg) for text in text_list]
 
         # 剔除停用词
-        self.sequence = seq(split_text_list).map(
-            lambda sent: [
-                word for word in sent if not self.check_stopwords(word, stopwords)
-            ]
+        self.sequence = list(
+            map(
+                lambda sent_list: list(
+                    filter(
+                        lambda word: not self.check_stopwords(word, stopwords), sent_list
+                    )
+                ),
+                split_text_list,
+            )
         )
         # 检查序列是否为空
         if not any(self.sequence):
@@ -172,8 +176,11 @@ class NotionTextAnalysis(NotionDBText):
             raise NLPError("empty rich texts.")
 
         # 获取词表
-        self.unique_words = self.sequence.map(lambda sent: set(sent)).reduce(
-            lambda x, y: x.union(y)
+        self.unique_words = pipe(
+            self.sequence,
+            map(lambda sent: set(sent)),
+            reduce(lambda x, y: x.union(y)),
+            set,
         )
 
         # 检查词表是否为空
@@ -207,11 +214,11 @@ class NotionTextAnalysis(NotionDBText):
         return word2sents
 
     @staticmethod
-    def tf_idf(sequence: Sequence):
+    def tf_idf(sequence: List):
         """使用标准tf-idf工具来分析
 
         Args:
-            sequence (Sequence): pyfunctional库的sequence对象
+            sequence (Sequence): sequence对象
 
         Returns:
             DataFrame: 词表与tf-idf的关联dataframe
@@ -220,7 +227,7 @@ class NotionTextAnalysis(NotionDBText):
         from sklearn.feature_extraction.text import TfidfVectorizer
 
         vectorizer = TfidfVectorizer()
-        vectors = vectorizer.fit_transform(sequence.map(lambda x: " ".join(x)).to_list())
+        vectors = vectorizer.fit_transform(list(map(lambda x: " ".join(x), sequence)))
         feature_names = vectorizer.get_feature_names_out()
         denselist = vectors.todense().tolist()
         df = pd.DataFrame(denselist, columns=feature_names)
@@ -343,7 +350,7 @@ class NotionTextAnalysis(NotionDBText):
         with open(output_dir / file_name, "w", encoding="utf-8") as f:
             f.write("# " + task_description + "\n\n")
             f.write("## Top " + str(top_n) + " words\n\n")
-            f.write("|Word|Score|Sentence number|\n|---|---|\n")
+            f.write("|Word|Score|Sentence number|\n|---|---|---|\n")
             top_words = [
                 f"|{word}|{score}|{len(self.word2sents[word])}|"
                 for word, score in top_n_words.items()
