@@ -17,7 +17,7 @@ echo=
 set /p tmp=Press Enter to view the summary markdown document of the topic...
 start "" ".\Temp-dataset\results\tfidf_analysis\chinese-simple_task\chinese-simple_task.top_5.md"
 echo=
-echo "How to configure your own task? Tutorial guidance ==> https://github.com/dario-github/notion-nlp/blob/main/README.zh.md#%E4%BD%BF%E7%94%A8"
+echo "How to configure your own task? Tutorial guidance ==> https://reurl.cc/NqAybp"
 echo=
 set /p tmp=Press Enter to open the parameter file and start configuring your own task...
 copy /y ".\Temp-dataset\configs\config.test.yaml" ".\Temp-dataset\configs\config.yaml" > nul
@@ -38,7 +38,8 @@ echo=
 echo Author:      Dario Zhang
 echo Version:     v1.0.7.2
 echo Code:        https://github.com/dario-github/notion-nlp
-echo Description: Read text from the Notion database and perform natural echo              language processing analysis
+echo Description: Read text from the Notion database and perform natural
+echo              language processing analysis
 echo=
 echo ===================== Promotion Zone ==============================
 echo=
@@ -102,4 +103,5 @@ goto main
 
 :lastopt
 start parrot.bat
+cls
 goto main
