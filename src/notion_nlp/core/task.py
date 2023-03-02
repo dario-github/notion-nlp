@@ -77,7 +77,7 @@ def task_info(
     """查看任务信息
 
     Args:
-        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion-nlp-dataset/configs/config.yaml".
     """
     config = load_config(config_file)
     if not config.tasks_with_diff_name():
@@ -110,9 +110,9 @@ def run_task(
         task (TaskParams, optional): 任务信息参数类. Defaults to None.
         task_json (str, optional): 任务信息json字符串. Defaults to None.
         task_name (str, optional): 任务名. Defaults to None.
-        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion-nlp-dataset/configs/config.yaml".
         download_stopwords (bool, optional): 是否下载停用词. Defaults to False.
-        stopfiles_dir (str, optional): 停用词文件目录. Defaults to "notion_nlp/stopwords".
+        stopfiles_dir (str, optional): 停用词文件目录. Defaults to "notion-nlp-dataset/stopwords".
         stopfiles_postfix (str, optional): 停用词文件后缀. Defaults to "stopwords.txt".
 
     Raises:
@@ -181,7 +181,7 @@ def run_all_tasks(
     """运行所有任务
 
     Args:
-        config_file (str, optional): 参数文件地址. Defaults to "notion_nlp/configs/config.yaml".
+        config_file (str, optional): 参数文件地址. Defaults to "notion-nlp-dataset/configs/config.yaml".
     """
     # 打印所有任务信息
     task_info(config_file)

@@ -21,7 +21,7 @@ def word_cloud_plot(
     font_path: Optional[str] = None,
     width: int = 800,  # TODO 词云图的宽、高也放到task参数中（作为可选项）
     height: int = 450,
-    colormap: str = "viridis",  # TODO 词云图的颜色也是可选项，可以指定自己想要的颜色
+    colormap: str = "viridis",
     font_show: str = "chinese.stzhongs.ttf",
 ):
     """绘制词云图

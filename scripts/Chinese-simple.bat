@@ -34,7 +34,7 @@ color 0a
 echo ================== ☆ Notion 自然语言处理 ☆ ======================
 echo=
 echo 作者:  Dario Zhang 
-echo 版本:  v1.0.7.2 
+echo 版本:  v1.0.7.3 
 echo 代码:  https://github.com/dario-github/notion-nlp 
 echo 描述:  从Notion数据库中读取文本并进行自然语言处理分析 
 echo=
